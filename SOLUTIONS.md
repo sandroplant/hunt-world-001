@@ -403,3 +403,28 @@ Level 3 is never text: it is an arrow at the screen edge toward the target, or a
 ```
 
 The rest of the entries follow the tables above. Positions of hidden objects are also stored as scene coordinates in `objects.json` (under `x3d`), and a build-time check confirms that each `answers.json` direction actually points at the object from its viewpoint.
+
+---
+
+## 12. Graybox tuning log (Phase A, 2026-09-29)
+
+Guideline numbers changed while building the grey version. The rules did not change. The tables above are updated where they matter; this log records what moved and why.
+
+| What | Was (Phase 0) | Now | Why |
+|---|---|---|---|
+| Street houses and lighthouse | houses 10 m tall; lighthouse on a headland at (−40, −70), 12 m | houses 5 m; lighthouse on a mole at (−22, −40), 20 m tall | From street level a distant lighthouse was hidden behind the house row. Now it shows between the second and third gables. |
+| **S1** pose | A, yaw 28, pitch 14, zoom 1.8 | A, yaw 29, pitch 17, zoom 1.8 | Follows the lighthouse move. |
+| Drawer layout | ink pool and key bridge to the right of the letter hill | ink pool at (−14, 0, −30), bridge across it at z = −29, stamp tower at (−16, 4.5, −37), all to the left-front of B | The original S3 direction looked at the cat, not the bridge. |
+| **S3** pose | B, yaw −10, pitch −6, zoom 1.5 | B, yaw 35, pitch −14, zoom 1.4 | Follows the drawer layout. |
+| Paper boat (hidden) | A, yaw 8, pitch −20, 15 units | A, yaw 25, pitch −7, 33 units | The old direction pointed below the drawer floor. |
+| Stamp with the moon missing (hidden) | B, yaw 30, pitch 10, 9 units | B, yaw 30, pitch 6, 20 units | Sits on the moved stamp tower. |
+| Cat collar viewpoint B | (40, 12, 60), facing +X along the collar | (40, 12, −40), facing −Z; the collar runs across in front at z = −76 | Standing on the collar's line made it fill the view as a wall. |
+| Charm colours | all brass | fish teal, house cream, bell bright gold, heart red, tag grey | Brass charms vanished against the orange head. Not colour-only: the shapes differ too. |
+| S4 alt text | "a fish, a bell, a house" | "a house, a bell, a heart" | Matches the order along the collar. |
+| Moon ground | 300 × 300 plane | 80 × 44 plane ending at the rise | The plane hid the harbor below the edge. |
+| **S6** pose and the edge | B, yaw −30, pitch −35; edge at yaw −30, pitch −50 | B, yaw 24, pitch −41, zoom 1.5; edge at yaw 24, pitch −56 | The harbor far below sits to the left of the rise, not the right. |
+| Turn limits | drawer B ±130, cat B ±110, eye B ±140, moon B ±120 | drawer B ±170, cat B ±140, eye B ±180, moon B ±180 | Each stand mark must be visible from the other viewpoint. |
+| Lens hold | not specified | holding the lens zooms toward 4× in about a second; letting go eases back to the wheel or pinch level | Phones need a one-finger zoom that also works for the dive ring. |
+| Look direction | — | the world follows the finger: drag right to look left, drag down to look up; arrow keys turn 70° per second at 1×, slower when zoomed | One convention for both axes. |
+
+Not changed: every rule in §0, the chain in §1, the hint text (two lines reworded to match the moved bridge and the moon's edge), the decoy counts.

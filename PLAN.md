@@ -1,6 +1,6 @@
 # PLAN.md — World 001, step 1: Into the Cat's Eye
 
-**Status:** Phase 0 draft, 2026-09-29. Waiting for the founder at STOP 0.
+**Status:** Phase A graybox built, 2026-09-29. Waiting for the founder at STOP A (Gate A). The nine proposals in §1 were accepted at STOP 0 (see `DECISIONS.md` D-006).
 **Governing spec:** `SPEC_WORLD_001_STEP_1_INTO_THE_CATS_EYE.md`.
 
 ---
@@ -35,8 +35,8 @@ Time estimates are agent sessions of roughly 2–4 hours each. **Confidence: low
 
 | Phase | What | Deliverables | Estimate | Stop |
 |---|---|---|---|---|
-| 0 | Plan | `DESIGN.md`, `SOLUTIONS.md`, `PLAN.md`, `DECISIONS.md`, `PROGRESS.md`, `PRODUCTION_LOG.md` | 1 session | **STOP 0** (this one) |
-| A | Graybox | Six places and the ending in flat shapes; all dives, sketches, hidden objects, required steps, hints; depth ribbon, sketchbook, save/restart; touch, mouse, keyboard; the judge; Gate A tests | 3–5 sessions | **STOP A** — the founder plays 15 min; 3–5 strangers play grey |
+| 0 | Plan | `DESIGN.md`, `SOLUTIONS.md`, `PLAN.md`, `DECISIONS.md`, `PROGRESS.md`, `PRODUCTION_LOG.md` | 1 session (done) | **STOP 0** (done) |
+| A | Graybox | Six places and the ending in flat shapes; all dives, sketches, hidden objects, required steps, hints; depth ribbon, sketchbook, save/restart; touch, mouse, keyboard; the judge; Gate A tests | 1 session (done) | **STOP A** (this one) — the founder plays 15 min; 3–5 strangers play grey |
 | B1 | Style frames | 3 screenshots: street, drawer, eye | 1 session | **STOP B1** — founder approves |
 | B2 | Art and completeness | Full art, density ≥150 props per place, audio, tiers, accessibility, onboarding, the rest of §10 checks | 4–6 sessions | — |
 | C1 | Review prep | `REVIEW/` set up, screenshot set, clean-clone check | 1 session | **STOP C1** — founder runs reviews |

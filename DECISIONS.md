@@ -46,3 +46,26 @@ One judge module (`src/game/judge.ts`) makes every "is this found?" decision. Al
 ## D-005 — Cost reporting (decision, spec §12)
 
 The builder cannot see a dollar figure from inside this cloud session. At every stop the builder records in `PRODUCTION_LOG.md`: wall-clock time, what the session's own token counter showed (labelled as a counter, not a cost), and the words "dollar cost not visible to the builder". The founder pastes the usage view's figure, and the builder adds it to the log row.
+
+---
+
+## D-006 — Founder decision at STOP 0 (2026-09-29): all nine proposals accepted
+
+The founder accepted all nine proposals in `PLAN.md` §1. They are now decisions. `SOLUTIONS.md` stands as written; its fallbacks no longer apply.
+
+**One change to proposal 4 (founder's words):** the "getting warm" feedback must also respond to zoom. A player facing the right direction at the wrong zoom must still see the sketch lines start to line up. So warmth is computed from both the angle and the zoom distance to the stored pose. The judge returns one warmth value in 0..1; the angle term and the zoom term each contribute, and the lock still needs both to be within their bands for 0.8 s.
+
+**Phase 0 cost, from the founder:** $10 (credit balance $250 → $240). Recorded in `PRODUCTION_LOG.md`.
+
+**Phase A budget rule, from the founder:** stop and report if Phase A reaches about $60, even if it is not finished. Keep the graybox simple: plain shapes, no art.
+
+---
+
+## D-007 — Input conventions and the lens hold (decision in the graybox, spec §4 leaves them open)
+
+- **Look:** the world follows the finger or mouse. Drag right to look left, drag down to look up. Arrow keys turn at about 70° per second at 1×, slower when zoomed. Sensitivity 0.18° per pixel at 1×, divided by the zoom.
+- **Lens:** wheel and pinch set a zoom level that stays. Holding the lens (the button, the right mouse button, or Z) zooms toward 4× in about a second and eases back to the set level on release. This gives phones a one-finger zoom, and it is the same hold that fills the dive ring.
+- **Dive trigger:** the ring fills while an active dive target is centered and the lens is held, or the zoom is 1.5× or more. Tapping, clicking, E or Enter on a centered dive target starts the dive at once (the accessibility path in spec §4).
+- **Verbs:** the crosshair picks the nearest usable thing within its angular size or 22 px, whichever is bigger. A hidden object is picked only when the judge would accept a find there (right viewpoint, centered, zoomed enough).
+- **Escape** closes any open panel; with nothing open it opens the menu. Tab is never used.
+- **Two viewpoints per place** are ordinary objects with the verb "Stand here". The glide takes about 0.9 s and resets the zoom.

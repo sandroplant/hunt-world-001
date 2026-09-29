@@ -1,0 +1,12 @@
+{
+  "_notes": "Data only. Poses live in answers.json (judge only). Each sketch belongs to a place and has alt text. hidden = the two outline pictures on the same page.",
+  "sketches": [
+    { "id": "S1", "place": "street", "alt": "A lighthouse seen between two pointed roofs. A fish-shaped weathervane on the left roof.", "hidden": ["street.umbrella", "street.ship_bottle"] },
+    { "id": "S2", "place": "shop", "alt": "A shop counter with brass scales. A tall clock behind it. A birdcage hangs above.", "hidden": ["shop.teacup_star", "shop.marble"] },
+    { "id": "S3", "place": "drawer", "alt": "A bridge made of old keys over dark ink. A tower of stamps behind. A cat's tail curls at the edge.", "hidden": ["drawer.paper_boat", "drawer.stamp_moon"] },
+    { "id": "S4", "place": "cat", "alt": "Three charms on a collar: a house, a bell, a heart. A whisker crosses above.", "hidden": ["cat.flea", "cat.fishbone"] },
+    { "id": "S5", "place": "eye", "alt": "Three bright stars in a line. A curved gold ring crosses them. The corner of a window.", "hidden": ["eye.comet", "eye.lighthouse_reflection"] },
+    { "id": "S6", "place": "moon", "alt": "A small harbor far below, seen over a grey rim. A lighthouse on a stone pier.", "hidden": ["moon.footprint", "moon.glove"] }
+  ],
+  "lastPage": { "altStart": "A grey moon with an old lamp. The lamp is dark.", "altEnd": "A cat on a step, looking up at a glowing moon." }
+}
