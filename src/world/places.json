@@ -1,113 +1,956 @@
 {
-  "_notes": "Data only. Units differ per place. heading = base yaw in degrees (0 faces -Z, +90 faces -X). yaw/pitch = turn limits. reach = max distance for a verb to show. Viewpoint A is where a dive lands.",
-  "order": ["street", "shop", "drawer", "cat", "eye", "moon", "street_night"],
-  "ribbon": ["street", "shop", "drawer", "cat", "eye", "moon"],
+  "_notes": "Data only. Units differ per place. All headings are 0: yaw is measured in world terms (0 faces -Z, +90 faces -X) and stays the same when moving between spots. yaw limits are a full turn; pitch limits stay. reach = max distance for a verb to show. eye = eye height above the spot mark. moveSpeed = glide speed in place units per second. approach = where the portal camera stands relative to the arrival spot (back along the view, up, and its pitch).",
+  "order": [
+    "street",
+    "shop",
+    "drawer",
+    "cat",
+    "eye",
+    "moon",
+    "street_night"
+  ],
+  "ribbon": [
+    "street",
+    "shop",
+    "drawer",
+    "cat",
+    "eye",
+    "moon"
+  ],
   "places": {
     "street": {
-      "label": "Street", "unit": "m", "reach": 4.0, "near": 0.05, "far": 400,
-      "sky": "#2B3A67", "ground": "#3B4150", "fog": ["#2B3A67", 30, 160], "light": ["#B7C4E8", 0.9, "#F2B75B", 0.35],
+      "label": "Street",
+      "unit": "m",
+      "reach": 4.0,
+      "near": 0.05,
+      "far": 400,
+      "sky": "#2B3A67",
+      "ground": "#3B4150",
+      "fog": [
+        "#2B3A67",
+        30,
+        160
+      ],
+      "light": [
+        "#B7C4E8",
+        0.9,
+        "#F2B75B",
+        0.35
+      ],
       "arrive": "A",
       "viewpoints": {
-        "A": { "pos": [0, 1.6, 0], "heading": 0, "yaw": [-120, 120], "pitch": [-35, 55], "describe": "the middle of the street, beside the fish stall" },
-        "B": { "pos": [-3.5, 1.6, -6.5], "heading": 90, "yaw": [-140, 140], "pitch": [-40, 50], "describe": "the curiosity shop's step" }
+        "A": {
+          "pos": [
+            0,
+            1.6,
+            0
+          ],
+          "heading": 0,
+          "yaw": [
+            -180,
+            180
+          ],
+          "pitch": [
+            -35,
+            55
+          ],
+          "describe": "the middle of the street, beside the fish stall"
+        },
+        "B": {
+          "pos": [
+            -3.5,
+            1.6,
+            -6.5
+          ],
+          "heading": 0,
+          "yaw": [
+            -180,
+            180
+          ],
+          "pitch": [
+            -40,
+            50
+          ],
+          "describe": "the curiosity shop's step"
+        },
+        "C": {
+          "pos": [
+            2.0,
+            1.6,
+            -12.0
+          ],
+          "heading": 0,
+          "yaw": [
+            -180,
+            180
+          ],
+          "pitch": [
+            -35,
+            55
+          ],
+          "describe": "the quay, beside the boats"
+        },
+        "D": {
+          "pos": [
+            -1.5,
+            1.6,
+            5.0
+          ],
+          "heading": 0,
+          "yaw": [
+            -180,
+            180
+          ],
+          "pitch": [
+            -35,
+            55
+          ],
+          "describe": "up the street, near the top"
+        }
       },
       "landmarks": [
-        { "text": "the lighthouse on the mole, seen between two roofs", "at": ["A", 29, 17] },
-        { "text": "the harbor and the boats at the end of the street", "at": ["A", 0, -2] },
-        { "text": "the curiosity shop, with a cat asleep in its window", "at": ["A", 28, 0] },
-        { "text": "the fish stall", "at": ["A", -50, -5] },
-        { "text": "a dull moon above the roofs", "at": ["A", -15, 40] }
-      ]
+        {
+          "text": "the lighthouse on the mole, seen between two roofs",
+          "at": [
+            "A",
+            29,
+            17
+          ]
+        },
+        {
+          "text": "the harbor and the boats at the end of the street",
+          "at": [
+            "A",
+            0,
+            -2
+          ]
+        },
+        {
+          "text": "the curiosity shop, with a cat asleep in its window",
+          "at": [
+            "A",
+            28,
+            0
+          ]
+        },
+        {
+          "text": "the fish stall",
+          "at": [
+            "A",
+            -50,
+            -5
+          ]
+        },
+        {
+          "text": "a dull moon above the roofs",
+          "at": [
+            "A",
+            -15,
+            40
+          ]
+        }
+      ],
+      "eye": 1.6,
+      "moveSpeed": 3.0,
+      "approach": {
+        "back": 1.5,
+        "up": 0,
+        "pitch": 0
+      }
     },
     "street_night": {
-      "label": "Street", "unit": "m", "reach": 4.0, "near": 0.05, "far": 400, "variantOf": "street", "night": true,
-      "sky": "#141B33", "ground": "#23283A", "fog": ["#141B33", 30, 160], "light": ["#7F8DBF", 0.55, "#F2B75B", 0.6],
+      "label": "Street",
+      "unit": "m",
+      "reach": 4.0,
+      "near": 0.05,
+      "far": 400,
+      "variantOf": "street",
+      "night": true,
+      "sky": "#141B33",
+      "ground": "#23283A",
+      "fog": [
+        "#141B33",
+        30,
+        160
+      ],
+      "light": [
+        "#7F8DBF",
+        0.55,
+        "#F2B75B",
+        0.6
+      ],
       "arrive": "A",
       "viewpoints": {
-        "A": { "pos": [0, 1.6, 0], "heading": 0, "yaw": [-120, 120], "pitch": [-35, 55], "describe": "the middle of the street at night, beside the fish stall" },
-        "B": { "pos": [-3.5, 1.6, -6.5], "heading": 90, "yaw": [-140, 140], "pitch": [-40, 50], "describe": "the curiosity shop's step at night" }
+        "A": {
+          "pos": [
+            0,
+            1.6,
+            0
+          ],
+          "heading": 0,
+          "yaw": [
+            -180,
+            180
+          ],
+          "pitch": [
+            -35,
+            55
+          ],
+          "describe": "the middle of the street at night, beside the fish stall"
+        },
+        "B": {
+          "pos": [
+            -3.5,
+            1.6,
+            -6.5
+          ],
+          "heading": 0,
+          "yaw": [
+            -180,
+            180
+          ],
+          "pitch": [
+            -40,
+            50
+          ],
+          "describe": "the curiosity shop's step at night"
+        },
+        "C": {
+          "pos": [
+            2.0,
+            1.6,
+            -12.0
+          ],
+          "heading": 0,
+          "yaw": [
+            -180,
+            180
+          ],
+          "pitch": [
+            -35,
+            55
+          ],
+          "describe": "the quay at night, beside the boats"
+        },
+        "D": {
+          "pos": [
+            -1.5,
+            1.6,
+            5.0
+          ],
+          "heading": 0,
+          "yaw": [
+            -180,
+            180
+          ],
+          "pitch": [
+            -35,
+            55
+          ],
+          "describe": "up the street at night"
+        }
       },
       "landmarks": [
-        { "text": "the lighthouse, its beam turning", "at": ["A", 29, 17] },
-        { "text": "the lamps, lit now", "at": ["A", 50, 20] },
-        { "text": "the moon above the roofs, glowing", "at": ["A", -15, 40] },
-        { "text": "the cat on the shop's step, looking up", "at": ["A", 28, -8] }
-      ]
+        {
+          "text": "the lighthouse, its beam turning",
+          "at": [
+            "A",
+            29,
+            17
+          ]
+        },
+        {
+          "text": "the lamps, lit now",
+          "at": [
+            "A",
+            50,
+            20
+          ]
+        },
+        {
+          "text": "the moon above the roofs, glowing",
+          "at": [
+            "A",
+            -15,
+            40
+          ]
+        },
+        {
+          "text": "the cat on the shop's step, looking up",
+          "at": [
+            "A",
+            28,
+            -8
+          ]
+        }
+      ],
+      "eye": 1.6,
+      "moveSpeed": 3.0,
+      "approach": {
+        "back": 12,
+        "up": 18,
+        "pitch": -56
+      }
     },
     "shop": {
-      "label": "Shop", "unit": "m", "reach": 2.6, "near": 0.02, "far": 60,
-      "sky": "#5A3D1E", "ground": "#4A3320", "fog": ["#5A3D1E", 8, 30], "light": ["#F2B75B", 0.9, "#FFD79A", 0.5],
+      "label": "Shop",
+      "unit": "m",
+      "reach": 2.6,
+      "near": 0.02,
+      "far": 60,
+      "sky": "#5A3D1E",
+      "ground": "#4A3320",
+      "fog": [
+        "#5A3D1E",
+        8,
+        30
+      ],
+      "light": [
+        "#F2B75B",
+        0.9,
+        "#FFD79A",
+        0.5
+      ],
       "arrive": "A",
       "viewpoints": {
-        "A": { "pos": [0, 1.6, 0], "heading": 0, "yaw": [-110, 110], "pitch": [-45, 50], "describe": "just inside the shop doorway" },
-        "B": { "pos": [2.2, 1.6, -3.0], "heading": -90, "yaw": [-140, 140], "pitch": [-50, 60], "describe": "beside the chest of little drawers" }
+        "A": {
+          "pos": [
+            0,
+            1.6,
+            0
+          ],
+          "heading": 0,
+          "yaw": [
+            -180,
+            180
+          ],
+          "pitch": [
+            -45,
+            50
+          ],
+          "describe": "just inside the shop doorway"
+        },
+        "B": {
+          "pos": [
+            2.2,
+            1.6,
+            -3.0
+          ],
+          "heading": 0,
+          "yaw": [
+            -180,
+            180
+          ],
+          "pitch": [
+            -50,
+            60
+          ],
+          "describe": "beside the chest of little drawers"
+        },
+        "C": {
+          "pos": [
+            -1.8,
+            1.6,
+            -5.2
+          ],
+          "heading": 0,
+          "yaw": [
+            -180,
+            180
+          ],
+          "pitch": [
+            -45,
+            50
+          ],
+          "describe": "the end of the counter, by the tall clock"
+        },
+        "D": {
+          "pos": [
+            -2.4,
+            1.6,
+            -1.5
+          ],
+          "heading": 0,
+          "yaw": [
+            -180,
+            180
+          ],
+          "pitch": [
+            -45,
+            50
+          ],
+          "describe": "the left-hand shelves"
+        }
       },
       "landmarks": [
-        { "text": "the tall clock behind the counter", "at": ["A", -10, 5] },
-        { "text": "the counter with brass scales", "at": ["A", -12, -8] },
-        { "text": "shelves to the ceiling on both walls", "at": ["A", 60, 20] },
-        { "text": "a chest of many small drawers on the right wall", "at": ["A", -50, -5] }
-      ]
+        {
+          "text": "the tall clock behind the counter",
+          "at": [
+            "A",
+            -10,
+            5
+          ]
+        },
+        {
+          "text": "the counter with brass scales",
+          "at": [
+            "A",
+            -12,
+            -8
+          ]
+        },
+        {
+          "text": "shelves to the ceiling on both walls",
+          "at": [
+            "A",
+            60,
+            20
+          ]
+        },
+        {
+          "text": "a chest of many small drawers on the right wall",
+          "at": [
+            "A",
+            -50,
+            -5
+          ]
+        }
+      ],
+      "eye": 1.6,
+      "moveSpeed": 2.4,
+      "approach": {
+        "back": 1.6,
+        "up": 0,
+        "pitch": 0
+      }
     },
     "drawer": {
-      "label": "Drawer", "unit": "cm", "reach": 12, "near": 0.2, "far": 300,
-      "sky": "#E9DCC2", "ground": "#D9CBAA", "fog": ["#E9DCC2", 40, 140], "light": ["#FFF6E5", 1.0, "#F1E6CF", 0.5],
+      "label": "Drawer",
+      "unit": "cm",
+      "reach": 12,
+      "near": 0.2,
+      "far": 300,
+      "sky": "#E9DCC2",
+      "ground": "#D9CBAA",
+      "fog": [
+        "#E9DCC2",
+        40,
+        140
+      ],
+      "light": [
+        "#FFF6E5",
+        1.0,
+        "#F1E6CF",
+        0.5
+      ],
       "arrive": "A",
       "viewpoints": {
-        "A": { "pos": [0, 4, 0], "heading": 0, "yaw": [-90, 90], "pitch": [-45, 40], "describe": "the drawer's front lip, looking in" },
-        "B": { "pos": [-6, 6, -18], "heading": 0, "yaw": [-170, 170], "pitch": [-50, 50], "describe": "the top of the letter hill, near the key bridge" }
+        "A": {
+          "pos": [
+            0,
+            4,
+            0
+          ],
+          "heading": 0,
+          "yaw": [
+            -180,
+            180
+          ],
+          "pitch": [
+            -45,
+            40
+          ],
+          "describe": "the drawer's front lip, looking in"
+        },
+        "B": {
+          "pos": [
+            -6,
+            6,
+            -18
+          ],
+          "heading": 0,
+          "yaw": [
+            -180,
+            180
+          ],
+          "pitch": [
+            -50,
+            50
+          ],
+          "describe": "the top of the letter hill, near the key bridge"
+        },
+        "C": {
+          "pos": [
+            12,
+            4,
+            -10
+          ],
+          "heading": 0,
+          "yaw": [
+            -180,
+            180
+          ],
+          "pitch": [
+            -45,
+            40
+          ],
+          "describe": "among the buttons and coins on the right"
+        },
+        "D": {
+          "pos": [
+            8,
+            4,
+            -26
+          ],
+          "heading": 0,
+          "yaw": [
+            -180,
+            180
+          ],
+          "pitch": [
+            -45,
+            40
+          ],
+          "describe": "beside the pillow of socks"
+        }
       },
       "landmarks": [
-        { "text": "the cat asleep on a pillow of socks at the far end", "at": ["A", -4, 5] },
-        { "text": "hills of folded letters", "at": ["A", 30, -10] },
-        { "text": "a bridge made of keys over a pool of ink, to the left", "at": ["A", 25, -7] },
-        { "text": "a tower of stamps, far left", "at": ["A", 24, 4] }
-      ]
+        {
+          "text": "the cat asleep on a pillow of socks at the far end",
+          "at": [
+            "A",
+            -4,
+            5
+          ]
+        },
+        {
+          "text": "hills of folded letters",
+          "at": [
+            "A",
+            30,
+            -10
+          ]
+        },
+        {
+          "text": "a bridge made of keys over a pool of ink, to the left",
+          "at": [
+            "A",
+            25,
+            -7
+          ]
+        },
+        {
+          "text": "a tower of stamps, far left",
+          "at": [
+            "A",
+            24,
+            4
+          ]
+        }
+      ],
+      "eye": 4,
+      "moveSpeed": 14,
+      "approach": {
+        "back": 7,
+        "up": 0,
+        "pitch": 0
+      }
     },
     "cat": {
-      "label": "Cat", "unit": "mm", "reach": 60, "near": 0.5, "far": 2000,
-      "sky": "#6E4A2A", "ground": "#8A5A2E", "fog": ["#6E4A2A", 150, 900], "light": ["#FFD7A8", 1.0, "#D98C3F", 0.5],
+      "label": "Cat",
+      "unit": "mm",
+      "reach": 60,
+      "near": 0.5,
+      "far": 2000,
+      "sky": "#6E4A2A",
+      "ground": "#8A5A2E",
+      "fog": [
+        "#6E4A2A",
+        150,
+        900
+      ],
+      "light": [
+        "#FFD7A8",
+        1.0,
+        "#D98C3F",
+        0.5
+      ],
       "arrive": "A",
       "viewpoints": {
-        "A": { "pos": [0, 15, 0], "heading": 0, "yaw": [-120, 120], "pitch": [-30, 70], "describe": "on the cat's cheek, below the ear" },
-        "B": { "pos": [40, 12, -40], "heading": 0, "yaw": [-140, 140], "pitch": [-40, 50], "describe": "at the collar, among the charms" }
+        "A": {
+          "pos": [
+            0,
+            15,
+            0
+          ],
+          "heading": 0,
+          "yaw": [
+            -180,
+            180
+          ],
+          "pitch": [
+            -30,
+            70
+          ],
+          "describe": "on the cat's cheek, below the ear"
+        },
+        "B": {
+          "pos": [
+            40,
+            12,
+            -40
+          ],
+          "heading": 0,
+          "yaw": [
+            -180,
+            180
+          ],
+          "pitch": [
+            -40,
+            50
+          ],
+          "describe": "at the collar, among the charms"
+        },
+        "C": {
+          "pos": [
+            -60,
+            15,
+            -20
+          ],
+          "heading": 0,
+          "yaw": [
+            -180,
+            180
+          ],
+          "pitch": [
+            -30,
+            70
+          ],
+          "describe": "deep in the fur, by the whiskers"
+        },
+        "D": {
+          "pos": [
+            90,
+            15,
+            -60
+          ],
+          "heading": 0,
+          "yaw": [
+            -180,
+            180
+          ],
+          "pitch": [
+            -30,
+            70
+          ],
+          "describe": "further along the collar, near the tag"
+        }
       },
       "landmarks": [
-        { "text": "the ear, high above", "at": ["A", 15, 45] },
-        { "text": "the closed eye, a soft hill", "at": ["A", 5, 30] },
-        { "text": "fur like a forest all around", "at": ["A", -60, 0] },
-        { "text": "the collar, running past like a road, with charms along it", "at": ["A", -45, -12] }
-      ]
+        {
+          "text": "the ear, high above",
+          "at": [
+            "A",
+            15,
+            45
+          ]
+        },
+        {
+          "text": "the closed eye, a soft hill",
+          "at": [
+            "A",
+            5,
+            30
+          ]
+        },
+        {
+          "text": "fur like a forest all around",
+          "at": [
+            "A",
+            -60,
+            0
+          ]
+        },
+        {
+          "text": "the collar, running past like a road, with charms along it",
+          "at": [
+            "A",
+            -45,
+            -12
+          ]
+        }
+      ],
+      "eye": 15,
+      "moveSpeed": 70,
+      "approach": {
+        "back": 28,
+        "up": 0,
+        "pitch": 0
+      }
     },
     "eye": {
-      "label": "Eye", "unit": "eye", "reach": 40, "near": 0.2, "far": 800,
-      "sky": "#0E1B3A", "ground": "#132552", "fog": ["#0E1B3A", 80, 400], "light": ["#9FB4FF", 0.8, "#E3B341", 0.6],
+      "label": "Eye",
+      "unit": "eye",
+      "reach": 40,
+      "near": 0.2,
+      "far": 800,
+      "sky": "#0E1B3A",
+      "ground": "#132552",
+      "fog": [
+        "#0E1B3A",
+        80,
+        400
+      ],
+      "light": [
+        "#9FB4FF",
+        0.8,
+        "#E3B341",
+        0.6
+      ],
       "arrive": "A",
       "viewpoints": {
-        "A": { "pos": [0, 5, 0], "heading": 0, "yaw": [-100, 100], "pitch": [-20, 80], "describe": "the edge of the iris" },
-        "B": { "pos": [0, 5, -70], "heading": 0, "yaw": [-180, 180], "pitch": [-30, 70], "describe": "a gold ring near the pupil" }
+        "A": {
+          "pos": [
+            0,
+            5,
+            0
+          ],
+          "heading": 0,
+          "yaw": [
+            -180,
+            180
+          ],
+          "pitch": [
+            -20,
+            80
+          ],
+          "describe": "the edge of the iris"
+        },
+        "B": {
+          "pos": [
+            0,
+            5,
+            -70
+          ],
+          "heading": 0,
+          "yaw": [
+            -180,
+            180
+          ],
+          "pitch": [
+            -30,
+            70
+          ],
+          "describe": "a gold ring near the pupil"
+        },
+        "C": {
+          "pos": [
+            -60,
+            5,
+            -40
+          ],
+          "heading": 0,
+          "yaw": [
+            -180,
+            180
+          ],
+          "pitch": [
+            -20,
+            80
+          ],
+          "describe": "the middle ring, to the left"
+        },
+        "D": {
+          "pos": [
+            55,
+            5,
+            -45
+          ],
+          "heading": 0,
+          "yaw": [
+            -180,
+            180
+          ],
+          "pitch": [
+            -20,
+            80
+          ],
+          "describe": "the middle ring, to the right"
+        }
       },
       "landmarks": [
-        { "text": "the pupil, a dark slit ahead", "at": ["A", 0, 0] },
-        { "text": "gold rings glowing in the iris", "at": ["A", 40, 5] },
-        { "text": "stars scattered between the rings", "at": ["A", 25, 30] },
-        { "text": "a wet shine high up, reflecting things that should not be here", "at": ["A", -25, 45] }
-      ]
+        {
+          "text": "the pupil, a dark slit ahead",
+          "at": [
+            "A",
+            0,
+            0
+          ]
+        },
+        {
+          "text": "gold rings glowing in the iris",
+          "at": [
+            "A",
+            40,
+            5
+          ]
+        },
+        {
+          "text": "stars scattered between the rings",
+          "at": [
+            "A",
+            25,
+            30
+          ]
+        },
+        {
+          "text": "a wet shine high up, reflecting things that should not be here",
+          "at": [
+            "A",
+            -25,
+            45
+          ]
+        }
+      ],
+      "eye": 5,
+      "moveSpeed": 60,
+      "approach": {
+        "back": 30,
+        "up": 0,
+        "pitch": 0
+      }
     },
     "moon": {
-      "label": "Moon", "unit": "m", "reach": 3.2, "near": 0.05, "far": 3000,
-      "sky": "#0B0E1A", "ground": "#9DA3AB", "fog": ["#0B0E1A", 60, 600], "light": ["#E6ECF2", 1.0, "#CFD6DC", 0.3],
+      "label": "Moon",
+      "unit": "m",
+      "reach": 3.2,
+      "near": 0.05,
+      "far": 3000,
+      "sky": "#0B0E1A",
+      "ground": "#9DA3AB",
+      "fog": [
+        "#0B0E1A",
+        60,
+        600
+      ],
+      "light": [
+        "#E6ECF2",
+        1.0,
+        "#CFD6DC",
+        0.3
+      ],
       "arrive": "A",
       "viewpoints": {
-        "A": { "pos": [0, 1.6, 0], "heading": 0, "yaw": [-150, 150], "pitch": [-50, 60], "describe": "the crater field" },
-        "B": { "pos": [0, 3.4, -14], "heading": 0, "yaw": [-180, 180], "pitch": [-70, 50], "describe": "the rise beside the old lamp, at the moon's edge" }
+        "A": {
+          "pos": [
+            0,
+            1.6,
+            0
+          ],
+          "heading": 0,
+          "yaw": [
+            -180,
+            180
+          ],
+          "pitch": [
+            -50,
+            60
+          ],
+          "describe": "the crater field"
+        },
+        "B": {
+          "pos": [
+            0,
+            3.4,
+            -18
+          ],
+          "heading": 0,
+          "yaw": [
+            -180,
+            180
+          ],
+          "pitch": [
+            -70,
+            50
+          ],
+          "describe": "the rise beside the old lamp, at the moon's edge"
+        },
+        "C": {
+          "pos": [
+            -6,
+            1.6,
+            4
+          ],
+          "heading": 0,
+          "yaw": [
+            -180,
+            180
+          ],
+          "pitch": [
+            -50,
+            60
+          ],
+          "describe": "the small craters to the left"
+        },
+        "D": {
+          "pos": [
+            7,
+            1.6,
+            -6
+          ],
+          "heading": 0,
+          "yaw": [
+            -180,
+            180
+          ],
+          "pitch": [
+            -50,
+            60
+          ],
+          "describe": "the rocks to the right"
+        }
       },
       "landmarks": [
-        { "text": "an old dark lamp on a rise ahead", "at": ["A", -6, 8] },
-        { "text": "craters and grey dust all around", "at": ["A", 60, -20] },
-        { "text": "the moon's edge beyond the rise, and the harbor far below", "at": ["B", 24, -41] },
-        { "text": "a picture flag", "at": ["A", 40, 5] }
-      ]
+        {
+          "text": "an old dark lamp on a rise ahead",
+          "at": [
+            "A",
+            -6,
+            8
+          ]
+        },
+        {
+          "text": "craters and grey dust all around",
+          "at": [
+            "A",
+            60,
+            -20
+          ]
+        },
+        {
+          "text": "the moon's edge beyond the rise, and the harbor far below",
+          "at": [
+            "B",
+            30,
+            -40
+          ]
+        },
+        {
+          "text": "a picture flag",
+          "at": [
+            "A",
+            40,
+            5
+          ]
+        }
+      ],
+      "eye": 1.6,
+      "moveSpeed": 3.0,
+      "approach": {
+        "back": 8,
+        "up": 0,
+        "pitch": 0
+      }
     }
   }
 }

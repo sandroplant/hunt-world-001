@@ -37,7 +37,7 @@ Query flags:
 |---|---|
 | `?perf=1` | Records frame times (real frame deltas, not JavaScript timing). Menu → "Download frame times". In every build. |
 | `?test=1` | Fixes the clock and pauses ambient motion so screenshots are stable. |
-| `?debug=1` | Dev builds only: jump to any place, do the next step, state inspector, FPS, `window.__hunt` hooks. Not in the playtest build. |
+| `?debug=1` | Dev builds only: jump to any place, do the next step, state inspector, FPS, `window.__hunt` hooks (including a dive freeze for the seam check). Not in the playtest build. |
 
 The session log for observers is off by default. Turn it on in the menu at the start; "Save session log" downloads a JSON file. Nothing is sent anywhere.
 
@@ -45,17 +45,17 @@ The session log for observers is off by default. Turn it on in the menu at the s
 
 | Action | Phone | Laptop mouse | Keyboard only |
 |---|---|---|---|
-| Look around | drag | drag | arrow keys |
+| Look around (full turn) | drag | drag | arrow keys |
+| Move to a spot | tap its ring on the ground | click its ring | W A S D toward it, or E on it |
 | Zoom (lens) | pinch, or hold the lens button | scroll wheel, or hold the right button | hold Z |
 | Open or use | tap when the verb shows | click | E or Enter |
-| Dive | hold the lens on the target | same | hold Z on the target, or Enter at the prompt |
+| Dive | hold the lens on the opening, or tap it | same | hold Z on it, or Enter |
 | Back out | Back button | Back button or Esc | X or Backspace |
 | Sketchbook | book button | book button | B |
 | Hints | ? button | ? button | H |
 | Describe surroundings | menu | menu | V |
-| Change viewpoint | tap the worn spot when "Stand here" shows | click | E or Enter |
 
-Tab is never a game key. The dive takes the same time on every device. Reduced motion (in the menu) replaces the dive with a cross-fade of the same total length.
+Tab is never a game key. The dive is one continuous move through the opening into the next place and takes the same time on every device. Reduced motion (in the menu) replaces it with a cross-fade of the same total length. The session log and frame times are copied to the clipboard from the menu ("Copy log", "Copy frame times").
 
 ## Layout
 
@@ -68,7 +68,7 @@ src/player/   viewpoint camera, lens, input
 src/ui/       HUD, panels, styles
 src/audio/    procedural WebAudio
 src/debug/    dev-only debug tools
-tests/unit/   Vitest      tests/e2e/   Playwright      tools/   screenshots and probes
+tests/unit/   Vitest      tests/e2e/   Playwright      tools/   screenshots.mjs and seam.mjs (dive hand-over check)
 ```
 
 Trust rules (spec §6): every "is this found?" decision goes through `src/game/judge.ts`, which reads only `src/world/answers.json`. That file is marked to move server-side before any prize hunt. The renderer and the UI never decide a find.

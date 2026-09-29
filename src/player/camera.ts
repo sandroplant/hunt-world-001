@@ -1,7 +1,7 @@
 // The viewpoint camera: fixed position, limited turn and tilt, a lens for zoom, and a short glide between viewpoints.
 import * as THREE from 'three';
 import type { PlaceData } from '../game/types';
-import { clamp, DEG } from '../game/geom';
+import { clamp, DEG, wrapDeg } from '../game/geom';
 
 export const BASE_FOV = 60; // degrees on the narrow axis of the screen
 export const ZOOM_MIN = 1;
@@ -43,25 +43,27 @@ export class ViewCamera {
     this.camera.updateProjectionMatrix();
     this.camera.position.set(...vp.pos);
     this.glide = null;
-    this.yaw = clamp(yaw, vp.yaw[0], vp.yaw[1]);
+    this.yaw = vp.yaw[1] - vp.yaw[0] >= 360 ? wrapDeg(yaw) : clamp(yaw, vp.yaw[0], vp.yaw[1]);
     this.pitch = clamp(pitch, vp.pitch[0], vp.pitch[1]);
     this.zoom = clamp(zoom, ZOOM_MIN, ZOOM_MAX);
     this.apply();
   }
 
-  /** Glide to another viewpoint of the same place over about a second. */
-  glideTo(viewpointId: string, now: number, ms = 900): void {
-    if (!this.place) return;
+  /** Glide to another spot of the same place at the place's fixed speed. The view direction is kept. */
+  glideTo(viewpointId: string, now: number): number {
+    if (!this.place) return 0;
     const vp = this.place.viewpoints[viewpointId];
-    if (!vp) return;
+    if (!vp) return 0;
     this.viewpointId = viewpointId;
     this.heading = vp.heading;
     this.yawLimits = vp.yaw;
     this.pitchLimits = vp.pitch;
-    this.yaw = 0;
-    this.pitch = 0;
     this.zoom = 1;
-    this.glide = { from: this.camera.position.clone(), to: new THREE.Vector3(...vp.pos), start: now, ms };
+    const to = new THREE.Vector3(...vp.pos);
+    const dist = this.camera.position.distanceTo(to);
+    const ms = clamp((dist / this.place.moveSpeed) * 1000, 350, 2500);
+    this.glide = { from: this.camera.position.clone(), to, start: now, ms };
+    return ms;
   }
 
   get gliding(): boolean {
@@ -69,8 +71,15 @@ export class ViewCamera {
   }
 
   look(dYawDeg: number, dPitchDeg: number): void {
-    this.yaw = clamp(this.yaw + dYawDeg, this.yawLimits[0], this.yawLimits[1]);
+    const full = this.yawLimits[1] - this.yawLimits[0] >= 360;
+    this.yaw = full ? wrapDeg(this.yaw + dYawDeg) : clamp(this.yaw + dYawDeg, this.yawLimits[0], this.yawLimits[1]);
     this.pitch = clamp(this.pitch + dPitchDeg, this.pitchLimits[0], this.pitchLimits[1]);
+  }
+
+  /** Set the view directly (degrees). Used by the dive hand-over and the debug hooks. */
+  setView(yaw: number, pitch: number): void {
+    this.yaw = wrapDeg(yaw);
+    this.pitch = clamp(pitch, this.pitchLimits[0], this.pitchLimits[1]);
   }
 
   setZoom(z: number): void {

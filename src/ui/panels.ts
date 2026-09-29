@@ -33,6 +33,32 @@ export function outlineSvg(id: string, alt: string): HTMLElement {
 
 export type PanelName = 'title' | 'menu' | 'book' | 'hints' | 'describe' | 'end';
 
+/** Copy text to the clipboard. Returns false when the browser refuses, so the caller can show the text instead. */
+export async function copyToClipboard(text: string): Promise<boolean> {
+  try {
+    if (navigator.clipboard?.writeText) {
+      await navigator.clipboard.writeText(text);
+      return true;
+    }
+  } catch {
+    /* fall through to the old way */
+  }
+  try {
+    const ta = document.createElement('textarea');
+    ta.value = text;
+    ta.setAttribute('readonly', '');
+    ta.style.position = 'fixed';
+    ta.style.opacity = '0';
+    document.body.append(ta);
+    ta.select();
+    const ok = document.execCommand('copy');
+    ta.remove();
+    return ok;
+  } catch {
+    return false;
+  }
+}
+
 export interface PanelCallbacks {
   begin(): void;
   restart(): void;
@@ -42,8 +68,9 @@ export interface PanelCallbacks {
   hint(target: string, level: number): void;
   setSetting(key: 'reducedMotion' | 'largeText' | 'quality', value: boolean | 'auto' | 'high' | 'low'): void;
   setSessionLog(on: boolean): void;
-  saveSessionLog(): void;
-  savePerf(): void;
+  /** Copy the session log to the clipboard (downloads are blocked where the game is hosted). Returns the JSON for the fallback box. */
+  copySessionLog(): Promise<string>;
+  copyPerf(): Promise<string>;
   describe(): void;
 }
 
@@ -103,7 +130,7 @@ export class Panels {
     }
     box.append(row);
     if (storageBlocked) box.append(el('p', { class: 'small' }, s.menu.storageBlocked));
-    box.append(el('p', { class: 'small' }, 'Drag to look. Zoom with the lens. Tap or click when a verb shows. Hold the lens on a place to dive in. Keys: arrows, Z, E, X, B, H, V.'));
+    box.append(el('p', { class: 'small' }, 'Drag to look all the way round. Tap a spot on the ground to move. Zoom with the lens. Tap or click when a verb shows. Hold the lens on an opening to dive in. Keys: arrows, W A S D, Z, E, X, B, H, V.'));
   }
 
   renderMenu(state: GameState, sessionLogOn: boolean, perfMode: boolean, storageBlocked: boolean): void {
@@ -136,22 +163,35 @@ export class Panels {
     resume.addEventListener('click', () => this.cb.close());
     const describe = el('button', { class: 'btn' }, s.verbs.describe + ' (V)');
     describe.addEventListener('click', () => this.cb.describe());
-    const saveLog = el('button', { class: 'btn' }, s.menu.saveLog);
-    saveLog.addEventListener('click', () => this.cb.saveSessionLog());
+    const copyBox = el('textarea', { class: 'copybox', readonly: '', 'aria-label': 'Log text to copy' });
+    copyBox.style.display = 'none';
+    const copyWith = async (fn: () => Promise<string>, btn: HTMLButtonElement) => {
+      const text = await fn();
+      const ok = await copyToClipboard(text);
+      btn.textContent = ok ? 'Copied ✓' : 'Select and copy below';
+      if (!ok) {
+        copyBox.value = text;
+        copyBox.style.display = '';
+        copyBox.focus();
+        copyBox.select();
+      }
+    };
+    const saveLog = el('button', { class: 'btn' }, s.menu.copyLog);
+    saveLog.addEventListener('click', () => void copyWith(() => this.cb.copySessionLog(), saveLog));
     const restart = el('button', { class: 'btn' }, s.restart);
     restart.addEventListener('click', () => {
       if (confirm(s.restartConfirm)) this.cb.restart();
     });
     row.append(resume, describe, saveLog);
     if (perfMode) {
-      const perf = el('button', { class: 'btn' }, 'Download frame times');
-      perf.addEventListener('click', () => this.cb.savePerf());
+      const perf = el('button', { class: 'btn' }, 'Copy frame times');
+      perf.addEventListener('click', () => void copyWith(() => this.cb.copyPerf(), perf));
       row.append(perf);
     }
     row.append(restart);
-    box.append(row);
+    box.append(row, copyBox);
     if (storageBlocked) box.append(el('p', { class: 'small' }, s.menu.storageBlocked));
-    box.append(el('p', { class: 'small' }, 'Controls: drag or arrow keys to look · pinch, wheel, right button or Z to zoom · tap, click, E or Enter to use · hold the lens on a place to dive · X or Backspace to back out · B sketchbook · H hints · V describe.'));
+    box.append(el('p', { class: 'small' }, 'Controls: drag or arrow keys to look · tap a spot on the ground, or W A S D, to move · pinch, wheel, right button or Z to zoom · tap, click, E or Enter to use · hold the lens on an opening to dive · X or Backspace to back out · B sketchbook · H hints · V describe.'));
   }
 
   renderBook(state: GameState, sketches: Map<string, HTMLCanvasElement>, heldId: string | null, lastPage: HTMLCanvasElement): void {

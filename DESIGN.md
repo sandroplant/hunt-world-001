@@ -2,7 +2,7 @@
 
 **No spoilers here.** This file describes the places, the rules and the look. It does not say where any sketch spot or hidden object is. Those are in `SOLUTIONS.md`. The hidden objects are named here because the player sees their outlines in the sketchbook anyway.
 
-**Status:** Phase 0 draft, 2026-09-29. Waiting for the founder at STOP 0.
+**Status:** Redesigned once after Gate A, 2026-09-29 (`DECISIONS.md` D-008). Waiting for the founder at the second STOP A.
 **Governing spec:** `SPEC_WORLD_001_STEP_1_INTO_THE_CATS_EYE.md`. Where this file and the spec differ, the spec wins, unless the founder approves a change listed in `PLAN.md` §1.
 
 ---
@@ -40,7 +40,7 @@ Each place holds:
 
 That is 24 finds. Only the six required steps (and the dives) are needed to finish. Sketches and hidden objects count toward completion but never block the way. A player can skip them and come back.
 
-**What "find the spot" means with no walking.** The player stands at a fixed viewpoint, like looking into a diorama. Some places have a second viewpoint the player can glide to. A sketch spot is therefore: *which viewpoint*, *which direction*, and *how far zoomed in*. The lens matters. Several sketches are drawn zoomed in on a detail, so turning alone is not enough.
+**What "find the spot" means with no walking.** The player stands on one of 3–5 stand spots in each place, like looking into a diorama from a few chosen places. Each spot allows a full turn and a limited tilt. A sketch spot is therefore: *which stand spot*, *which direction*, and *how far zoomed in*. The lens matters. Several sketches are drawn zoomed in on a detail, so turning alone is not enough.
 
 ---
 
@@ -117,39 +117,42 @@ The player lands back in place 1. It is night. The lamps are lit. The windows ar
 
 ---
 
-## 4. Travel: the dive
+## 4. Moving and travelling
 
-**No walking.** The player stands at a fixed viewpoint. They can turn and tilt within limits, and zoom with the lens (1× to 4×). Each place has two preset viewpoints. A viewpoint is a marked spot on the ground (a worn patch, a chalk ring, a mat). When the view is centered on it, the verb **Stand here** appears. Choosing it glides the camera over in about a second.
+**Moving inside a place: stand spots.** Each place has 3–5 spots on the ground, shown as faint rings. A ring brightens under the crosshair or under the mouse. Tap or click a ring, press E or Enter with the crosshair on it, or press W, A, S or D to move toward the nearest spot in that direction. The camera glides there at a fixed speed for the place and keeps facing the same way. There is no free walking.
+
+**Looking.** Every spot allows a full 360° turn. Up and down are limited per place. The world follows the finger or mouse: drag right to look left, drag down to look up. Arrow keys turn; zoomed in, they turn more slowly.
+
+**Seeing what can be entered.** The next place is visible inside its opening before the dive: the lit shop and the sleeping cat through the shop window and the open door; the drawer world inside the open blue drawer; the cat's fur in the cat's neck; the iris in the open eye; the moon inside the round pupil; the night street below the moon's edge. These openings are live pictures of the real next place, not paintings. Plain scenery never reacts to the crosshair; only things you can act on do. The dull moon in the street sky is scenery.
 
 **The dive is the only way between places, and it is the same on every device.**
-- Dive targets are physical objects: the open shop door, the open blue drawer, the cat, the eye, the pupil, and the moon's edge.
-- Hold the lens on a target from close range. A thin ring fills over 1 second. When it is full, the dive starts. Let go before then and it cancels.
-- Enter at the "Look closer" prompt also starts the dive.
-- The dive is one continuous camera move with a change of scale, about 2 seconds, the same length everywhere. No loading screen. No page change. The old place and the new place are separate scenes; the swap happens in the middle of the move, hidden by the motion.
+- Dive targets are physical openings: the open shop door, the open blue drawer, the cat's neck, the open eye, the round pupil, and the moon's edge.
+- Hold the lens on an opening from close range. A thin ring fills over 1 second. When it is full, the dive starts. Let go before then and it cancels. Tapping, clicking, E or Enter on a centered opening also starts it.
+- The dive is one continuous forward move: the camera flies into the opening until the opening fills the screen, and at that instant the real next place takes over from the same camera position, so there is no cut. It continues forward into the place. About 2 seconds, the same length everywhere. No loading screen. No page change.
 - **Reduced motion:** a 0.6-second cross-fade instead. The total travel time stays the same.
-- **Back out** is always available. It plays the dive in reverse and returns the player to the viewpoint they dived from. Found things stay found.
+- **Back out** is always available. It runs the same path in reverse and returns the player to the spot they dived from, facing the opening. Found things stay found.
 
-**The depth ribbon** at the top always shows where you are: *Street › Shop › Drawer › Cat › Eye › Moon*. After the dive home, the first chip turns night-blue with a small moon mark, and the marker sits there.
+**Locked things show it without words.** A locked door has a small dark keyhole mark and rattles when used. The dark lamp on the moon has an empty socket and rattles too.
 
----
+**If nothing happens for 45 seconds,** the most useful next thing glints once. No text. If it is out of reach from where the player stands, the ring of the spot it can be reached from glints instead.
+
+**The trail** at the top shows the places already reached by name, and the places ahead as dots. It is not a control and does not look like one. On phones it sits below the buttons.
 
 ## 5. Controls
 
 | Action | Phone | Laptop mouse | Keyboard only |
 |---|---|---|---|
-| Look around | drag | drag | arrow keys |
+| Look around (full turn) | drag | drag | arrow keys |
+| Move to a spot | tap its ring | click its ring | W A S D toward it, or E on it |
 | Zoom (lens) | pinch, or hold the lens button | scroll wheel, or hold the right button | hold Z |
 | Open or use | tap when the verb shows | click | E or Enter |
-| Dive | hold the lens on the target | same | hold Z on the target, or Enter at the prompt |
+| Dive | hold the lens on the opening, or tap it | same | hold Z on it, or Enter |
 | Back out | Back button | Back button or Esc | X or Backspace |
 | Sketchbook | book button | book button | B |
 | Hints | ? button | ? button | H |
 | Describe surroundings | menu | menu | V |
-| Stand here (change viewpoint) | tap the mark when the verb shows | click | E or Enter |
 
 Tab is never a game key. The first time the player sees a place, two small wordless hints appear in place (a hand for drag, a magnifier for zoom) and fade once used.
-
----
 
 ## 6. Searching, clues and fairness
 
@@ -228,6 +231,7 @@ Tab is never a game key. The first time the player sees a place, two small wordl
 
 - Autosave to `localStorage`. Restart clears it. If storage is blocked, the game warns once and continues in memory.
 - `?perf=1` records frame times (every build). `?test=1` fixes the clock and pauses ambient motion. `?debug=1` (dev builds only) jumps to any place and shows state and FPS. The playtest build has no debug shortcut.
+- The session log and the frame times are copied to the clipboard with "Copy log" and "Copy frame times". Downloads are blocked where the game is hosted.
 - The title screen and the menu say: *Prototype · non-competitive · no prize*.
 
 ---

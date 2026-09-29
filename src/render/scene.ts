@@ -37,6 +37,10 @@ export class PlaceScene {
   private ambient: AmbientEntry[] = [];
   private wiggles: WiggleEntry[] = [];
   private lastStates = new Map<string, string>();
+  private conditional: Array<{ mesh: THREE.Object3D; when: { object: string; is: string } }> = [];
+  readonly portals: Array<{ mesh: THREE.Mesh; to: string; width: number; height: number; when?: { object: string; is: string } }> = [];
+  private highlighted: string | null = null;
+  private glints: Array<{ mesh: THREE.Mesh; start: number; baseScale: THREE.Vector3 }> = [];
   readonly night: boolean;
 
   constructor(readonly world: World, readonly placeId: string, readonly quality: Quality) {
@@ -74,7 +78,50 @@ export class PlaceScene {
     return m;
   }
 
+  private addPortal(p: PropData): void {
+    const [w, h] = [p.size[0], p.size[1]];
+    const geometry = new THREE.PlaneGeometry(w, h);
+    this.geometries.push(geometry);
+    const material = new THREE.MeshBasicMaterial({ color: '#0A0C14', fog: false });
+    this.materials.push(material);
+    const mesh = new THREE.Mesh(geometry, material);
+    mesh.name = p.id;
+    mesh.position.set(...p.pos);
+    if (p.normal) {
+      mesh.quaternion.setFromUnitVectors(new THREE.Vector3(0, 0, 1), new THREE.Vector3(...p.normal).normalize());
+    } else {
+      const face = this.world.places[this.placeId]!.viewpoints[p.face ?? 'A'];
+      if (face) mesh.lookAt(new THREE.Vector3(...face.pos));
+    }
+    this.root.add(mesh);
+    this.portals.push({ mesh, to: p.portal!, width: w, height: h, when: p.when });
+    if (p.when) this.conditional.push({ mesh, when: p.when });
+  }
+
+  /** Give a portal opening its live picture. */
+  setPortalTexture(to: string, texture: THREE.Texture | null): void {
+    for (const pt of this.portals) {
+      if (pt.to !== to) continue;
+      const m = pt.mesh.material as THREE.MeshBasicMaterial;
+      if (m.map !== texture) {
+        m.map = texture;
+        m.color.set(texture ? '#FFFFFF' : '#0A0C14');
+        m.needsUpdate = true;
+      }
+    }
+  }
+
+  /** The opening used for the dive to `to`: the one tied to the dive target's state, else the first. */
+  divePortal(to: string, targetObject: string | null): { mesh: THREE.Mesh; width: number; height: number } | null {
+    const list = this.portals.filter((p) => p.to === to);
+    return list.find((p) => p.when?.object === targetObject) ?? list[0] ?? null;
+  }
+
   private addProp(p: PropData): void {
+    if (p.portal) {
+      this.addPortal(p);
+      return;
+    }
     const nightOverride = this.night ? p.night : undefined;
     const color = nightOverride?.color ?? p.color;
     const emissive = nightOverride?.emissive ?? p.emissive ?? false;
@@ -98,6 +145,7 @@ export class PlaceScene {
       mesh.name = p.id;
       this.root.add(mesh);
       if (p.ambient) this.ambient.push({ mesh, kind: p.ambient, base: mesh.position.clone(), phase: 0, scale: p.size[1] });
+      if (p.when) this.conditional.push({ mesh, when: p.when });
       return;
     }
     const inst = new THREE.InstancedMesh(geometry, material, n);
@@ -130,6 +178,22 @@ export class PlaceScene {
   }
 
   private addObject(o: WorldObject): void {
+    if (o.kind === 'stand') {
+      // A faint ring on the ground. It brightens under the crosshair or the pointer (founder change 2).
+      const r = o.size[0] / 2;
+      const geometry = new THREE.RingGeometry(r * 0.72, r, 40);
+      this.geometries.push(geometry);
+      const material = new THREE.MeshBasicMaterial({ color: '#F1E6CF', transparent: true, opacity: 0.3, side: THREE.DoubleSide, depthWrite: false });
+      this.materials.push(material);
+      const mesh = new THREE.Mesh(geometry, material);
+      mesh.name = o.id;
+      mesh.position.set(...o.pos);
+      mesh.rotation.x = -Math.PI / 2;
+      mesh.userData = { base: mesh.position.clone(), baseRot: mesh.rotation.clone(), baseScale: mesh.scale.clone(), baseColor: o.color, stand: true };
+      this.root.add(mesh);
+      this.objects.set(o.id, mesh);
+      return;
+    }
     const mesh = new THREE.Mesh(this.geometry(o.shape), this.material(o.color, false));
     mesh.name = o.id;
     mesh.position.set(...o.pos);
@@ -142,8 +206,16 @@ export class PlaceScene {
 
   /** Show the state of every object in this place. Cheap; call after any state change. */
   applyState(state: GameState): void {
+    for (const c of this.conditional) {
+      const cur = state.objectStates[c.when.object] ?? this.world.objects[c.when.object]?.initial;
+      c.mesh.visible = cur === c.when.is;
+    }
     for (const [id, mesh] of this.objects) {
       const o = this.world.objects[id]!;
+      if (o.kind === 'stand') {
+        mesh.visible = o.target !== state.viewpoint;
+        continue;
+      }
       const s = o.kind === 'hidden' ? (state.found[id] ? 'found' : 'unfound') : (state.objectStates[id] ?? o.initial);
       if (this.lastStates.get(id) === s) continue;
       this.lastStates.set(id, s);
@@ -170,6 +242,27 @@ export class PlaceScene {
     }
   }
 
+  /** Brighten one stand mark (under the crosshair or the pointer). */
+  setMarkHighlight(objectId: string | null): void {
+    if (this.highlighted === objectId) return;
+    for (const id of [this.highlighted, objectId]) {
+      if (!id) continue;
+      const mesh = this.objects.get(id);
+      if (!mesh || !mesh.userData.stand) continue;
+      const on = id === objectId;
+      (mesh.material as THREE.MeshBasicMaterial).opacity = on ? 0.95 : 0.3;
+      mesh.scale.setScalar(on ? 1.18 : 1);
+    }
+    this.highlighted = objectId;
+  }
+
+  /** One short glint on a thing (founder change 4). No text. */
+  glint(objectId: string, now: number): void {
+    const mesh = this.objects.get(objectId);
+    if (!mesh) return;
+    this.glints.push({ mesh, start: now, baseScale: mesh.scale.clone() });
+  }
+
   wiggle(objectId: string, now: number): void {
     const mesh = this.objects.get(objectId);
     if (!mesh) return;
@@ -193,6 +286,22 @@ export class PlaceScene {
       const t = (w.until - now) / 350;
       const amp = 0.06 * Math.max(...(w.mesh.scale.toArray() as number[]));
       w.mesh.position.set(w.base.x + Math.sin(now * 0.05) * amp * t, w.base.y + Math.abs(Math.sin(now * 0.07)) * amp * t, w.base.z);
+    }
+    for (let i = this.glints.length - 1; i >= 0; i--) {
+      const g = this.glints[i]!;
+      const k = (now - g.start) / 900;
+      const mat = g.mesh.material as THREE.MeshLambertMaterial & { emissive?: THREE.Color; opacity?: number };
+      if (k >= 1) {
+        g.mesh.scale.copy(g.baseScale);
+        if (mat.emissive) mat.emissive.set('#000000');
+        if (g.mesh.userData.stand) mat.opacity = this.highlighted === g.mesh.name ? 0.95 : 0.3;
+        this.glints.splice(i, 1);
+        continue;
+      }
+      const pulse = Math.sin(k * Math.PI);
+      g.mesh.scale.copy(g.baseScale).multiplyScalar(1 + 0.35 * pulse);
+      if (mat.emissive) mat.emissive.set('#FFE39A').multiplyScalar(0.7 * pulse);
+      if (g.mesh.userData.stand) mat.opacity = 0.3 + 0.7 * pulse;
     }
     if (paused) return;
     const t = now / 1000;

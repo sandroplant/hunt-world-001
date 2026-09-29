@@ -2,6 +2,12 @@ import type { Vec3 } from './types';
 
 export const DEG = Math.PI / 180;
 
+export function wrapDeg(a: number): number {
+  while (a > 180) a -= 360;
+  while (a <= -180) a += 360;
+  return a;
+}
+
 export function clamp(v: number, lo: number, hi: number): number {
   return v < lo ? lo : v > hi ? hi : v;
 }

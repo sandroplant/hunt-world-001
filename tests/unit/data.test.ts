@@ -15,21 +15,35 @@ describe('world data', () => {
     expect(world.order).toEqual(judge.order());
   });
 
-  it('each place has two viewpoints, and each stand mark is visible from the other viewpoint', () => {
+  it('each place has 3 to 5 stand spots, all with a full turn, and a stand mark for each', () => {
     for (const id of world.order) {
       const p = world.places[id]!;
       const vps = Object.keys(p.viewpoints);
-      expect(vps.length, id).toBe(2);
-      for (const o of world.objectsIn(id)) {
-        if (o.kind !== 'stand') continue;
-        const other = vps.find((v) => v !== o.target)!;
-        const vp = p.viewpoints[other]!;
-        const rel = anglesFromDir(sub(o.pos, vp.pos), vp.heading);
-        expect(rel.yaw, `${o.id} from ${other}`).toBeGreaterThanOrEqual(vp.yaw[0]);
-        expect(rel.yaw, `${o.id} from ${other}`).toBeLessThanOrEqual(vp.yaw[1]);
-        expect(rel.pitch, `${o.id} from ${other}`).toBeGreaterThanOrEqual(vp.pitch[0]);
-        expect(rel.pitch, `${o.id} from ${other}`).toBeLessThanOrEqual(vp.pitch[1]);
+      expect(vps.length, id).toBeGreaterThanOrEqual(3);
+      expect(vps.length, id).toBeLessThanOrEqual(5);
+      for (const v of vps) {
+        const vp = p.viewpoints[v]!;
+        expect(vp.yaw[1] - vp.yaw[0], `${id}/${v}`).toBeGreaterThanOrEqual(360);
+        expect(vp.heading, `${id}/${v}`).toBe(0);
+        const mark = world.objects[`${id}.stand_${v}`]!;
+        expect(mark.kind).toBe('stand');
+        expect(mark.target).toBe(v);
+        expect(Math.abs(mark.pos[1] - (vp.pos[1] - p.eye))).toBeLessThan(p.reach * 0.02);
       }
+      expect(p.moveSpeed).toBeGreaterThan(0);
+      expect(p.approach.back).toBeGreaterThan(0);
+    }
+  });
+
+  it('every place with a dive target has a portal opening for the next place', () => {
+    for (const id of world.order) {
+      const d = judge.diveTarget(id);
+      if (!d) continue;
+      const portals = world.propsIn(id).filter((p) => p.portal === d.to);
+      expect(portals.length, id).toBeGreaterThanOrEqual(1);
+      const divePortal = portals.find((p) => p.when?.object === d.object);
+      expect(divePortal, `${id}: a portal that appears when ${d.object} is ready`).toBeDefined();
+      expect(divePortal!.face).toBe(world.objects[d.object]!.home);
     }
   });
 

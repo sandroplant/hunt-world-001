@@ -1,4 +1,14 @@
 import type { Page } from '@playwright/test';
+import { readFileSync } from 'node:fs';
+
+const objectsJson = JSON.parse(readFileSync(new URL('../../src/world/objects.json', import.meta.url), 'utf8')) as { objects: Array<{ id: string; at?: [string, number, number, number] }> };
+
+/** [yaw, pitch, spot] of an object placed with `at` (world yaw). */
+export function objectAt(id: string): [number, number, string] {
+  const o = objectsJson.objects.find((x) => x.id === id);
+  if (!o?.at) throw new Error(`no at for ${id}`);
+  return [o.at[1], o.at[2], o.at[0]];
+}
 
 declare global {
   interface Window {
@@ -15,6 +25,10 @@ declare global {
       back(): void;
       enter(): void;
       diving(): boolean;
+      tap(x: number, y: number): void;
+      move(dir: 'forward' | 'back' | 'left' | 'right'): void;
+      glint(): void;
+      freezeDive(t: number | null): void;
       stats(): { calls: number; triangles: number; geometries: number; textures: number };
       frames(): { count: number; median: number; p95: number; p99: number };
       heap(): number | null;

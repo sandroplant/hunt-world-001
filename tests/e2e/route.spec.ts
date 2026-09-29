@@ -1,10 +1,10 @@
 import { expect, test } from '@playwright/test';
-import { boot, begin, capture, waitForDive, world } from './helpers';
+import { boot, begin, capture, objectAt, waitForDive, world } from './helpers';
 import { readFileSync } from 'node:fs';
 
 interface Answers {
   sketches: Record<string, { yaw: number; pitch: number; zoom: number }>;
-  hidden: Record<string, { yaw: number; pitch: number; minZoom: number }>;
+  hidden: Record<string, { minZoom: number }>;
   requiredSteps: Record<string, string[]>;
   diveTargets: Record<string, { object: string }>;
 }
@@ -32,11 +32,12 @@ test('a scripted route completes the whole chain', async ({ page, baseURL }) => 
 
   // A hidden object: the umbrella, only when zoomed in.
   const u = answers.hidden['street.umbrella']!;
-  await page.evaluate(([y, p]) => window.__hunt.setView(y, p, 1), [u.yaw, u.pitch] as [number, number]);
+  const uAt = objectAt('street.umbrella');
+  await page.evaluate(([y, p]) => window.__hunt.setView(y, p, 1), [uAt[0], uAt[1]] as [number, number]);
   await page.waitForTimeout(150);
   await page.evaluate(() => window.__hunt.act());
   expect((await page.evaluate(() => window.__hunt.state())).found['street.umbrella']).toBeUndefined();
-  await page.evaluate(([y, p, z]) => window.__hunt.setView(y, p, z), [u.yaw, u.pitch, u.minZoom] as [number, number, number]);
+  await page.evaluate(([y, p, z]) => window.__hunt.setView(y, p, z), [uAt[0], uAt[1], u.minZoom] as [number, number, number]);
   await page.waitForTimeout(150);
   await expect(page.locator('#verb')).toHaveText('Take');
   await page.evaluate(() => window.__hunt.act());
@@ -93,4 +94,35 @@ test('back out returns up the chain and keeps what was found', async ({ page }) 
   await waitForDive(page, 'street');
   s = await page.evaluate(() => window.__hunt.state());
   expect(s.stack.length).toBe(0);
+});
+
+test('spots: W A S D move to the nearest spot in that direction, and tapping a mark moves there', async ({ page }) => {
+  await boot(page);
+  await begin(page);
+  await page.evaluate(() => window.__hunt.move('forward'));
+  await page.waitForFunction(() => window.__hunt.view().viewpoint === 'C');
+  await page.waitForTimeout(2600);
+  await page.evaluate(() => window.__hunt.move('back'));
+  await page.waitForFunction(() => window.__hunt.view().viewpoint !== 'C');
+  await page.waitForTimeout(2600);
+  // Face the shop step's mark and tap where it appears on screen.
+  await page.evaluate(() => window.__hunt.jump('street'));
+  await page.waitForTimeout(300);
+  await page.evaluate(() => window.__hunt.setView(28, -12, 1));
+  await page.waitForTimeout(200);
+  const size = page.viewportSize()!;
+  await page.evaluate(([x, y]) => window.__hunt.tap(x, y), [size.width / 2, size.height / 2] as [number, number]);
+  await page.waitForFunction(() => window.__hunt.view().viewpoint === 'B');
+  // The view direction is kept while moving.
+  const v = await page.evaluate(() => window.__hunt.view());
+  expect(Math.abs(v.yaw - 28)).toBeLessThan(0.01);
+});
+
+test('the idle glint fires once on the most useful next thing, without text', async ({ page }) => {
+  await boot(page);
+  await begin(page);
+  await page.evaluate(() => window.__hunt.glint());
+  await page.waitForTimeout(400);
+  const toast = await page.locator('#toast').textContent();
+  expect(toast ?? '').toBe('');
 });

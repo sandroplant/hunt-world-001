@@ -6,7 +6,12 @@ export interface InputHandlers {
   turn(dYawDeg: number, dPitchDeg: number): void;
   zoomBy(factor: number): void;
   lens(held: boolean): void;
-  act(): void;
+  /** A tap or click at a screen position (CSS px). */
+  act(x: number, y: number): void;
+  /** The mouse moved without a button (for brightening a spot under the pointer). */
+  hover(x: number, y: number): void;
+  /** W, A, S or D: move toward the nearest spot in that direction relative to the view. */
+  move(dir: 'forward' | 'back' | 'left' | 'right'): void;
   enter(): void;
   back(): void;
   book(): void;
@@ -27,6 +32,9 @@ export class Input {
   constructor(private target: HTMLElement, private h: InputHandlers) {
     target.addEventListener('pointerdown', this.onPointerDown);
     target.addEventListener('pointermove', this.onPointerMove);
+    target.addEventListener('pointermove', (e) => {
+      if (e.pointerType === 'mouse' && e.buttons === 0) this.h.hover(e.clientX, e.clientY);
+    });
     target.addEventListener('pointerup', this.onPointerUp);
     target.addEventListener('pointercancel', this.onPointerUp);
     target.addEventListener('wheel', this.onWheel, { passive: false });
@@ -98,8 +106,8 @@ export class Input {
       this.syncLens();
       return;
     }
-    // A tap or click without a drag is "act".
-    if (!p.moved && (p.button === 0 || e.pointerType === 'touch')) this.h.act();
+    // A tap or click without a drag is "act", at the pointer's position.
+    if (!p.moved && (p.button === 0 || e.pointerType === 'touch')) this.h.act(e.clientX, e.clientY);
   };
 
   private onWheel = (e: WheelEvent): void => {
@@ -125,7 +133,19 @@ export class Input {
         this.syncLens();
         break;
       case 'e': case 'E':
-        this.h.act();
+        this.h.act(window.innerWidth / 2, window.innerHeight / 2);
+        break;
+      case 'w': case 'W':
+        this.h.move('forward');
+        break;
+      case 's': case 'S':
+        this.h.move('back');
+        break;
+      case 'a': case 'A':
+        this.h.move('left');
+        break;
+      case 'd': case 'D':
+        this.h.move('right');
         break;
       case 'Enter':
         this.h.enter();

@@ -8,18 +8,6 @@ export interface LogEvent {
   detail?: Record<string, unknown>;
 }
 
-export function downloadJson(name: string, data: unknown): void {
-  const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
-  const url = URL.createObjectURL(blob);
-  const a = document.createElement('a');
-  a.href = url;
-  a.download = name;
-  document.body.append(a);
-  a.click();
-  a.remove();
-  setTimeout(() => URL.revokeObjectURL(url), 2000);
-}
-
 export class SessionLog {
   on = false;
   private events: LogEvent[] = [];
@@ -43,13 +31,14 @@ export class SessionLog {
     this.events.push(e);
   }
 
-  download(): void {
-    downloadJson(`hunt-world-001-session-${Date.now()}.json`, {
+  /** The log as JSON text, for "Copy log" (downloads are blocked where the game is hosted). */
+  text(): string {
+    return JSON.stringify({
       world: 'hunt-world-001 step 1',
       userAgent: navigator.userAgent,
       screen: { w: window.innerWidth, h: window.innerHeight, dpr: window.devicePixelRatio },
       events: this.events,
-    });
+    }, null, 1);
   }
 }
 
@@ -76,8 +65,8 @@ export class FrameRecorder {
     return { count: s.length, median: q(0.5), p95: q(0.95), p99: q(0.99) };
   }
 
-  download(extra: Record<string, unknown>): void {
-    downloadJson(`hunt-world-001-frames-${Date.now()}.json`, {
+  text(extra: Record<string, unknown>): string {
+    return JSON.stringify({
       note: 'Frame times in ms from requestAnimationFrame deltas. Not JavaScript-only timing.',
       userAgent: navigator.userAgent,
       screen: { w: window.innerWidth, h: window.innerHeight, dpr: window.devicePixelRatio },

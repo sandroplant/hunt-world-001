@@ -69,3 +69,30 @@ The founder accepted all nine proposals in `PLAN.md` §1. They are now decisions
 - **Verbs:** the crosshair picks the nearest usable thing within its angular size or 22 px, whichever is bigger. A hidden object is picked only when the judge would accept a find there (right viewpoint, centered, zoomed enough).
 - **Escape** closes any open panel; with nothing open it opens the menu. Tab is never used.
 - **Two viewpoints per place** are ordinary objects with the verb "Stand here". The glide takes about 0.9 s and resets the zoom.
+
+---
+
+## D-008 — Gate A result (founder, 2026-09-29): redesign once
+
+**What happened.** The founder played blind on a laptop. He never found a dive and did not find the second viewpoint. He thought the locked shop door was broken, because nothing showed it was locked or that a key existed. He could not turn around and could not tell what can be zoomed into. He zoomed on the moon in the sky and expected it to lead somewhere. He read the top bar as a menu.
+
+**Decision:** redesign once (spec §13 S1, first of the one allowed redesign). No art yet. The next round after this one is a single street style frame.
+
+**The eight changes, in the founder's order:**
+1. Full 360° turning at every viewpoint. Up/down limits stay.
+2. Moving: 3–5 stand spots per place. Tap or click a spot on the ground, or use the keys toward it, and the camera glides there at a fixed speed. Spots are faint marks that brighten under the crosshair. No free walking.
+3. Show what can be entered: the next place must be visible inside its dive target before the dive. The crosshair changes only over things you can act on; plain scenery gives no reaction. The moon in the street sky must not react or look like a target.
+4. After 45 seconds of no input, the most useful next thing glints once. No text.
+5. Locked things show it without words: a rattle plus a small keyhole mark.
+6. The dive is one continuous forward zoom through the target into the next place, with no visible cut. If the seam cannot be hidden, report it rather than fake it.
+7. The top bar shows only places already reached; later ones are dots. It must not look clickable. It must not run under the buttons on phones.
+8. "Download log" becomes "Copy log". Downloads are blocked where the game is hosted.
+
+**Budget for this round:** stop and report when 1–8 are done, or at $50 spent, whichever comes first. The credit balance in the founder's message was left as a placeholder ("[balance]"), so no figure is recorded.
+
+**How they are built (builder's notes):**
+- Yaw is now measured in world terms at every spot (all headings are 0), so a player keeps facing the same way when moving between spots. Data that was written relative to a turned viewpoint was converted once.
+- Spots are generated from `places.json` viewpoints; they are no longer listed in `objects.json`.
+- Hidden objects are judged from the object's position and the player's current spot, so a hidden thing can be found from any spot it is centered from, with the zoom needed scaled by distance. Sketches stay bound to the spot they were drawn from.
+- Change 3 and change 6 share one mechanism: a portal. The next place is rendered live from an "approach" camera into a texture shown on the dive target's opening (and on the shop window). The dive flies the camera to that opening until the opening fills the screen, then hands over to the real next place with the same camera, so the two images match at the hand-over.
+- Keys: arrow keys still look (spec §4 keyboard-only play needs a look key). W, A, S, D move toward the nearest spot in that direction. E or Enter on a spot under the crosshair also moves.

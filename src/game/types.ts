@@ -17,11 +17,20 @@ export interface LandmarkData {
   at: [string, number, number]; // viewpoint, yaw, pitch
 }
 
+export interface Approach {
+  back: number; // distance behind the arrival spot, along its view
+  up: number;
+  pitch: number; // the portal camera's pitch (degrees, +up)
+}
+
 export interface PlaceData {
   id: string;
   label: string;
   unit: string;
   reach: number;
+  eye: number;
+  moveSpeed: number;
+  approach: Approach;
   near: number;
   far: number;
   sky: string;
@@ -104,6 +113,13 @@ export interface PropData {
   ring?: number;
   ambient?: 'drift' | 'sway' | 'twinkle' | 'blink';
   night?: { color?: string; emissive?: boolean };
+  /** Shown only while an object is in a state. */
+  when?: { object: string; is: string };
+  /** A portal: a flat opening that shows this place live. size = [width, height]; face = the spot it faces. */
+  portal?: string;
+  face?: string;
+  /** For a portal on a wall: the direction the opening faces. Otherwise it faces the `face` spot. */
+  normal?: Vec3;
 }
 
 export interface SketchData {

@@ -7,10 +7,11 @@ import {
   recordHiddenFound, recordSketchLocked, save, standAt as rulesStandAt, useHint, verbFor, type Store,
 } from './game/rules';
 import type { GameEvent, GameState, WorldObject } from './game/types';
-import { angleBetween, anglesFromDir, dirFromAngles, length, sub } from './game/geom';
+import { angleBetween, anglesFromDir, dirFromAngles, length, sub, wrapDeg } from './game/geom';
 import { PlaceScene, type Quality } from './render/scene';
 import { Renderer, detectQuality } from './render/renderer';
-import { DiveAnimator, DIVE_MS } from './render/dive';
+import { DiveAnimator, type CamPose, type PortalGeometry } from './render/dive';
+import { PortalRenderer, approachPose } from './render/portal';
 import { ViewCamera, ZOOM_MAX, ZOOM_MIN } from './player/camera';
 import { Input } from './player/input';
 import { Hud } from './ui/hud';
@@ -22,6 +23,7 @@ import { FrameRecorder, SessionLog } from './game/log';
 export const LOOK_DEG_PER_PX = 0.18;
 const RING_MS = 1000;
 const LENS_ZOOM_FOR_DIVE = 1.5;
+const IDLE_GLINT_MS = 45_000;
 
 function localStore(): { store: Store; blocked: boolean } {
   try {
@@ -44,6 +46,7 @@ export class App {
   readonly panels: Panels;
   readonly audio = new Audio();
   readonly sketcher: SketchRenderer;
+  readonly portalRenderer: PortalRenderer;
   readonly diveAnim = new DiveAnimator();
   readonly log = new SessionLog();
   readonly frames = new FrameRecorder();
@@ -58,17 +61,20 @@ export class App {
   private sketchImages = new Map<string, HTMLCanvasElement>();
   private heldSketch: string | null = null;
   private lensHeld = false;
-  /** The zoom set by wheel or pinch. Holding the lens zooms in from here and eases back on release. */
   private baseZoom = 1;
   private ringStart: number | null = null;
   private alignedSince: number | null = null;
   private best: WorldObject | null = null;
-  private bestVerb: string | null = null;
   private lastLive = 0;
   private pointTarget: { kind: 'object' | 'pose'; id: string; until: number } | null = null;
   private started = false;
   private pendingEnd = false;
   private lastNow = 0;
+  private lastInputAt = 0;
+  private glinted = false;
+  private hoverMark: string | null = null;
+  private frameCount = 0;
+  private afterDive: (() => void) | null = null;
   diving = false;
 
   constructor(canvas: HTMLCanvasElement, ui: HTMLElement) {
@@ -85,6 +91,7 @@ export class App {
     this.applyTextSize();
     this.renderer = new Renderer(canvas, this.quality());
     this.sketcher = new SketchRenderer(this.renderer.gl);
+    this.portalRenderer = new PortalRenderer(this.renderer.gl, this.renderer.quality === 'high' ? 1024 : 640);
     this.hud = new Hud(ui, this.world);
     this.panels = new Panels(ui, this.world, {
       begin: () => this.begin(),
@@ -95,8 +102,8 @@ export class App {
       hint: (t, l) => this.hint(t, l),
       setSetting: (k, v) => this.setSetting(k, v),
       setSessionLog: (on) => (on ? this.log.start() : this.log.stop()),
-      saveSessionLog: () => this.log.download(),
-      savePerf: () => this.frames.download({ quality: this.renderer.quality, place: this.state.place, stats: this.renderer.stats() }),
+      copySessionLog: async () => this.log.text(),
+      copyPerf: async () => this.frames.text({ quality: this.renderer.quality, place: this.state.place, stats: this.renderer.stats() }),
       describe: () => this.describe(),
     });
     this.input = new Input(canvas, {
@@ -104,19 +111,21 @@ export class App {
       turn: (y, p) => this.turn(y, p),
       zoomBy: (f) => this.zoomBy(f),
       lens: (held) => this.setLens(held),
-      act: () => this.act(),
+      act: (x, y) => this.actAt(x, y),
+      hover: (x, y) => this.hover(x, y),
+      move: (dir) => this.moveToward(dir),
       enter: () => this.enter(),
       back: () => this.backOut(),
       book: () => this.toggle('book'),
       hints: () => this.toggle('hints'),
       describe: () => this.describe(),
       menu: () => this.toggle('menu'),
-      anyInput: () => this.audio.unlock(),
+      anyInput: () => this.noteInput(),
     });
     const lensBtn = this.hud.buttons.lens;
     const down = (e: Event) => {
       e.preventDefault();
-      this.audio.unlock();
+      this.noteInput();
       this.input.setLensButton(true);
     };
     const up = () => this.input.setLensButton(false);
@@ -135,7 +144,7 @@ export class App {
 
     this.enterPlace(this.state.place, this.state.viewpoint, this.state.yaw, this.state.pitch, this.state.zoom);
     this.refreshHud();
-    this.panels.renderTitle(!!load(this.store, this.world) && (this.state.startedAt !== null), this.storageBlocked);
+    this.panels.renderTitle(!!load(this.store, this.world) && this.state.startedAt !== null, this.storageBlocked);
     this.panels.show('title');
     requestAnimationFrame((t) => this.loop(t));
   }
@@ -163,7 +172,7 @@ export class App {
       const sk = this.world.sketchFor(placeId);
       if (sk && !this.sketchImages.has(sk.id)) {
         const pose = judge.sketchPose(sk.id);
-        if (pose && pose.place === this.world.baseOf(placeId) && placeId === pose.place) this.sketchImages.set(sk.id, this.sketcher.draw(s, pose));
+        if (pose && placeId === pose.place) this.sketchImages.set(sk.id, this.sketcher.draw(s, pose));
       }
     }
     return s;
@@ -173,9 +182,16 @@ export class App {
     return this.scene(this.state.place);
   }
 
+  /** The place a dive from `placeId` leads to, with its scene built so its portal can show it. */
+  private nextOf(placeId: string): PlaceScene | null {
+    const d = judge.diveTarget(placeId);
+    return d ? this.scene(d.to) : null;
+  }
+
   private enterPlace(placeId: string, viewpoint: string, yaw = 0, pitch = 0, zoom = 1): void {
     const place = this.world.places[placeId]!;
     this.scene(placeId);
+    this.nextOf(placeId);
     this.camera.setPlace(place, viewpoint, yaw, pitch, zoom);
     this.baseZoom = this.camera.zoom;
     this.ringStart = null;
@@ -184,12 +200,20 @@ export class App {
     this.hud.showCard(null);
     this.hud.setRing(0);
     this.frames.mark(`place:${placeId}`);
+    this.glinted = false;
+    this.lastInputAt = this.lastNow;
+  }
+
+  private eyePos(): [number, number, number] {
+    const p = this.camera.camera.position;
+    return [p.x, p.y, p.z];
   }
 
   private view(): View {
     return {
       place: this.state.place,
       viewpoint: this.state.viewpoint,
+      pos: this.eyePos(),
       yaw: this.camera.yaw,
       pitch: this.camera.pitch,
       zoom: this.camera.zoom,
@@ -199,8 +223,7 @@ export class App {
 
   private commit(next: GameState, events: GameEvent[] = []): void {
     this.state = next;
-    this.current.applyState(next);
-    for (const s of this.scenes.values()) if (s !== this.current) s.applyState(next);
+    for (const s of this.scenes.values()) s.applyState(next);
     save(this.store, next);
     this.refreshHud();
     const captions = this.world.strings.captions as Record<string, string>;
@@ -225,17 +248,20 @@ export class App {
     this.hud.buttons.back.style.visibility = canBack ? 'visible' : 'hidden';
   }
 
+  private noteInput(): void {
+    this.audio.unlock();
+    this.lastInputAt = this.lastNow;
+    this.glinted = false;
+  }
+
   // ---- flow ------------------------------------------------------------------------------
 
   begin(): void {
     this.started = true;
-    if (this.state.startedAt === null) {
-      const s = { ...this.state, startedAt: Date.now() };
-      this.commit(s);
-    }
+    if (this.state.startedAt === null) this.commit({ ...this.state, startedAt: Date.now() });
     this.panels.hide();
     this.log.record('start', { place: this.state.place });
-    this.audio.unlock();
+    this.noteInput();
   }
 
   restart(): void {
@@ -292,17 +318,17 @@ export class App {
     if (!this.started) return;
     const place = this.world.places[this.state.place]!;
     const vp = place.viewpoints[this.state.viewpoint]!;
-    const forward = dirFromAngles(vp.heading, this.camera.yaw, this.camera.pitch);
-    const landmarks = place.landmarks.filter((l) => l.at[0] === this.state.viewpoint).map((l) => l.text);
+    const forward = dirFromAngles(0, this.camera.yaw, this.camera.pitch);
+    const eye = this.eyePos();
+    const landmarks = place.landmarks.filter((l) => angleBetween(forward, dirFromAngles(0, l.at[1], l.at[2])) < 70).map((l) => l.text);
     const nearby: string[] = [];
     for (const o of this.world.objectsIn(this.state.place)) {
       if (o.kind === 'hidden' && !this.state.found[o.id]) continue; // never reveal hidden things
-      if (o.kind === 'stand') continue;
       const v = verbFor(this.world, o, this.state, this.world.strings.verbs.lookCloser, this.world.strings.verbs.standHere);
       if (!v) continue;
-      const d = sub(o.pos, vp.pos);
-      if (length(d) > place.reach && o.kind !== 'hidden') continue;
-      if (angleBetween(forward, d) > 60) continue;
+      const d = sub(o.pos, eye);
+      if (o.kind !== 'stand' && o.kind !== 'hidden' && length(d) > place.reach) continue;
+      if (angleBetween(forward, d) > 70) continue;
       nearby.push(`${o.label} (${v})`);
     }
     const items = this.world.strings.items as Record<string, string>;
@@ -357,7 +383,6 @@ export class App {
     if (!this.state.onboarded.lens && this.camera.zoom > 1.2) this.commit({ ...this.state, onboarded: { ...this.state.onboarded, lens: true } });
   }
 
-  /** Hold the lens: zoom ramps in toward the maximum; letting go eases back to the wheel or pinch level. */
   private updateLensZoom(dt: number): void {
     if (this.busy) return;
     if (this.lensHeld) {
@@ -373,17 +398,72 @@ export class App {
     if (held && !this.state.onboarded.lens) this.commit({ ...this.state, onboarded: { ...this.state.onboarded, lens: true } });
   }
 
+  /** Move to a stand spot. The view direction is kept; the glide runs at the place's fixed speed. */
   standAt(viewpoint: string): void {
     if (this.diving || !this.started) return;
     const next = rulesStandAt(this.world, this.state, viewpoint);
     if (next === this.state) return;
+    next.yaw = this.camera.yaw;
+    next.pitch = this.camera.pitch;
     this.commit(next);
     this.camera.glideTo(viewpoint, this.lastNow);
     this.baseZoom = 1;
     this.audio.play('stand');
     this.heldSketch = null;
     this.hud.showCard(null);
+    this.current.setMarkHighlight(null);
     this.log.record('stand', { place: this.state.place, viewpoint });
+  }
+
+  /** The stand mark under a screen position, if any. */
+  private markAt(x: number, y: number): WorldObject | null {
+    const ndc = new THREE.Vector2((x / this.renderer.width) * 2 - 1, -(y / this.renderer.height) * 2 + 1);
+    const ray = new THREE.Raycaster();
+    ray.setFromCamera(ndc, this.camera.camera);
+    const marks = [...this.current.objects.entries()].filter(([, m]) => m.userData.stand && m.visible).map(([, m]) => m);
+    const hits = ray.intersectObjects(marks, false);
+    const hit = hits[0];
+    if (!hit) return null;
+    return this.world.objects[hit.object.name] ?? null;
+  }
+
+  private hover(x: number, y: number): void {
+    if (this.busy) {
+      this.hoverMark = null;
+      return;
+    }
+    this.hoverMark = this.markAt(x, y)?.id ?? null;
+  }
+
+  /** W, A, S, D: the nearest spot in that direction relative to the view. */
+  moveToward(dir: 'forward' | 'back' | 'left' | 'right'): void {
+    if (this.busy) return;
+    const yawOffset = { forward: 0, back: 180, left: 90, right: -90 }[dir];
+    const want = dirFromAngles(0, this.camera.yaw + yawOffset, 0);
+    const eye = this.eyePos();
+    let best: { id: string; score: number } | null = null;
+    for (const o of this.world.objectsIn(this.state.place)) {
+      if (o.kind !== 'stand' || !o.target || o.target === this.state.viewpoint) continue;
+      const d: [number, number, number] = [o.pos[0] - eye[0], 0, o.pos[2] - eye[2]];
+      const dist = length(d);
+      if (dist < 1e-6) continue;
+      const angle = angleBetween(want, d);
+      if (angle > 65) continue;
+      const score = angle / 65 + dist / (this.world.places[this.state.place]!.reach * 6);
+      if (!best || score < best.score) best = { id: o.target, score };
+    }
+    if (best) this.standAt(best.id);
+  }
+
+  /** A tap or click: a stand mark under the pointer moves there; otherwise act on what the crosshair picked. */
+  actAt(x: number, y: number): void {
+    if (this.busy) return;
+    const mark = this.markAt(x, y);
+    if (mark?.target) {
+      this.standAt(mark.target);
+      return;
+    }
+    this.act();
   }
 
   act(): void {
@@ -419,40 +499,22 @@ export class App {
     else this.act();
   }
 
-  backOut(): void {
-    if (this.busy) return;
-    const b = rulesBackOut(this.state);
-    if (!b) return;
-    const from = this.current;
-    const parent = this.scene(b.to);
-    const diveObj = judge.diveTarget(b.to);
-    const targetPos = diveObj ? parent.worldPosition(diveObj.object) : null;
-    const place = this.world.places[b.to]!;
-    const vp = place.viewpoints[b.state.viewpoint]!;
-    const look = targetPos ? anglesFromDir(sub([targetPos.x, targetPos.y, targetPos.z], vp.pos), vp.heading) : { yaw: 0, pitch: 0 };
-    const toCamera = this.makeCamera(b.to, b.state.viewpoint, look.yaw, look.pitch, 1);
-    const fromCamera = this.camera.camera.clone();
-    this.commit(b.state);
-    this.diving = true;
-    this.hud.setVerb(null);
-    this.hud.setRing(0);
-    this.heldSketch = null;
-    this.hud.showCard(null);
-    this.audio.play('back');
-    this.hud.showCaption(this.world.strings.captions.back);
-    this.log.record('back_out', { from: from.placeId, to: b.to });
-    this.frames.mark('back:start');
-    this.diveAnim.begin({ direction: 'out', from, to: parent, fromCamera, toCamera, target: targetPos ?? new THREE.Vector3(...vp.pos), reducedMotion: this.state.settings.reducedMotion, start: this.lastNow });
-    this.afterDive = () => this.enterPlace(b.to, b.state.viewpoint, look.yaw, look.pitch, 1);
+  // ---- dives -----------------------------------------------------------------------------------
+
+  private currentPose(): CamPose {
+    return { pos: this.camera.camera.position.clone(), yaw: this.camera.yaw, pitch: this.camera.pitch, fov: this.camera.camera.fov };
   }
 
-  private afterDive: (() => void) | null = null;
+  private portalGeometry(scene: PlaceScene, to: string, targetObject: string | null): PortalGeometry | null {
+    const p = scene.divePortal(to, targetObject);
+    if (!p) return null;
+    p.mesh.updateMatrixWorld(true);
+    const normal = new THREE.Vector3(0, 0, 1).applyQuaternion(p.mesh.getWorldQuaternion(new THREE.Quaternion())).normalize();
+    return { center: p.mesh.getWorldPosition(new THREE.Vector3()), normal, width: p.width, height: p.height };
+  }
 
-  private makeCamera(placeId: string, viewpoint: string, yaw: number, pitch: number, zoom: number): THREE.PerspectiveCamera {
-    const tmp = new ViewCamera();
-    tmp.setPlace(this.world.places[placeId]!, viewpoint, yaw, pitch, zoom);
-    tmp.update(0, this.renderer.width / this.renderer.height);
-    return tmp.camera;
+  private normalFov(): number {
+    return new ViewCamera().verticalFov(this.renderer.width / this.renderer.height);
   }
 
   private startDive(): void {
@@ -461,11 +523,15 @@ export class App {
     if (!d) return;
     const from = this.current;
     const target = judge.diveTarget(this.state.place);
-    const targetPos = target ? from.worldPosition(target.object) : null;
     const to = this.scene(d.to);
-    const toCamera = this.makeCamera(d.to, d.state.viewpoint, 0, 0, 1);
-    const fromCamera = this.camera.camera.clone();
+    const portal = this.portalGeometry(from, d.to, target?.object ?? null);
+    if (!portal) return;
     const firstEnding = judge.isEnding(d.to) && !this.state.ended;
+    const arrival = this.world.places[d.to]!.viewpoints[d.state.viewpoint]!;
+    const approach = approachPose(to, portal.width / portal.height);
+    // Make sure the opening shows the exact picture the hand-over will use.
+    this.portalRenderer.render(to, approach);
+    from.setPortalTexture(d.to, this.portalRenderer.texture);
     this.commit(d.state);
     this.diving = true;
     this.hud.setVerb(null);
@@ -477,9 +543,58 @@ export class App {
     this.hud.showCaption(this.world.strings.captions.dive);
     this.log.record('dive', { from: from.placeId, to: d.to });
     this.frames.mark('dive:start');
-    this.diveAnim.begin({ direction: 'in', from, to, fromCamera, toCamera, target: targetPos ?? fromCamera.position.clone(), reducedMotion: this.state.settings.reducedMotion, start: this.lastNow });
+    this.diveAnim.begin({
+      direction: 'in',
+      from,
+      to,
+      portal,
+      approach,
+      start: this.currentPose(),
+      end: { pos: new THREE.Vector3(...arrival.pos), yaw: 0, pitch: 0, fov: this.normalFov() },
+      screenAspect: this.renderer.width / this.renderer.height,
+      reducedMotion: this.state.settings.reducedMotion,
+      startedAt: this.lastNow,
+    });
     this.pendingEnd = firstEnding;
     this.afterDive = () => this.enterPlace(d.to, d.state.viewpoint, 0, 0, 1);
+  }
+
+  backOut(): void {
+    if (this.busy) return;
+    const b = rulesBackOut(this.state);
+    if (!b) return;
+    const from = this.current;
+    const parent = this.scene(b.to);
+    const diveObj = judge.diveTarget(b.to);
+    const portal = this.portalGeometry(parent, this.state.place, diveObj?.object ?? null);
+    if (!portal) return;
+    const place = this.world.places[b.to]!;
+    const vp = place.viewpoints[b.state.viewpoint]!;
+    const look = anglesFromDir(sub([portal.center.x, portal.center.y, portal.center.z], vp.pos), 0);
+    const approach = approachPose(from, portal.width / portal.height);
+    this.commit(b.state);
+    this.diving = true;
+    this.hud.setVerb(null);
+    this.hud.setRing(0);
+    this.heldSketch = null;
+    this.hud.showCard(null);
+    this.audio.play('back');
+    this.hud.showCaption(this.world.strings.captions.back);
+    this.log.record('back_out', { from: from.placeId, to: b.to });
+    this.frames.mark('back:start');
+    this.diveAnim.begin({
+      direction: 'out',
+      from,
+      to: parent,
+      portal,
+      approach,
+      start: this.currentPose(),
+      end: { pos: new THREE.Vector3(...vp.pos), yaw: look.yaw, pitch: look.pitch, fov: this.normalFov() },
+      screenAspect: this.renderer.width / this.renderer.height,
+      reducedMotion: this.state.settings.reducedMotion,
+      startedAt: this.lastNow,
+    });
+    this.afterDive = () => this.enterPlace(b.to, b.state.viewpoint, look.yaw, look.pitch, 1);
   }
 
   private finishDive(): void {
@@ -507,10 +622,23 @@ export class App {
 
   // ---- per-frame ------------------------------------------------------------------------------
 
+  /** Keep the openings showing the next place live. Cheap: one small render, skipped on alternate frames on Low. */
+  private updatePortals(): void {
+    const scene = this.current;
+    if (!scene.portals.some((p) => p.mesh.visible)) return;
+    if (this.renderer.quality === 'low' && this.frameCount % 2 === 1) return;
+    const groups = new Set(scene.portals.filter((p) => p.mesh.visible).map((p) => p.to));
+    for (const to of groups) {
+      const next = this.scene(to);
+      const first = scene.portals.find((p) => p.to === to)!;
+      this.portalRenderer.render(next, approachPose(next, first.width / first.height));
+      scene.setPortalTexture(to, this.portalRenderer.texture);
+    }
+  }
+
   private pick(): void {
     const place = this.world.places[this.state.place]!;
-    const vp = place.viewpoints[this.state.viewpoint]!;
-    const forward = dirFromAngles(vp.heading, this.camera.yaw, this.camera.pitch);
+    const forward = dirFromAngles(0, this.camera.yaw, this.camera.pitch);
     const camPos = this.camera.camera.position;
     const pxPerDeg = this.camera.pxPerDeg(this.renderer.height, this.renderer.width / this.renderer.height);
     const minTol = 22 / pxPerDeg;
@@ -528,9 +656,6 @@ export class App {
       const dist = length(d);
       if ((o.kind === 'usable' || o.kind === 'dive') && dist > place.reach) continue;
       const angle = angleBetween(forward, d);
-      // A thing is picked within its own angular size (capped, so a door at arm's length does not capture the
-      // whole screen) or within 22 px, whichever is bigger. Among candidates, the one closest to its own
-      // centre wins, so a small thing in front of a big one is picked when the crosshair sits on it.
       const radiusDeg = (Math.atan((Math.max(o.size[0], o.size[1], o.size[2]) / 2) / Math.max(dist, 1e-6)) * 180) / Math.PI;
       const tol = Math.max(Math.min(radiusDeg, 12), minTol);
       if (angle > tol) continue;
@@ -542,8 +667,8 @@ export class App {
       bestScore = score;
     }
     this.best = best;
-    this.bestVerb = bestVerb;
     this.hud.setVerb(bestVerb, best?.kind === 'dive');
+    scene.setMarkHighlight(best?.kind === 'stand' ? best.id : this.hoverMark);
   }
 
   private updateRing(now: number): void {
@@ -591,6 +716,42 @@ export class App {
     this.log.record('find_sketch', { id, place: this.state.place });
   }
 
+  /** After 45 s without input, the most useful next thing glints once (founder change 4). No text. */
+  private updateIdleGlint(now: number): void {
+    if (this.glinted || now - this.lastInputAt < IDLE_GLINT_MS) return;
+    this.glinted = true;
+    const target = hintTargets(this.world, this.state)[0];
+    if (!target) return;
+    let objectId: string | null = null;
+    let viewpoint: string | null = null;
+    if (target.startsWith('dive:')) {
+      const d = judge.diveTarget(this.state.place);
+      objectId = d?.object ?? null;
+    } else if (/^S\d$/.test(target)) {
+      viewpoint = judge.sketchPose(target)?.viewpoint ?? null;
+    } else if (this.world.objects[target]) {
+      objectId = target;
+    } else {
+      const obj = Object.values(this.world.objects).find((o) => o.transitions.some((t) => (t.effects ?? []).some((e) => e.type === 'step' && e.id === target)));
+      objectId = obj?.id ?? null;
+    }
+    if (objectId) {
+      const obj = this.world.objects[objectId]!;
+      const reach = this.world.places[this.state.place]!.reach;
+      const inReach = length(sub(obj.pos, this.eyePos())) <= reach || obj.kind === 'hidden';
+      if (!inReach && obj.home && obj.home !== this.state.viewpoint) viewpoint = obj.home;
+      else {
+        this.current.glint(objectId, now);
+        this.log.record('glint', { target: objectId });
+        return;
+      }
+    }
+    if (viewpoint && viewpoint !== this.state.viewpoint) {
+      this.current.glint(`${this.state.place}.stand_${viewpoint}`, now);
+      this.log.record('glint', { target: `stand_${viewpoint}` });
+    }
+  }
+
   private updatePointer(now: number): void {
     if (!this.pointTarget || now > this.pointTarget.until) {
       if (this.pointTarget) this.pointTarget = null;
@@ -609,11 +770,10 @@ export class App {
         const place = this.world.places[this.state.place]!;
         if (pose.viewpoint === this.state.viewpoint) {
           const vp = place.viewpoints[pose.viewpoint]!;
-          const d = dirFromAngles(vp.heading, pose.yaw, pose.pitch);
+          const d = dirFromAngles(0, pose.yaw, pose.pitch);
           pos = new THREE.Vector3(vp.pos[0] + d[0] * 10, vp.pos[1] + d[1] * 10, vp.pos[2] + d[2] * 10);
         } else {
-          const mark = this.world.objectsIn(this.state.place).find((o) => o.kind === 'stand' && o.target === pose.viewpoint);
-          pos = mark ? this.current.worldPosition(mark.id) : null;
+          pos = this.current.worldPosition(`${this.state.place}.stand_${pose.viewpoint}`);
         }
       }
     }
@@ -631,9 +791,18 @@ export class App {
   private loop(now: number): void {
     const dt = this.lastNow ? Math.min(0.1, (now - this.lastNow) / 1000) : 0;
     this.lastNow = now;
+    this.frameCount++;
     if (this.perfMode) this.frames.tick(now);
     const aspect = this.renderer.width / this.renderer.height;
     if (this.diving) {
+      const p = this.diveAnim.plan;
+      // Keep the opening's picture fresh until the hand-over, so the two frames match.
+      if (p && !this.diveAnim.handedOver) {
+        const nested = p.direction === 'in' ? p.to : p.from;
+        const outer = p.direction === 'in' ? p.from : p.to;
+        this.portalRenderer.render(nested, p.approach);
+        outer.setPortalTexture(nested.placeId, this.portalRenderer.texture);
+      }
       const r = this.diveAnim.step(now);
       if (r) {
         this.hud.setFade(r.fade > 0.5, true);
@@ -651,6 +820,7 @@ export class App {
         this.pick();
         this.updateRing(now);
         this.updateSketch(now);
+        this.updateIdleGlint(now);
       } else {
         this.best = null;
         this.hud.setVerb(null);
@@ -658,6 +828,7 @@ export class App {
         this.ringStart = null;
       }
       this.updatePointer(now);
+      this.updatePortals();
       this.renderer.render(this.current.scene, this.camera.camera);
     }
     for (const f of this.onFrame) f(now);
@@ -668,7 +839,7 @@ export class App {
 
   debugSetView(yaw: number, pitch: number, zoom: number): void {
     if (__PLAYTEST__) return;
-    this.camera.look(yaw - this.camera.yaw, pitch - this.camera.pitch);
+    this.camera.setView(yaw, pitch);
     this.camera.setZoom(Math.max(ZOOM_MIN, Math.min(ZOOM_MAX, zoom)));
     this.baseZoom = this.camera.zoom;
   }
@@ -720,7 +891,7 @@ export class App {
     if (next) {
       const s = this.replayOneStep(this.state, next);
       this.commit(s);
-      if (s.viewpoint !== this.camera.viewpoint) this.camera.setPlace(this.world.places[s.place]!, s.viewpoint);
+      if (s.viewpoint !== this.camera.viewpoint) this.camera.setPlace(this.world.places[s.place]!, s.viewpoint, this.camera.yaw, this.camera.pitch);
     } else {
       this.startDive();
     }
@@ -729,8 +900,12 @@ export class App {
   debugHit(ndcX: number, ndcY: number): string[] {
     if (__PLAYTEST__) return [];
     const ray = new THREE.Raycaster();
-    ray.setFromCamera(new THREE.Vector2(ndcX, ndcY), this.camera.camera);
-    return ray.intersectObjects(this.current.scene.children, true).slice(0, 4).map((h) => `${h.object.name || h.object.type}@${h.distance.toFixed(2)}`);
+    const plan = this.diveAnim.plan;
+    const cam = plan ? (this.diveAnim.handedOver ? this.diveAnim.camB : this.diveAnim.camA) : this.camera.camera;
+    const scene = plan ? (this.diveAnim.handedOver ? plan.to : plan.from) : this.current;
+    ray.setFromCamera(new THREE.Vector2(ndcX, ndcY), cam);
+    const pos = `cam(${cam.position.x.toFixed(2)},${cam.position.y.toFixed(2)},${cam.position.z.toFixed(2)}) fov ${cam.fov.toFixed(1)}`;
+    return [pos, ...ray.intersectObjects(scene.scene.children, true).slice(0, 4).map((h) => `${h.object.name || h.object.type}@${h.distance.toFixed(2)}`)];
   }
 
   debugSketch(yaw: number, pitch: number, zoom: number): string {
@@ -747,6 +922,19 @@ export class App {
     if (__PLAYTEST__) return;
     for (const [id, s] of this.scenes) if (id !== this.state.place) { s.dispose(); this.scenes.delete(id); }
   }
+
+  /** Freeze the running dive at a fraction of its length, or null to let it run (seam check). */
+  debugFreezeDive(t: number | null): void {
+    if (__PLAYTEST__) return;
+    this.diveAnim.freezeAt = t;
+  }
+
+  /** Force the idle glint now (for tests). */
+  debugGlint(): void {
+    if (__PLAYTEST__) return;
+    this.lastInputAt = this.lastNow - IDLE_GLINT_MS - 1;
+    this.glinted = false;
+  }
 }
 
 const canvas = document.getElementById('view') as HTMLCanvasElement;
@@ -755,4 +943,4 @@ const app = new App(canvas, ui);
 if (!__PLAYTEST__ && app.debugMode) {
   void import('./debug/debug').then((m) => m.installDebug(app));
 }
-void DIVE_MS;
+void wrapDeg;

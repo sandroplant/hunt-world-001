@@ -10,11 +10,11 @@
 
 **Coordinates.** Each place is its own Three.js scene with its own units. Y is up. Each viewpoint has a forward direction; **yaw** is degrees from that forward, positive turns left; **pitch** is degrees, positive looks up. **Zoom** is lens magnification (1× = the default 60° vertical field of view; 4× is the maximum).
 
-**Viewpoints.** Every place has two: **A** (where the dive lands) and **B**. Each has turn limits. The player glides between them with *Stand here*.
+**Stand spots.** Every place has four: **A** (where the dive lands), **B**, **C** and **D**. All allow a full turn; up/down limits are per place. Yaw is measured in world terms (0 faces −Z, +90 faces −X), so the numbers below are the same from any spot. The player moves between spots by tapping a ring on the ground, pressing E on it, or W A S D toward it.
 
-**Reach.** A usable thing shows its verb only when it is centered, its projected size is big enough, and it is within that place's *reach* distance from the current viewpoint. Hidden objects have no reach limit: they are found by zooming and tapping from wherever they are visible. Dive targets need reach.
+**Reach.** A usable thing shows its verb only when it is centered, its projected size is big enough, and it is within that place's *reach* distance from the current spot. Hidden objects have no reach limit: they are found by zooming and tapping from any spot they are centered from; the zoom they need scales with distance (`minZoom × distance / refDist`). Dive openings need reach.
 
-**A pose** is `{ viewpoint, yaw, pitch, zoom }`. **Sketch lock:** same viewpoint, within 10° of the direction, zoom within ±35% of the stored zoom, held 0.8 s. **Getting warm:** same viewpoint, within 25°. **A hidden-object find:** the object is centered within its hit cone, and the current zoom ≥ its `minZoom` (chosen so the object is at least 44 CSS px across on a 390-px-wide phone). The judge (`src/game/judge.ts`) makes all of these decisions from `src/world/answers.json`.
+**A pose** is `{ spot, yaw, pitch, zoom }`. **Sketch lock:** same spot, within 10° of the direction, zoom within ±35% of the stored zoom, held 0.8 s. **Getting warm:** same viewpoint, within 25°. **A hidden-object find:** the object is centered within its hit cone (never under 44 CSS px across), and the current zoom is at least `minZoom` scaled by distance from the spot it was placed from. The judge (`src/game/judge.ts`) makes all of these decisions from `src/world/answers.json`.
 
 **Priority rule.** If an active dive target is centered and the lens is held, the dive ring runs and sketch locking is suspended. Dive targets become active only after their place's required step is done. This stops a sketch lock and a dive from firing together.
 
@@ -428,3 +428,21 @@ Guideline numbers changed while building the grey version. The rules did not cha
 | Look direction | — | the world follows the finger: drag right to look left, drag down to look up; arrow keys turn 70° per second at 1×, slower when zoomed | One convention for both axes. |
 
 Not changed: every rule in §0, the chain in §1, the hint text (two lines reworded to match the moved bridge and the moon's edge), the decoy counts.
+
+## 13. Redesign round after Gate A (2026-09-29, `DECISIONS.md` D-008)
+
+Rules and positions that changed in the redesign. Numbers in the tables above are still the objects' `at` entries from the spots they were placed from; only the yaw convention changed (world yaw; the old spot headings were folded in once).
+
+| What | Now |
+|---|---|
+| Turning | full 360° at every spot; pitch limits unchanged |
+| Spots | four per place: A (arrival), B, plus C and D (street: the quay beside the boats, up the street; shop: the counter's end by the clock, the left shelves; drawer: among the buttons on the right, beside the sock pillow; cat: deep in the fur by the whiskers, along the collar near the tag; eye: middle ring left and right; moon: small craters left, rocks right) |
+| Yaw convention | world yaw everywhere. Street B objects gained +90 (the key is at yaw 105, the door at 80, the doorway at 80); shop B objects gained −90 (the blue drawer and its inside at −95, the teacup at −55). Cat, drawer, eye and moon B were already at heading 0 |
+| Hidden objects | judged from position: findable from any spot when centered, with zoom scaled by distance |
+| Openings (portals) | street: the shop window (always) and the open door; shop: the open blue drawer; drawer: the cat's neck; cat: the open eye; eye: the round pupil (raised to y 8); moon: a large opening below the edge at (−6, −14, −36). Each shows the next place live from its approach camera (`places.json` → `approach`) |
+| Moon B | moved to (0, 3.4, −18) on a smaller rise at z −17; **S6** is now B, yaw 30, pitch −40, zoom 1.5; the edge opening at B yaw 24, pitch −56 |
+| Street door | the door and doorway boxes are now thin along the wall (they used to stick out 1 m); the window moved to z −7.95 and no longer overlaps the door; the window cat is at B yaw 48, pitch 3 |
+| Locked marks | keyhole mark on the door while locked; empty socket on the moon lamp while dark |
+| Idle glint | 45 s without input: the next required object glints, or the dive opening, or the ring of the spot a sketch was drawn from |
+| Trail | reached places by name, the rest as dots; not a control |
+| Logs | "Copy log" and "Copy frame times" to the clipboard, with a text box fallback |

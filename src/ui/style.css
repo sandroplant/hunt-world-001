@@ -19,13 +19,16 @@ button { font: inherit; color: inherit; }
 .btn.primary { background: var(--amber); color: var(--ink); border-color: var(--amber); }
 .btn.holdable:active, .btn.holdable.held { background: var(--amber); color: var(--ink); }
 
-/* Depth ribbon */
-#ribbon { position: absolute; top: max(0.5rem, env(safe-area-inset-top)); left: 50%; transform: translateX(-50%); display: flex; gap: 0.35rem; background: rgba(27, 31, 42, 0.6); padding: 0.35rem 0.6rem; border-radius: 999px; font-size: 0.8rem; letter-spacing: 0.02em; max-width: calc(100vw - 7rem); overflow: hidden; white-space: nowrap; }
-#ribbon .chip { opacity: 0.45; padding: 0.15rem 0.35rem; border-radius: 999px; }
-#ribbon .chip.here { opacity: 1; background: var(--brass); color: var(--ink); }
-#ribbon .chip.visited { opacity: 0.8; }
-#ribbon .chip.night { background: #3a4a8a; color: var(--paper); }
-#ribbon .sep { opacity: 0.4; }
+/* The trail (depth ribbon): plain text, never a control */
+#ribbon { position: absolute; top: max(0.6rem, env(safe-area-inset-top)); left: 50%; transform: translateX(-50%); display: flex; gap: 0.3rem; align-items: baseline; font-size: 0.78rem; letter-spacing: 0.12em; text-transform: uppercase; opacity: 0.85; white-space: nowrap; pointer-events: none; text-shadow: 0 0 0.4rem rgba(0,0,0,0.9); }
+#ribbon .chip { opacity: 0.55; }
+#ribbon .chip.here { opacity: 1; border-bottom: 1px solid var(--amber); }
+#ribbon .chip.night { color: #9fb0ff; }
+#ribbon .sep { opacity: 0.35; }
+#ribbon .dot { opacity: 0.35; padding: 0 0.15rem; }
+@media (max-width: 720px) {
+  #ribbon { top: calc(max(0.5rem, env(safe-area-inset-top)) + 3.2rem); font-size: 0.7rem; }
+}
 
 /* Crosshair and verb */
 #crosshair { position: absolute; left: 50%; top: 50%; width: 1.4rem; height: 1.4rem; transform: translate(-50%, -50%); border: 2px solid rgba(241, 230, 207, 0.7); border-radius: 50%; transition: transform 120ms, border-color 120ms; }
@@ -106,4 +109,5 @@ button { font: inherit; color: inherit; }
 #debug { position: absolute; left: 0.6rem; bottom: 6rem; background: rgba(0,0,0,0.7); color: #9f9; font: 0.75rem monospace; padding: 0.4rem 0.6rem; border-radius: 0.3rem; max-width: 24rem; display: none; }
 #debug.show { display: block; }
 #debug select, #debug button { font: inherit; margin: 0.15rem 0.2rem 0 0; }
+.panel textarea.copybox { width: 100%; min-height: 6rem; font: 0.75rem monospace; margin-top: 0.4rem; }
 .visually-hidden { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); }

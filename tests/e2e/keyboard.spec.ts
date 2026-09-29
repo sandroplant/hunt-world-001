@@ -1,5 +1,5 @@
 import { expect, test } from '@playwright/test';
-import { boot, capture, waitForDive } from './helpers';
+import { boot, capture, waitForDive, objectAt } from './helpers';
 
 // Keyboard only: arrows to look, Z to zoom, E to use, Enter at the prompt to dive, B for the sketchbook, X to back out.
 // Completes place 1 and dives, then backs out. The full-chain keyboard run is a Phase B check (spec §10).
@@ -31,19 +31,22 @@ test('place 1 is playable with the keyboard alone', async ({ page, baseURL }) =>
   await page.keyboard.press('e');
   await page.waitForFunction(() => window.__hunt.view().viewpoint === 'B');
   await page.waitForTimeout(1100);
-  await lookTo(15, -8);
+  const key = objectAt('street.key');
+  await lookTo(key[0], key[1]);
   await page.keyboard.down('z'); // zoom in on the sill...
   await page.waitForTimeout(700);
-  await lookTo(15, -8, 0.5); // ...then aim finely, as a player would
+  await lookTo(key[0], key[1], 0.5); // ...then aim finely, as a player would
   await expect(page.locator('#verb')).toHaveText('Take');
   await page.keyboard.press('e');
   await page.keyboard.up('z');
   await page.waitForFunction(() => window.__hunt.state().items.includes('key'));
-  await lookTo(-10, 0);
+  const door = objectAt('street.door');
+  await lookTo(door[0], door[1]);
   await expect(page.locator('#verb')).toHaveText('Use');
   await page.keyboard.press('Enter');
   await page.waitForFunction(() => !!window.__hunt.state().steps['use_key_on_door']);
-  await lookTo(-10, 2);
+  const doorway = objectAt('street.doorway');
+  await lookTo(doorway[0], doorway[1]);
   await expect(page.locator('#verb')).toHaveText('Look closer');
   await page.keyboard.press('b');
   await expect(page.locator('#book')).toHaveClass(/show/);

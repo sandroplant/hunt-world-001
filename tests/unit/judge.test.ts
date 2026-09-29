@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import { judge } from '../../src/game/judge';
 import { loadWorld } from '../../src/game/world';
-import { anglesFromDir, sub } from '../../src/game/geom';
+import { anglesFromDir, length, sub } from '../../src/game/geom';
 
 const world = loadWorld();
 
@@ -42,17 +42,29 @@ describe('sketch judging', () => {
 describe('hidden-object judging', () => {
   for (const id of judge.hiddenIds()) {
     const a = judge.hiddenPose(id)!;
-    it(`${id} is found only when centered and zoomed`, () => {
-      const base = { place: a.place, viewpoint: a.viewpoint, yaw: a.yaw, pitch: a.pitch, pxPerDeg: 40 };
+    const obj = world.objects[id]!;
+    const place = world.places[a.place]!;
+    const home = place.viewpoints[obj.home!]!;
+    const rel = anglesFromDir(sub(a.pos, home.pos), 0);
+    it(`${id} is found only when centered and zoomed, from the spot it was placed from`, () => {
+      const base = { place: a.place, viewpoint: obj.home!, pos: home.pos, yaw: rel.yaw, pitch: rel.pitch, pxPerDeg: 40 };
       expect(judge.judgeHidden(id, { ...base, zoom: a.minZoom })).toBe(true);
       expect(judge.judgeHidden(id, { ...base, zoom: 1 })).toBe(false);
-      expect(judge.judgeHidden(id, { ...base, zoom: a.minZoom, yaw: a.yaw + 15 })).toBe(false);
-      const other = a.viewpoint === 'A' ? 'B' : 'A';
-      expect(judge.judgeHidden(id, { ...base, zoom: a.minZoom, viewpoint: other })).toBe(false);
+      expect(judge.judgeHidden(id, { ...base, zoom: a.minZoom, yaw: rel.yaw + 15 })).toBe(false);
+      expect(judge.judgeHidden(id, { ...base, zoom: a.minZoom, place: 'nowhere' })).toBe(false);
+    });
+    it(`${id} can be found from another spot when centered, with the zoom scaled by distance`, () => {
+      const other = Object.entries(place.viewpoints).find(([k]) => k !== obj.home)!;
+      const d = sub(a.pos, other[1].pos);
+      const r = anglesFromDir(d, 0);
+      const need = judge.hiddenNeedZoom(id, other[1].pos);
+      const base = { place: a.place, viewpoint: other[0], pos: other[1].pos, yaw: r.yaw, pitch: r.pitch, pxPerDeg: 40 };
+      if (need <= 4) expect(judge.judgeHidden(id, { ...base, zoom: need })).toBe(true);
+      expect(judge.judgeHidden(id, { ...base, zoom: Math.max(1, need * 0.7) })).toBe(false);
     });
     it(`${id} hit area is at least 44 CSS px across`, () => {
       // With 10 px per degree, a 22 px radius is 2.2°. A tap 2.0° off must still count.
-      const v = { place: a.place, viewpoint: a.viewpoint, yaw: a.yaw + 2.0, pitch: a.pitch, zoom: a.minZoom, pxPerDeg: 10 };
+      const v = { place: a.place, viewpoint: obj.home!, pos: home.pos, yaw: rel.yaw + 2.0, pitch: rel.pitch, zoom: a.minZoom, pxPerDeg: 10 };
       expect(judge.judgeHidden(id, v)).toBe(true);
     });
   }
@@ -60,14 +72,13 @@ describe('hidden-object judging', () => {
 
 describe('answer data agrees with object data', () => {
   for (const id of judge.hiddenIds()) {
-    it(`${id}: answers.json direction points at the object in objects.json`, () => {
+    it(`${id}: answers.json position is the object's position in objects.json`, () => {
       const a = judge.hiddenPose(id)!;
       const obj = world.objects[id]!;
-      const vp = world.places[a.place]!.viewpoints[a.viewpoint]!;
-      const rel = anglesFromDir(sub(obj.pos, vp.pos), vp.heading);
-      expect(Math.abs(rel.yaw - a.yaw)).toBeLessThan(0.5);
-      expect(Math.abs(rel.pitch - a.pitch)).toBeLessThan(0.5);
+      expect(length(sub(obj.pos, a.pos))).toBeLessThan(0.01 * a.refDist);
       expect(obj.kind).toBe('hidden');
+      expect(a.minZoom).toBeGreaterThanOrEqual(2);
+      expect(a.minZoom).toBeLessThanOrEqual(4);
     });
   }
   for (const id of judge.sketchIds()) {

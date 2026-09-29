@@ -124,6 +124,28 @@ export function loadWorld(): World {
   }
   const props = (propsJson.props as unknown as Array<PropData & { at?: [string, number, number, number] }>).map((p) => resolveProp(p, places));
 
+  // Stand spots are ordinary objects with the verb "Stand here", generated from each place's viewpoints.
+  for (const [pid, place] of Object.entries(places)) {
+    for (const [vid, vp] of Object.entries(place.viewpoints)) {
+      const id = `${pid}.stand_${vid}`;
+      const markSize = place.reach * 0.22;
+      objects[id] = {
+        id,
+        place: pid,
+        kind: 'stand',
+        label: vp.describe,
+        pos: [vp.pos[0], vp.pos[1] - place.eye + markSize * 0.02, vp.pos[2]],
+        size: [markSize, markSize * 0.03, markSize],
+        shape: 'cylinder',
+        color: '#F1E6CF',
+        states: ['idle'],
+        initial: 'idle',
+        transitions: [],
+        target: vid,
+      };
+    }
+  }
+
   const baseOf = (placeId: string): string => places[placeId]?.variantOf ?? placeId;
   const byPlace = new Map<string, WorldObject[]>();
   for (const id of Object.keys(places)) {

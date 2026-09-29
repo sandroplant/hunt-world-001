@@ -2,11 +2,13 @@
 // It reads only src/world/answers.json and is written so it could move to a server:
 // pure functions over plain data, no renderer, no DOM, no Three.js.
 import answers from '../world/answers.json';
-import { angleBetweenAngles, clamp } from './geom';
+import { angleBetween, angleBetweenAngles, clamp, dirFromAngles, length, sub } from './geom';
 
 export interface View {
   place: string;
   viewpoint: string;
+  /** The player's eye position in the place's units (needed to judge hidden objects from any spot). */
+  pos?: [number, number, number];
   yaw: number;
   pitch: number;
   zoom: number;
@@ -23,10 +25,10 @@ export interface SketchVerdict {
 }
 
 interface SketchAnswer { place: string; viewpoint: string; yaw: number; pitch: number; zoom: number; lockDeg?: number; warmDeg?: number; zoomTol?: number; holdMs?: number }
-interface HiddenAnswer { place: string; viewpoint: string; yaw: number; pitch: number; minZoom: number; hitDeg?: number }
+interface HiddenAnswer { place: string; pos: [number, number, number]; refDist: number; minZoom: number; hitDeg?: number }
 
 const sketches = answers.sketches as Record<string, SketchAnswer>;
-const hidden = answers.hidden as Record<string, HiddenAnswer>;
+const hidden = answers.hidden as unknown as Record<string, HiddenAnswer>;
 const required = answers.requiredSteps as Record<string, string[]>;
 const dives = answers.diveTargets as Record<string, { object: string; activeAfter: string; to: string }>;
 
@@ -110,13 +112,26 @@ export const judge = {
   judgeHidden(id: string, view: View): boolean {
     const a = hidden[id];
     if (!a) return false;
-    if (a.place !== view.place || a.viewpoint !== view.viewpoint) return false;
-    if (view.zoom < a.minZoom) return false;
-    const angle = angleBetweenAngles(view.yaw, view.pitch, a.yaw, a.pitch);
+    if (a.place !== view.place || !view.pos) return false;
+    const toObj = sub(a.pos, view.pos);
+    const dist = length(toObj);
+    if (dist < 1e-6) return false;
+    // The zoom needed scales with distance, so the object must look the same size on screen wherever you stand.
+    const needZoom = Math.max(1, a.minZoom * (dist / a.refDist));
+    if (view.zoom < needZoom * (1 - 1e-3)) return false;
+    const angle = angleBetween(dirFromAngles(0, view.yaw, view.pitch), toObj);
     // The hit area is never smaller than 44 CSS px across (22 px radius), however small the object looks.
     const minDeg = view.pxPerDeg ? 22 / view.pxPerDeg : 0;
-    const hitDeg = Math.max(a.hitDeg ?? answers.hiddenDefaults.hitDeg, minDeg);
+    const hitDeg = Math.max((a.hitDeg ?? answers.hiddenDefaults.hitDeg) * (a.refDist / dist), minDeg);
     return angle <= hitDeg;
+  },
+
+  /** The zoom a hidden object needs from a given eye position (for the affordance, not for finding). */
+  hiddenNeedZoom(id: string, pos: [number, number, number]): number {
+    const a = hidden[id];
+    if (!a) return Infinity;
+    const dist = length(sub(a.pos, pos));
+    return Math.max(1, a.minZoom * (dist / a.refDist));
   },
 };
 

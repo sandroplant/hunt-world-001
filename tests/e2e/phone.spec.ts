@@ -1,5 +1,5 @@
 import { devices, expect, test } from '@playwright/test';
-import { boot, begin, capture, waitForDive } from './helpers';
+import { boot, begin, capture, waitForDive, objectAt } from './helpers';
 
 // A 390×844 touch run that completes place 1 with real touch input: drags to look, taps to act,
 // the on-screen lens button to zoom and to dive. Debug hooks are used only to read the view, never to drive it.
@@ -61,14 +61,15 @@ test('a 390×844 touch run completes place 1', async ({ page, baseURL }) => {
   await page.waitForTimeout(1100);
 
   // 2. Look at the sill, hold the lens button to zoom, take the key.
-  await lookTo(page, 15, -8);
+  const key = objectAt('street.key');
+  await lookTo(page, key[0], key[1]);
   const lens = page.locator('#lens');
   const box = (await lens.boundingBox())!;
   await page.touchscreen.tap(box.x + box.width / 2, box.y + box.height / 2); // a tap toggles nothing; a hold zooms
   const cdp = await page.context().newCDPSession(page);
   await cdp.send('Input.dispatchTouchEvent', { type: 'touchStart', touchPoints: [{ x: box.x + box.width / 2, y: box.y + box.height / 2, id: 1 }] });
   await page.waitForTimeout(700); // the lens zooms in while held...
-  await lookTo(page, 15, -8, 0.6); // ...and a zoomed drag aims finely
+  await lookTo(page, key[0], key[1], 0.6); // ...and a zoomed drag aims finely
   await expect(page.locator('#verb')).toHaveText('Take');
   await page.evaluate(() => window.__hunt.act()); // tapping elsewhere while holding the lens would end the hold; the verb is what matters
   await cdp.send('Input.dispatchTouchEvent', { type: 'touchEnd', touchPoints: [] });
@@ -76,13 +77,15 @@ test('a 390×844 touch run completes place 1', async ({ page, baseURL }) => {
   await expect(page.locator('#pocket')).toContainText('key');
 
   // 3. Look at the door and tap "Use".
-  await lookTo(page, -10, 0);
+  const door = objectAt('street.door');
+  await lookTo(page, door[0], door[1]);
   await expect(page.locator('#verb')).toHaveText('Use');
   await tap(page);
   await page.waitForFunction(() => !!window.__hunt.state().steps['use_key_on_door']);
 
   // 4. Hold the lens on the open doorway until the ring fills, then the dive runs.
-  await lookTo(page, -10, 2);
+  const doorway = objectAt('street.doorway');
+  await lookTo(page, doorway[0], doorway[1]);
   await expect(page.locator('#verb')).toHaveText('Look closer');
   await cdp.send('Input.dispatchTouchEvent', { type: 'touchStart', touchPoints: [{ x: box.x + box.width / 2, y: box.y + box.height / 2, id: 2 }] });
   await page.waitForFunction(() => window.__hunt.diving(), null, { timeout: 5000 });

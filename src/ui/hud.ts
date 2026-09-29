@@ -19,7 +19,7 @@ export interface HudButtons {
 
 export class Hud {
   readonly root: HTMLElement;
-  readonly ribbon = el('nav', { id: 'ribbon', 'data-ui': '', 'aria-label': 'Where you are' });
+  readonly ribbon = el('nav', { id: 'ribbon', 'aria-label': 'Where you are' });
   readonly crosshair = el('div', { id: 'crosshair', 'aria-hidden': 'true' });
   readonly ring = el('div', { id: 'ring', 'aria-hidden': 'true' });
   readonly verb = el('div', { id: 'verb', role: 'status', 'aria-live': 'polite' });
@@ -63,22 +63,30 @@ export class Hud {
     root.append(this.fade, this.lockfx, this.ribbon, left, right, bottom, this.pocket, this.card, this.crosshair, this.ring, this.verb, this.caption, this.toast, this.onboard, this.arrow);
   }
 
+  /** The trail: places already reached by name, later ones as dots. It is not a control (founder change 7). */
   setRibbon(world: World, state: GameState): void {
     this.ribbon.replaceChildren();
-    const visited = new Set(state.stack.map((s) => s.place));
+    const reached = new Set(state.stack.map((s) => world.baseOf(s.place)));
+    reached.add(world.baseOf(state.place));
     const atNight = state.place === 'street_night';
+    let dotsAhead = 0;
     world.ribbon.forEach((id, i) => {
-      if (i > 0) this.ribbon.append(el('span', { class: 'sep' }, '›'));
-      const chip = el('span', { class: 'chip' }, world.places[id]!.label);
-      if (id === state.place || (atNight && i === 0)) chip.classList.add('here');
-      else if (visited.has(id)) chip.classList.add('visited');
-      if (atNight && i === 0) {
-        chip.classList.add('night');
-        chip.textContent = '☾ ' + chip.textContent;
+      const here = id === world.baseOf(state.place) && !(atNight && i > 0);
+      if (reached.has(id) || (atNight && i === 0)) {
+        if (i > 0) this.ribbon.append(el('span', { class: 'sep' }, '›'));
+        const chip = el('span', { class: 'chip' + (here ? ' here' : '') }, world.places[id]!.label);
+        if (atNight && i === 0) {
+          chip.classList.add('night');
+          chip.textContent = '☾ ' + chip.textContent;
+        }
+        this.ribbon.append(chip);
+      } else {
+        dotsAhead++;
+        this.ribbon.append(el('span', { class: 'dot', 'aria-hidden': 'true' }, '·'));
       }
-      this.ribbon.append(chip);
     });
-    this.ribbon.setAttribute('aria-label', `Where you are: ${world.places[state.place]!.label}, depth ${state.stack.length + 1}`);
+    const depth = state.stack.length + 1;
+    this.ribbon.setAttribute('aria-label', `Where you are: ${world.places[state.place]!.label}, place ${depth}; ${dotsAhead} places not reached yet`);
   }
 
   setVerb(text: string | null, dive = false): void {

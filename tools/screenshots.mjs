@@ -8,14 +8,14 @@ const S = (id) => { const a = answers.sketches[id]; return [a.place, a.viewpoint
 
 const out = process.argv[2] ?? 'REVIEW/screenshots/graybox';
 mkdirSync(out, { recursive: true });
-const server = spawn('npx', ['vite', 'preview', '--port', '4173', '--strictPort'], { stdio: 'ignore' });
+const server = spawn('npx', ['vite', 'preview', '--port', '4178', '--strictPort'], { stdio: 'ignore' });
 await new Promise((r) => setTimeout(r, 2500));
 const browser = await chromium.launch({ executablePath: process.env.PW_CHROMIUM ?? '/opt/pw-browsers/chromium', args: ['--use-gl=swiftshader', '--enable-unsafe-swiftshader'] });
 const page = await browser.newPage({ viewport: { width: 1280, height: 800 } });
 const errors = [];
 page.on('console', (m) => { if (m.type() === 'error') errors.push(m.text()); });
 page.on('pageerror', (e) => errors.push(e.message));
-await page.goto('http://127.0.0.1:4173/?debug=1&test=1');
+await page.goto('http://127.0.0.1:4178/?debug=1&test=1');
 await page.waitForTimeout(1500);
 await page.click('text=Begin');
 await page.waitForTimeout(500);
