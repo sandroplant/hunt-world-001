@@ -15,21 +15,18 @@ describe('world data', () => {
     expect(world.order).toEqual(judge.order());
   });
 
-  it('each place has 3 to 5 stand spots, all with a full turn, and a stand mark for each', () => {
+  it('each place has named spots with a full turn, a walkable floor, a speed and an approach', () => {
     for (const id of world.order) {
       const p = world.places[id]!;
       const vps = Object.keys(p.viewpoints);
       expect(vps.length, id).toBeGreaterThanOrEqual(3);
-      expect(vps.length, id).toBeLessThanOrEqual(5);
       for (const v of vps) {
         const vp = p.viewpoints[v]!;
         expect(vp.yaw[1] - vp.yaw[0], `${id}/${v}`).toBeGreaterThanOrEqual(360);
         expect(vp.heading, `${id}/${v}`).toBe(0);
-        const mark = world.objects[`${id}.stand_${v}`]!;
-        expect(mark.kind).toBe('stand');
-        expect(mark.target).toBe(v);
-        expect(Math.abs(mark.pos[1] - (vp.pos[1] - p.eye))).toBeLessThan(p.reach * 0.02);
       }
+      expect(p.walk.radius).toBeGreaterThan(0);
+      expect(p.walk.zones.length).toBeGreaterThan(0);
       expect(p.moveSpeed).toBeGreaterThan(0);
       expect(p.approach.back).toBeGreaterThan(0);
     }
@@ -41,39 +38,47 @@ describe('world data', () => {
       if (!d) continue;
       const portals = world.propsIn(id).filter((p) => p.portal === d.to);
       expect(portals.length, id).toBeGreaterThanOrEqual(1);
-      const divePortal = portals.find((p) => p.when?.object === d.object);
-      expect(divePortal, `${id}: a portal that appears when ${d.object} is ready`).toBeDefined();
-      expect(divePortal!.face).toBe(world.objects[d.object]!.home);
+      // The dive opening is tied to the dive object's state, or always open when the dive needs no step (the teaching street).
+      const divePortal = portals.find((p) => (d.activeAfter === null ? !p.when && p.glow : p.when?.object === d.object));
+      expect(divePortal, `${id}: a portal for ${d.object}`).toBeDefined();
+      expect(divePortal!.glow, `${id}: the dive opening glows`).toBe(true);
+      if (!divePortal!.normal) expect(divePortal!.face).toBe(world.objects[d.object]!.home);
     }
   });
 
-  it('usable objects are within reach of the viewpoint they were placed from', () => {
+  it('usable objects are within reach of a walkable point near the spot they were placed from', () => {
     for (const o of Object.values(world.objects)) {
       if (o.kind !== 'usable' && o.kind !== 'dive') continue;
       const p = world.places[o.place]!;
       const home = o.home ?? p.arrive;
       const d = length(sub(o.pos, p.viewpoints[home]!.pos));
-      expect(d, o.id).toBeLessThanOrEqual(p.reach + 1e-6);
+      // The player can walk up to it, so the spot may be a little further than the reach.
+      expect(d, o.id).toBeLessThanOrEqual(p.reach * 1.6 + 1e-6);
+      const near = world.walkMap(o.place).nearestFree(o.pos[0], o.pos[2]);
+      expect(near, `${o.id}: nothing walkable near it`).not.toBeNull();
+      const dd = Math.hypot(near![0] - o.pos[0], near![1] - o.pos[2]);
+      expect(dd, `${o.id}: nearest walkable point ${dd.toFixed(2)} away`).toBeLessThanOrEqual(p.reach);
     }
   });
 
-  it('every place has at least 4 ordinary usable things for every important one (spec §5)', () => {
+  it('place 1 keeps at most 6 ordinary usable things; from place 2 on, at least 4 for every important one (spec §5)', () => {
     for (const id of world.order) {
       if (id === 'street_night') continue;
       const objs = world.objectsIn(id);
       const important = objs.filter((o) => o.kind === 'hidden' || o.kind === 'dive' || o.transitions.some((t) => (t.effects ?? []).some((e) => e.type === 'step'))).length;
       const ordinary = objs.filter((o) => o.kind === 'usable' && !o.transitions.some((t) => (t.effects ?? []).some((e) => e.type === 'step'))).length;
-      expect(ordinary, `${id}: ${ordinary} ordinary vs ${important} important`).toBeGreaterThanOrEqual(4 * important);
+      if (id === 'street') expect(ordinary, 'street').toBeLessThanOrEqual(6);
+      else expect(ordinary, `${id}: ${ordinary} ordinary vs ${important} important`).toBeGreaterThanOrEqual(4 * important);
     }
   });
 
-  it('no two usable things from the same viewpoint sit closer than 3° apart', () => {
+  it('no two usable things from the same spot sit closer than 3° apart', () => {
     for (const id of world.order) {
       const p = world.places[id]!;
       for (const vpId of Object.keys(p.viewpoints)) {
         const vp = p.viewpoints[vpId]!;
         const dirs = world.objectsIn(id)
-          .filter((o) => o.kind !== 'stand' && o.kind !== 'dive' && (o.home ?? p.arrive) === vpId)
+          .filter((o) => o.kind !== 'dive' && (o.home ?? p.arrive) === vpId)
           .map((o) => ({ id: o.id, ...anglesFromDir(sub(o.pos, vp.pos), vp.heading) }));
         for (let i = 0; i < dirs.length; i++) {
           for (let j = i + 1; j < dirs.length; j++) {

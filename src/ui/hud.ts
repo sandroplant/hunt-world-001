@@ -9,6 +9,18 @@ function el<K extends keyof HTMLElementTagNameMap>(tag: K, attrs: Record<string,
   return e;
 }
 
+/** Wordless pictures for the three things a new player must learn (founder, third round). Inline SVG, no files. */
+export function pictogram(kind: 'look' | 'walk' | 'dive'): HTMLElement {
+  const wrap = el('div', { class: 'picto', 'aria-hidden': 'true' });
+  const art = {
+    look: '<path d="M30 62 q-8 -20 6 -30 l6 14 v-26 q0 -5 5 -5 q5 0 5 5 v20 l3 -14 q1 -5 6 -4 q5 1 4 6 l-2 12 l3 -8 q2 -4 6 -3 q4 1 3 6 l-4 18 q-6 22 -26 22 q-12 0 -15 -13 z" fill="none" stroke="currentColor" stroke-width="4" stroke-linejoin="round"/><path d="M8 40 h12 M14 34 l-6 6 6 6 M92 40 h-12 M86 34 l6 6 -6 6" fill="none" stroke="currentColor" stroke-width="4" stroke-linecap="round"/>',
+    walk: '<path d="M10 78 q40 -14 80 0" fill="none" stroke="currentColor" stroke-width="4" stroke-linecap="round"/><ellipse cx="50" cy="70" rx="20" ry="7" fill="none" stroke="currentColor" stroke-width="3" stroke-dasharray="5 4"/><path d="M50 40 q-6 -12 6 -14 q8 -1 10 8 v20 q-2 6 -8 6 h-6 z" fill="none" stroke="currentColor" stroke-width="4" stroke-linejoin="round"/><path d="M42 20 l8 4 M56 12 l8 -6 M62 22 l10 0" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"/>',
+    dive: '<rect x="34" y="18" width="32" height="54" rx="3" fill="none" stroke="currentColor" stroke-width="4"/><rect x="40" y="24" width="20" height="42" fill="currentColor" opacity="0.25"/><path d="M28 12 q22 -10 44 0 M28 78 q22 10 44 0" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" opacity="0.7"/><circle cx="24" cy="66" r="13" fill="none" stroke="currentColor" stroke-width="4"/><path d="M33 75 l14 14" stroke="currentColor" stroke-width="5" stroke-linecap="round"/>',
+  }[kind];
+  wrap.innerHTML = `<svg viewBox="0 0 100 100">${art}</svg>`;
+  return wrap;
+}
+
 export interface HudButtons {
   back: HTMLButtonElement;
   book: HTMLButtonElement;
@@ -38,6 +50,7 @@ export class Hud {
   private captionTimer = 0;
   private toastTimer = 0;
   private onboardDrag = el('div', { class: 'hint' });
+  private onboardWalk = el('div', { class: 'hint' });
   private onboardLens = el('div', { class: 'hint' });
 
   constructor(root: HTMLElement, world: World) {
@@ -56,9 +69,10 @@ export class Hud {
     bottom.append(lens);
     this.buttons = { back, book, hints, menu, lens };
     this.card.append(this.cardStored, this.cardLive, el('div', { class: 'tag' }, 'held up'));
-    this.onboardDrag.append(el('div', { class: 'icon' }, '✋'), el('div', {}, s.onboarding.drag));
-    this.onboardLens.append(el('div', { class: 'icon' }, '🔍'), el('div', {}, s.onboarding.lens));
-    this.onboard.append(this.onboardDrag, this.onboardLens);
+    this.onboardDrag.append(pictogram('look'), el('div', {}, s.onboarding.drag));
+    this.onboardWalk.append(pictogram('walk'), el('div', {}, s.onboarding.walk));
+    this.onboardLens.append(pictogram('dive'), el('div', {}, s.onboarding.lens));
+    this.onboard.append(this.onboardDrag, this.onboardWalk, this.onboardLens);
     this.arrow.append(this.arrowTip);
     root.append(this.fade, this.lockfx, this.ribbon, left, right, bottom, this.pocket, this.card, this.crosshair, this.ring, this.verb, this.caption, this.toast, this.onboard, this.arrow);
   }
@@ -149,10 +163,11 @@ export class Hud {
     this.fade.classList.toggle('on', on);
   }
 
-  setOnboard(drag: boolean, lens: boolean): void {
-    this.onboardDrag.classList.toggle('done', drag);
-    this.onboardLens.classList.toggle('done', lens);
-    this.onboard.style.display = drag && lens ? 'none' : '';
+  setOnboard(done: { drag: boolean; lens: boolean; walk: boolean }): void {
+    this.onboardDrag.classList.toggle('done', done.drag);
+    this.onboardWalk.classList.toggle('done', done.walk);
+    this.onboardLens.classList.toggle('done', done.lens);
+    this.onboard.style.display = done.drag && done.lens && done.walk ? 'none' : '';
   }
 
   setLensHeld(held: boolean): void {

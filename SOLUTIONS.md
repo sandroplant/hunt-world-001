@@ -446,3 +446,22 @@ Rules and positions that changed in the redesign. Numbers in the tables above ar
 | Idle glint | 45 s without input: the next required object glints, or the dive opening, or the ring of the spot a sketch was drawn from |
 | Trail | reached places by name, the rest as dots; not a control |
 | Logs | "Copy log" and "Copy frame times" to the clipboard, with a text box fallback |
+
+---
+
+## 14. Third round: free walking and the teaching street (2026-09-29, `DECISIONS.md` D-009)
+
+| What | Now |
+|---|---|
+| Moving | free walking: tap the ground or hold W A S D; speed per place (`moveSpeed`); walls, furniture and edges block (derived from the props and objects; see D-009); the moon's rise and the drawer's letter hills are platforms |
+| Walkable zones | street x −5.2..6.4, z −19.7..13; shop x ±3.4, z −7.4..0.6; drawer x ±20.5, z −40.5..1.5; cat x −205..285, z −225..265; eye a disc of radius 118 about (0, −100); moon x ±39.7, z −19.7..23.7 |
+| Place 1 | no required step. The doorway is `ready` from the start; the door opening glows. Six ordinary things: chalkboard, scale, gull on a post (near A); doorbell, window cat, painted sign (near B). The other 14 former decoys are plain dressing now. The key and the door object are gone from the street |
+| Place 2 | two required steps: **take the key** from the counter (`shop.key`, from A yaw −1, pitch −9, 3.9 m: walk up to the counter) and **unlock the blue drawer** with it (`shop.blue_drawer`, locked → open; rattles and shows a keyhole mark while locked). The dive opening appears when the drawer opens, as before |
+| Finds | 24 = 6 sketches + 12 hidden + 6 dives (a dive counts when taken; back-outs do not undo it) |
+| Sketch lock | within `posTol` of the spot's position (S1 1.2 m, S2 0.8 m, S3 3.5, S4 15, S5 12, S6 1.2), within 10° and ±35% zoom for 0.8 s. Warmth fades to zero by 3× posTol |
+| Hidden objects moved into view | umbrella now beside the oars behind the stall (from A yaw −19.6, pitch −12.5, 5.33 m); teacup among the high cups behind B (yaw −143, pitch 34, 1.8 m); marble on the floor right of the counter's corner (A yaw −20.4, pitch −23, 4.06 m); paper boat half out from under the bridge (A yaw 26.7, pitch −7.4, 31.4); moon stamp proud of the tower face (B 30/6/20.0); moon footprint on the dust (A 35/−23.4/4.0). `answers.json` positions regenerated from these |
+| Cat spot B | raised to (40, 15, −40) so its eye height matches the flat fur floor; the charms placed from it moved with it |
+| Drawer spot D | moved to (14, 4, −22), out of the cat body |
+| Shop chest | back to x 3.62 so the drawer fronts stand proud of it (they were inside it) |
+| Line of sight | a hidden object is offered only when some part of it can be seen from the eye (`PlaceScene.visibleFrom`); `tests/unit/sight.test.ts` checks every hidden object from its home spot |
+| Fairness report (founder change 1) | after the moves above, every hidden object is in view from the spot its hints describe and needs at most 4× zoom from the nearest walkable point (`tests/unit/walk.test.ts`). Two are deliberately not visible from everywhere: the paper boat is under the bridge from above (see it from the pool's side), and the teacup is behind you when you face the chest. Nothing became unfair in the sense of "impossible from where the hints send you"; five things were unfair before this round (buried in shapes) and are fixed |

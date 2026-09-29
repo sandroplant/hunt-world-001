@@ -6,7 +6,8 @@ import { BASE_FOV } from '../player/camera';
 import { DEG } from '../game/geom';
 
 export interface Pose {
-  viewpoint: string;
+  /** The eye position the sketch is drawn from. */
+  pos: [number, number, number];
   yaw: number;
   pitch: number;
   zoom: number;
@@ -34,11 +35,10 @@ export class SketchRenderer {
   /** Render the pose and return the luminance buffer (w*h, 0..255). */
   private luminance(place: PlaceScene, pose: Pose, w: number, h: number): Uint8Array {
     this.ensure(w, h);
-    const vp = place.world.places[place.placeId]!.viewpoints[pose.viewpoint]!;
     const cam = new THREE.PerspectiveCamera(BASE_FOV, w / h, place.world.places[place.placeId]!.near, place.world.places[place.placeId]!.far);
     cam.rotation.order = 'YXZ';
-    cam.position.set(...vp.pos);
-    cam.rotation.set(pose.pitch * DEG, (vp.heading + pose.yaw) * DEG, 0);
+    cam.position.set(...pose.pos);
+    cam.rotation.set(pose.pitch * DEG, pose.yaw * DEG, 0);
     const narrowHalf = Math.tan((BASE_FOV / 2) * DEG) / pose.zoom;
     cam.fov = (w / h >= 1 ? 2 * Math.atan(narrowHalf) : 2 * Math.atan(narrowHalf / (w / h))) / DEG;
     cam.updateProjectionMatrix();

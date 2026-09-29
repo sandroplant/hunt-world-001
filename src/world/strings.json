@@ -15,7 +15,6 @@
   },
   "verbs": {
     "lookCloser": "Look closer",
-    "standHere": "Stand here",
     "back": "Back",
     "book": "Sketchbook",
     "hints": "Hints",
@@ -84,7 +83,9 @@
     "light": "a small light"
   },
   "onboarding": {
-    "drag": "Drag to look around",
-    "lens": "Zoom to look closer"
-  }
+    "drag": "Drag to look",
+    "walk": "Tap the ground to walk",
+    "lens": "Hold the lens on a glowing opening"
+  },
+  "keys": "Keys: arrows look · W A S D walk · hold Z · E or Enter"
 }

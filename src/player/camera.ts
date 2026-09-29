@@ -1,15 +1,12 @@
-// The viewpoint camera: fixed position, limited turn and tilt, a lens for zoom, and a short glide between viewpoints.
+// The player's camera: a full turn, limited tilt, a lens for zoom, and walking over the floor at a fixed speed.
 import * as THREE from 'three';
-import type { PlaceData } from '../game/types';
+import type { PlaceData, Vec3 } from '../game/types';
 import { clamp, DEG, wrapDeg } from '../game/geom';
+import type { WalkMap } from '../game/walk';
 
 export const BASE_FOV = 60; // degrees on the narrow axis of the screen
 export const ZOOM_MIN = 1;
 export const ZOOM_MAX = 4;
-
-function easeInOut(t: number): number {
-  return t < 0.5 ? 2 * t * t : 1 - Math.pow(-2 * t + 2, 2) / 2;
-}
 
 export class ViewCamera {
   readonly camera = new THREE.PerspectiveCamera(BASE_FOV, 1, 0.05, 400);
@@ -17,62 +14,79 @@ export class ViewCamera {
   pitch = 0;
   zoom = 1;
   private place: PlaceData | null = null;
-  private viewpointId = 'A';
-  private heading = 0;
-  private yawLimits: [number, number] = [-180, 180];
+  private walkMap: WalkMap | null = null;
   private pitchLimits: [number, number] = [-80, 80];
-  private glide: { from: THREE.Vector3; to: THREE.Vector3; start: number; ms: number } | null = null;
+  /** Waypoints still to walk through (ground x, z). Empty when standing. */
+  private route: Array<[number, number]> = [];
 
   constructor() {
     this.camera.rotation.order = 'YXZ';
   }
 
-  get viewpoint(): string {
-    return this.viewpointId;
-  }
-
-  setPlace(place: PlaceData, viewpointId: string, yaw = 0, pitch = 0, zoom = 1): void {
+  /** Enter a place at an eye position. The pitch limits are the widest of the place's spots. */
+  setPlace(place: PlaceData, walkMap: WalkMap, pos: Vec3, yaw = 0, pitch = 0, zoom = 1): void {
     this.place = place;
-    this.viewpointId = viewpointId;
-    const vp = place.viewpoints[viewpointId]!;
-    this.heading = vp.heading;
-    this.yawLimits = vp.yaw;
-    this.pitchLimits = vp.pitch;
+    this.walkMap = walkMap;
+    const vps = Object.values(place.viewpoints);
+    this.pitchLimits = [Math.min(...vps.map((v) => v.pitch[0])), Math.max(...vps.map((v) => v.pitch[1]))];
     this.camera.near = place.near;
     this.camera.far = place.far;
     this.camera.updateProjectionMatrix();
-    this.camera.position.set(...vp.pos);
-    this.glide = null;
-    this.yaw = vp.yaw[1] - vp.yaw[0] >= 360 ? wrapDeg(yaw) : clamp(yaw, vp.yaw[0], vp.yaw[1]);
-    this.pitch = clamp(pitch, vp.pitch[0], vp.pitch[1]);
+    this.route = [];
+    this.setPosition(pos);
+    this.yaw = wrapDeg(yaw);
+    this.pitch = clamp(pitch, this.pitchLimits[0], this.pitchLimits[1]);
     this.zoom = clamp(zoom, ZOOM_MIN, ZOOM_MAX);
     this.apply();
   }
 
-  /** Glide to another spot of the same place at the place's fixed speed. The view direction is kept. */
-  glideTo(viewpointId: string, now: number): number {
-    if (!this.place) return 0;
-    const vp = this.place.viewpoints[viewpointId];
-    if (!vp) return 0;
-    this.viewpointId = viewpointId;
-    this.heading = vp.heading;
-    this.yawLimits = vp.yaw;
-    this.pitchLimits = vp.pitch;
-    this.zoom = 1;
-    const to = new THREE.Vector3(...vp.pos);
-    const dist = this.camera.position.distanceTo(to);
-    const ms = clamp((dist / this.place.moveSpeed) * 1000, 350, 2500);
-    this.glide = { from: this.camera.position.clone(), to, start: now, ms };
-    return ms;
+  /** Stand at a ground position (x, z); the eye height follows the floor. */
+  setPosition(pos: Vec3): void {
+    const y = this.place && this.walkMap ? this.walkMap.floorY(pos[0], pos[2]) + this.place.eye : pos[1];
+    this.camera.position.set(pos[0], y, pos[2]);
   }
 
-  get gliding(): boolean {
-    return this.glide !== null;
+  get eye(): Vec3 {
+    const p = this.camera.position;
+    return [p.x, p.y, p.z];
+  }
+
+  /** Walk to a ground point along a found path. Returns false when there is no way there. */
+  walkTo(x: number, z: number): boolean {
+    if (!this.walkMap) return false;
+    const p = this.camera.position;
+    const route = this.walkMap.path(p.x, p.z, x, z);
+    if (!route.length) return false;
+    this.route = route;
+    return true;
+  }
+
+  /** Stop walking where the player is. */
+  stop(): void {
+    this.route = [];
+  }
+
+  get walking(): boolean {
+    return this.route.length > 0;
+  }
+
+  /** Where the current walk ends (or the player's own position when standing). */
+  get destination(): [number, number] {
+    const last = this.route[this.route.length - 1];
+    return last ?? [this.camera.position.x, this.camera.position.z];
+  }
+
+  /** Slide by a ground vector (keys). Walls and edges stop or deflect the move. */
+  slide(dx: number, dz: number): void {
+    if (!this.walkMap || !this.place) return;
+    this.route = [];
+    const p = this.camera.position;
+    const [x, z] = this.walkMap.slide(p.x, p.z, dx, dz);
+    p.set(x, this.walkMap.floorY(x, z) + this.place.eye, z);
   }
 
   look(dYawDeg: number, dPitchDeg: number): void {
-    const full = this.yawLimits[1] - this.yawLimits[0] >= 360;
-    this.yaw = full ? wrapDeg(this.yaw + dYawDeg) : clamp(this.yaw + dYawDeg, this.yawLimits[0], this.yawLimits[1]);
+    this.yaw = wrapDeg(this.yaw + dYawDeg);
     this.pitch = clamp(this.pitch + dPitchDeg, this.pitchLimits[0], this.pitchLimits[1]);
   }
 
@@ -98,15 +112,35 @@ export class ViewCamera {
   }
 
   apply(): void {
-    this.camera.rotation.set(this.pitch * DEG, (this.heading + this.yaw) * DEG, 0);
+    this.camera.rotation.set(this.pitch * DEG, this.yaw * DEG, 0);
   }
 
-  update(now: number, aspect: number): void {
-    if (this.glide) {
-      const t = clamp((now - this.glide.start) / this.glide.ms, 0, 1);
-      this.camera.position.lerpVectors(this.glide.from, this.glide.to, easeInOut(t));
-      if (t >= 1) this.glide = null;
+  /** Advance the walk at the place's fixed speed. */
+  private advance(dt: number): void {
+    if (!this.route.length || !this.place || !this.walkMap) return;
+    let budget = this.place.moveSpeed * dt;
+    const p = this.camera.position;
+    while (budget > 0 && this.route.length) {
+      const [tx, tz] = this.route[0]!;
+      const dx = tx - p.x, dz = tz - p.z;
+      const d = Math.hypot(dx, dz);
+      if (d <= budget) {
+        p.x = tx;
+        p.z = tz;
+        budget -= d;
+        this.route.shift();
+      } else {
+        p.x += (dx / d) * budget;
+        p.z += (dz / d) * budget;
+        budget = 0;
+      }
     }
+    p.y = this.walkMap.floorY(p.x, p.z) + this.place.eye;
+  }
+
+  update(now: number, dt: number, aspect: number): void {
+    void now;
+    this.advance(dt);
     this.camera.aspect = aspect;
     this.camera.fov = this.verticalFov(aspect);
     this.camera.updateProjectionMatrix();

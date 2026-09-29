@@ -1,22 +1,18 @@
 import { describe, expect, it } from 'vitest';
 import { judge } from '../../src/game/judge';
 import { loadWorld } from '../../src/game/world';
-import { act, backOut, clearSave, createInitialState, dive, hintTargets, load, memoryStore, progress, recordHiddenFound, recordSketchLocked, save, standAt, useHint, verbFor } from '../../src/game/rules';
+import { act, backOut, clearSave, createInitialState, dive, hintTargets, load, memoryStore, moveTo, progress, recordHiddenFound, recordSketchLocked, save, standAt, useHint, verbFor } from '../../src/game/rules';
 import type { GameState } from '../../src/game/types';
 
 const world = loadWorld();
 
-/** Every object action available from every viewpoint of the current place, plus dive and back-out. */
+/** Every object action available in the current place (the player can walk anywhere), plus dive and back-out. */
 function moves(state: GameState): Array<{ name: string; apply: () => GameState }> {
   const out: Array<{ name: string; apply: () => GameState }> = [];
-  const place = world.places[state.place]!;
-  for (const vp of Object.keys(place.viewpoints)) {
-    const at = vp === state.viewpoint ? state : standAt(world, state, vp);
-    for (const obj of world.objectsIn(state.place)) {
-      if (obj.kind !== 'usable') continue;
-      if (verbFor(world, obj, at, 'Look closer', 'Stand here') === null) continue;
-      out.push({ name: `${vp}:${obj.id}`, apply: () => act(world, at, obj.id).state });
-    }
+  for (const obj of world.objectsIn(state.place)) {
+    if (obj.kind !== 'usable') continue;
+    if (verbFor(world, obj, state, 'Look closer') === null) continue;
+    out.push({ name: obj.id, apply: () => act(world, state, obj.id).state });
   }
   const d = dive(world, state);
   if (d) out.push({ name: `dive:${d.to}`, apply: () => d.state });
@@ -42,8 +38,8 @@ describe('the chain', () => {
   it('the scripted route reaches the ending', () => {
     let s = createInitialState(world);
     const route: Array<['stand', string] | ['act', string] | ['dive']> = [
-      ['stand', 'B'], ['act', 'street.key'], ['act', 'street.door'], ['dive'],
-      ['stand', 'B'], ['act', 'shop.blue_drawer'], ['dive'],
+      ['stand', 'B'], ['dive'],
+      ['act', 'shop.key'], ['stand', 'B'], ['act', 'shop.blue_drawer'], ['dive'],
       ['stand', 'B'], ['act', 'drawer.envelope'], ['act', 'drawer.feather'], ['act', 'drawer.cat_nose'], ['dive'],
       ['act', 'cat.ear'], ['dive'],
       ['act', 'eye.reflected_lamp'], ['stand', 'B'], ['dive'],
@@ -105,38 +101,46 @@ describe('the chain', () => {
     expect(stuck, `dead ends: ${stuck.slice(0, 3).join(' ; ')}`).toEqual([]);
   });
 
-  it('required steps are refused out of order and cannot repeat', () => {
-    let s = createInitialState(world);
-    expect(verbFor(world, world.objects['street.door']!, standAt(world, s, 'B'), 'Look closer', 'Stand here')).toBe('Use');
-    const rattled = act(world, standAt(world, s, 'B'), 'street.door');
-    expect(rattled.state.steps['use_key_on_door']).toBeUndefined();
-    expect(rattled.events.some((e) => e.kind === 'sfx' && e.id === 'rattle')).toBe(true);
-    s = act(world, standAt(world, s, 'B'), 'street.key').state;
-    expect(s.items).toEqual(['key']);
-    expect(act(world, s, 'street.key').events[0]).toEqual({ kind: 'refused' });
-    expect(dive(world, s)).toBeNull();
-    s = act(world, s, 'street.door').state;
-    expect(s.steps['use_key_on_door']).toBe(true);
-    expect(s.items).toEqual([]);
+  it('the street is a teaching place: its dive is open from the start (founder, third round)', () => {
+    const s = createInitialState(world);
+    expect(judge.requiredSteps('street')).toEqual([]);
     expect(dive(world, s)?.to).toBe('shop');
+    expect(verbFor(world, world.objects['street.doorway']!, s, 'Look closer')).toBe('Look closer');
   });
 
-  it('back out returns to the viewpoint the player dived from, and found things stay found', () => {
+  it('required steps are refused out of order and cannot repeat (the key and the locked drawer, now in the shop)', () => {
+    let s = dive(world, createInitialState(world))!.state;
+    expect(s.place).toBe('shop');
+    expect(verbFor(world, world.objects['shop.blue_drawer']!, s, 'Look closer')).toBe('Use');
+    const rattled = act(world, s, 'shop.blue_drawer');
+    expect(rattled.state.steps['unlock_blue_drawer']).toBeUndefined();
+    expect(rattled.events.some((e) => e.kind === 'sfx' && e.id === 'rattle')).toBe(true);
+    s = act(world, s, 'shop.key').state;
+    expect(s.items).toEqual(['key']);
+    expect(act(world, s, 'shop.key').events[0]).toEqual({ kind: 'refused' });
+    expect(dive(world, s)).toBeNull();
+    expect(verbFor(world, world.objects['shop.blue_drawer']!, s, 'Look closer')).toBe('Unlock');
+    s = act(world, s, 'shop.blue_drawer').state;
+    expect(s.steps['unlock_blue_drawer']).toBe(true);
+    expect(s.items).toEqual([]);
+    expect(dive(world, s)?.to).toBe('drawer');
+  });
+
+  it('back out returns to the position the player dived from, and found things stay found', () => {
     let s = createInitialState(world);
-    s = standAt(world, s, 'B');
-    s = act(world, s, 'street.key').state;
-    s = act(world, s, 'street.door').state;
+    s = moveTo(s, [-3.1, 1.6, -6.2]);
     s = recordHiddenFound(s, 'street.umbrella');
     s = recordSketchLocked(s, 'S1');
     const d = dive(world, s)!;
     expect(d.state.place).toBe('shop');
-    expect(d.state.viewpoint).toBe('A');
+    expect(d.state.pos).toEqual(world.places['shop']!.viewpoints['A']!.pos);
+    expect(d.state.dived['street']).toBe(true);
     const b = backOut(d.state)!;
     expect(b.state.place).toBe('street');
-    expect(b.state.viewpoint).toBe('B');
+    expect(b.state.pos).toEqual([-3.1, 1.6, -6.2]);
     expect(b.state.found['street.umbrella']).toBe(true);
     expect(b.state.found['S1']).toBe(true);
-    expect(b.state.steps['use_key_on_door']).toBe(true);
+    expect(b.state.dived['street']).toBe(true);
     expect(backOut(b.state)).toBeNull();
   });
 
@@ -157,7 +161,6 @@ describe('save, load and restart', () => {
     const store = memoryStore();
     let s = createInitialState(world);
     s = standAt(world, s, 'B');
-    s = act(world, s, 'street.key').state;
     s = recordSketchLocked(s, 'S1');
     s = useHint(s, 'S1', 2);
     s.yaw = 12;
@@ -178,6 +181,8 @@ describe('save, load and restart', () => {
     expect(load(store, world)).toBeNull();
     store.set('hunt-world-001.save', JSON.stringify({ version: 99, place: 'street' }));
     expect(load(store, world)).toBeNull();
+    store.set('hunt-world-001.save', JSON.stringify({ version: 1, place: 'street', viewpoint: 'B' })); // a save from before free walking
+    expect(load(store, world)).toBeNull();
   });
   it('a blocked store is survived', () => {
     const blocked = { get: () => { throw new Error('blocked'); }, set: () => { throw new Error('blocked'); }, remove: () => { throw new Error('blocked'); } };
@@ -190,11 +195,13 @@ describe('save, load and restart', () => {
 describe('hints and progress', () => {
   it('offers the next required step, then the dive, plus the place sketch and its hidden objects', () => {
     let s = createInitialState(world);
-    expect(hintTargets(world, s)).toEqual(['take_key', 'S1', 'street.umbrella', 'street.ship_bottle']);
-    s = standAt(world, s, 'B');
-    s = act(world, s, 'street.key').state;
-    s = act(world, s, 'street.door').state;
-    expect(hintTargets(world, s)[0]).toBe('dive:street');
+    expect(hintTargets(world, s)).toEqual(['dive:street', 'S1', 'street.umbrella', 'street.ship_bottle']);
+    s = dive(world, s)!.state;
+    expect(hintTargets(world, s)[0]).toBe('take_key');
+    s = act(world, s, 'shop.key').state;
+    expect(hintTargets(world, s)[0]).toBe('unlock_blue_drawer');
+    s = act(world, s, 'shop.blue_drawer').state;
+    expect(hintTargets(world, s)[0]).toBe('dive:shop');
   });
   it('every required step, dive, sketch and hidden object has three hint levels', () => {
     for (const step of judge.allRequiredSteps()) expect(world.hints[step], step).toHaveLength(3);
@@ -207,10 +214,12 @@ describe('hints and progress', () => {
       expect(typeof levels[2], k).toBe('object');
     }
   });
-  it('counts 24 finds in total', () => {
-    const p = progress(world, createInitialState(world));
+  it('counts 24 finds in total: 6 sketches, 12 hidden things, 6 dives', () => {
+    const s = createInitialState(world);
+    const p = progress(world, s);
     expect(p.total).toBe(24);
     expect(p.finds).toBe(0);
-    expect(judge.allRequiredSteps().length).toBe(10);
+    expect(judge.allRequiredSteps().length).toBe(9);
+    expect(progress(world, dive(world, s)!.state).finds).toBe(1);
   });
 });

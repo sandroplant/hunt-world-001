@@ -1,6 +1,6 @@
 # PLAN.md — World 001, step 1: Into the Cat's Eye
 
-**Status:** Phase A graybox built, 2026-09-29. Waiting for the founder at STOP A (Gate A). The nine proposals in §1 were accepted at STOP 0 (see `DECISIONS.md` D-006).
+**Status:** Phase A graybox built and redesigned twice, 2026-09-29 (`DECISIONS.md` D-008 free turning and openings, D-009 free walking and the teaching street). Waiting for the founder's third play. The nine proposals in §1 were accepted at STOP 0 (D-006).
 **Governing spec:** `SPEC_WORLD_001_STEP_1_INTO_THE_CATS_EYE.md`.
 
 ---

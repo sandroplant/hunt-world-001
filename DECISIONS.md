@@ -96,3 +96,34 @@ The founder accepted all nine proposals in `PLAN.md` §1. They are now decisions
 - Hidden objects are judged from the object's position and the player's current spot, so a hidden thing can be found from any spot it is centered from, with the zoom needed scaled by distance. Sketches stay bound to the spot they were drawn from.
 - Change 3 and change 6 share one mechanism: a portal. The next place is rendered live from an "approach" camera into a texture shown on the dive target's opening (and on the shop window). The dive flies the camera to that opening until the opening fills the screen, then hands over to the real next place with the same camera, so the two images match at the hand-over.
 - Keys: arrow keys still look (spec §4 keyboard-only play needs a look key). W, A, S, D move toward the nearest spot in that direction. E or Enter on a spot under the crosshair also moves.
+
+---
+
+## D-009 — Second play (founder, 2026-09-29): free walking, a teaching first place, real-input proof
+
+**What happened.** The founder played the redesigned graybox and still could not move or reach the shop. The founder then tested the playtest build directly: clicking a stand ring did nothing; only W moved. The end-to-end tests had missed it because they moved through debug hooks, not real clicks.
+
+**Root cause, found by the builder with real mouse events:** the ring was drawn and hit-tested as a thin annulus (the line of the ring, 12 cm wide, seen from up to 8 m away). A click inside the ring, where a person naturally clicks, hit the ground and did nothing. The one end-to-end test that "clicked" a ring did so through a hook at the exact crosshair, so it never saw the miss.
+
+**The founder's changes, in order:**
+1. Free walking inside each place replaces stand rings. Tap or click anywhere on the ground and the player walks there at a fixed speed; W A S D walk on a keyboard. Walls, furniture and edges block movement. Hidden objects and sketches must stay fair from any reachable position; the builder reports any that become unfair.
+2. From now on, a feature counts as working only if an end-to-end test reaches it with real clicks or taps on the playtest build. Hooks may set up a test, never prove it.
+3. Place 1 becomes a teaching place. The shop door stands open from the start, with the lit shop and the cat visible inside. The first dive must be possible within 60 seconds. The key-and-door puzzle moves to place 2 or is dropped; the builder says which.
+4. Place 1 keeps at most 6 ordinary usable things. Decoys may return from place 2 onward.
+5. The start screen shows three things, with pictures and very few words: drag to look; tap the ground to walk; hold the lens on a glowing opening to go in.
+6. One end-to-end test plays place 1 like a new player, on the playtest build, with real clicks only: start, walk, dive into the shop, within 60 seconds of game time.
+7. Check whether this container can download files from polyhaven.com, kenney.nl and quaternius.com. Report yes or no for each. No art yet.
+
+**Budget for this round:** stop and report when done, or at $35 spent.
+
+**Builder decisions inside these changes:**
+- **The key puzzle moved to place 2, not dropped.** The blue drawer in the shop is locked (keyhole mark, rattle); the key lies on the counter by the door. Reasons: every place after the first keeps one required open-or-use step, as spec §3 asks; the locked-thing marks from D-008 stay in use; and the shop's step now also teaches walking (counter first, chest second). The street has no required step, so the count of finds keeps 24 by counting each dive as a find (6 sketches, 12 hidden things, 6 dives) instead of each completed place.
+- **Taps: near the crosshair they act, elsewhere they walk.** A tap or click within 22% of the short screen side from the centre acts on what the crosshair shows; any other tap walks to the tapped ground. E and Enter always act. So the founder's phone taps "when a verb shows" keep working, and a tap on the ground is never swallowed by a verb.
+- **Blocking is derived from the world data**, not hand-drawn: every solid prop or object whose height overlaps the player's body (above the knee, below the head) blocks, kept one body radius away; rotated boxes use their true outline; scattered dressing of more than 40 pieces (cobbles, stars, fur) never blocks; thin hairs and whiskers are marked not solid; hills and the moon's rise are platforms that raise the floor. Each place lists its walkable zones (rectangles or a disc) in `places.json`. Openings are walls: you dive through them, never walk.
+- **Sketches lock from a position, not a spot name:** within a per-sketch distance of the spot they were drawn from (`posTol` in `answers.json`, 0.8 to 15 place units). "Getting warm" fades to zero by three times that distance, so a player facing the right way from the wrong place sees faint lines and knows to move.
+- **A hidden thing must be in sight.** The crosshair now offers a hidden object only if some part of it can be seen from the eye (rays to its centre and corners). This exposed five hidden objects that were buried inside their host shapes in the graybox (the umbrella inside the fish stall, the teacup behind the shop wall, the marble and the moon footprint under the floor, the moon stamp inside the stamp tower). They were only ever "found" by pointing at a box. All five were moved into view; a unit test now checks every hidden object is in sight from the spot its hints describe. The blue drawer fronts were also inside the chest and are now proud of it.
+- **Named spots stay in the data** as authoring anchors (objects are placed relative to them), as dive arrival points, as the sketch positions, and for "describe surroundings" (the nearest spot's text). The player never sees them.
+- **The dive prefers the glowing opening.** With the door open from the start, the street had two openings into the shop; the seam check caught the dive flying through the window and past the sleeping cat.
+- **Saves from before this round are discarded** (save version 2), since they hold a spot name instead of a position.
+
+**Download check (change 7):** polyhaven.com, api.polyhaven.com, dl.polyhaven.org, kenney.nl and quaternius.com all answer "CONNECT tunnel failed, response 403" from the container's proxy. **No for all three sites.** Any asset from them would have to be fetched by the founder and added to the repository with its licence recorded in `PROVENANCE.md`.

@@ -1,6 +1,7 @@
 // Full-screen panels: title, menu, sketchbook, hints, describe, ending. All keyboard-reachable. Esc closes.
 import type { GameState, HintLevel } from '../game/types';
 import type { World } from '../game/world';
+import { pictogram } from './hud';
 
 function el<K extends keyof HTMLElementTagNameMap>(tag: K, attrs: Record<string, string> = {}, text?: string): HTMLElementTagNameMap[K] {
   const e = document.createElement(tag);
@@ -129,8 +130,16 @@ export class Panels {
       row.append(restart);
     }
     box.append(row);
+    // Three things, with pictures and very few words (founder, third round).
+    const teach = el('div', { class: 'teach' });
+    for (const [kind, text] of [['look', s.onboarding.drag], ['walk', s.onboarding.walk], ['dive', s.onboarding.lens]] as const) {
+      const tile = el('div', { class: 'tile' });
+      tile.append(pictogram(kind), el('div', { class: 'cap' }, text));
+      teach.append(tile);
+    }
+    box.append(teach);
     if (storageBlocked) box.append(el('p', { class: 'small' }, s.menu.storageBlocked));
-    box.append(el('p', { class: 'small' }, 'Drag to look all the way round. Tap a spot on the ground to move. Zoom with the lens. Tap or click when a verb shows. Hold the lens on an opening to dive in. Keys: arrows, W A S D, Z, E, X, B, H, V.'));
+    box.append(el('p', { class: 'small keys' }, s.keys));
   }
 
   renderMenu(state: GameState, sessionLogOn: boolean, perfMode: boolean, storageBlocked: boolean): void {
@@ -191,7 +200,7 @@ export class Panels {
     row.append(restart);
     box.append(row, copyBox);
     if (storageBlocked) box.append(el('p', { class: 'small' }, s.menu.storageBlocked));
-    box.append(el('p', { class: 'small' }, 'Controls: drag or arrow keys to look · tap a spot on the ground, or W A S D, to move · pinch, wheel, right button or Z to zoom · tap, click, E or Enter to use · hold the lens on an opening to dive · X or Backspace to back out · B sketchbook · H hints · V describe.'));
+    box.append(el('p', { class: 'small' }, 'Controls: drag or arrow keys to look · tap the ground, or hold W A S D, to walk · pinch, wheel, right button or Z to zoom · tap, click, E or Enter to use what the crosshair shows · hold the lens on a glowing opening to go in · X or Backspace to back out · B sketchbook · H hints · V describe.'));
   }
 
   renderBook(state: GameState, sketches: Map<string, HTMLCanvasElement>, heldId: string | null, lastPage: HTMLCanvasElement): void {

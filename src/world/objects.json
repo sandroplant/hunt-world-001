@@ -1,160 +1,3615 @@
 {
   "_notes": "Data only. One object per line. at = [spot, world yaw, pitch, distance] in the place's units; pos = absolute. act.simple = one verb, no state change; act.toggle = two states. kind: usable | hidden | dive. Stand spots come from places.json.",
   "objects": [
-    {"id":"street.key","place":"street","kind":"usable","label":"a tiny brass key on the windowsill","at":["B",105,-8,1.7],"size":[0.08,0.02,0.04],"shape":"box","color":"#C9A24E","states":["on_sill","taken"],"initial":"on_sill","transitions":[{"from":"on_sill","to":"taken","verb":"Take","effects":[{"type":"take_item","item":"key"},{"type":"step","id":"take_key"},{"type":"play_sfx","id":"pick"}]}],"visual":{"taken":{"hidden":true}}},
-    {"id":"street.door","place":"street","kind":"usable","label":"the shop door","at":["B",80,0,1.7],"size":[0.12,2.2,1.0],"shape":"box","color":"#6B3F22","states":["locked","open"],"initial":"locked","transitions":[{"from":"locked","to":"locked","verb":"Use","conditions":[{"not_has_item":"key"}],"effects":[{"type":"play_sfx","id":"rattle"},{"type":"anim","id":"wiggle"}]},{"from":"locked","to":"open","verb":"Use","conditions":[{"has_item":"key"}],"effects":[{"type":"consume_item","item":"key"},{"type":"step","id":"use_key_on_door"},{"type":"play_sfx","id":"door"},{"type":"change_state","object":"street.doorway","to":"ready"}]}],"visual":{"open":{"hidden":true}}},
-    {"id":"street.doorway","place":"street","kind":"dive","to":"shop","label":"the open doorway of the shop","at":["B",80,2,1.9],"size":[0.02,2.0,0.9],"shape":"box","color":"#2A1A0C","states":["shut","ready"],"initial":"shut","visual":{"shut":{"hidden":true}}},
-    {"id":"street.umbrella","place":"street","kind":"hidden","label":"a folded red umbrella","at":["A",-55,-18,4.5],"size":[0.12,0.9,0.12],"shape":"box","color":"#B0281E","verb":"Take"},
-    {"id":"street.ship_bottle","place":"street","kind":"hidden","label":"a ship in a bottle on a windowsill","at":["A",-20,22,8.5],"size":[0.22,0.1,0.08],"shape":"box","color":"#2F7F86","verb":"Look"},
-    {"id":"street.awning","place":"street","kind":"usable","label":"the fish stall's awning","at":["A",-40,8,3.4],"size":[2.4,0.1,1.2],"shape":"box","color":"#7A5A3A","act":{"toggle":["Roll down","Roll up"]}},
-    {"id":"street.crate","place":"street","kind":"usable","label":"a fish crate","at":["A",-72,-20,3.6],"size":[0.6,0.4,0.5],"shape":"box","color":"#9A7A4A","act":{"toggle":["Open","Close"]}},
-    {"id":"street.bucket","place":"street","kind":"usable","label":"an ice bucket","at":["A",-48,-28,3.0],"size":[0.3,0.35,0.3],"shape":"cylinder","color":"#6E7E8E","act":{"simple":"Tip"}},
-    {"id":"street.chalkboard","place":"street","kind":"usable","label":"the stall's chalkboard, with pictures of fish","at":["A",-33,-4,3.9],"size":[0.6,0.8,0.05],"shape":"box","color":"#2E3A2E","act":{"simple":"Flip"}},
-    {"id":"street.scale","place":"street","kind":"usable","label":"the stall's brass scale","at":["A",-58,2,3.8],"size":[0.4,0.5,0.3],"shape":"box","color":"#C9A24E","act":{"simple":"Swing"}},
-    {"id":"street.bike_bell","place":"street","kind":"usable","label":"a bicycle bell","at":["A",-88,-12,3.2],"size":[0.08,0.06,0.08],"shape":"sphere","color":"#C9A24E","act":{"simple":"Ring"}},
-    {"id":"street.bike_wheel","place":"street","kind":"usable","label":"a bicycle wheel","at":["A",-100,-22,3.4],"size":[0.7,0.7,0.05],"shape":"cylinder","color":"#333333","act":{"simple":"Spin"},"rot":[0,0,90]},
-    {"id":"street.rope","place":"street","kind":"usable","label":"a coil of rope","at":["A",10,-28,3.2],"size":[0.4,0.15,0.4],"shape":"cylinder","color":"#A08A5A","act":{"simple":"Uncoil"}},
-    {"id":"street.lamp","place":"street","kind":"usable","label":"a street lamp","at":["A",50,20,3.0],"size":[0.25,0.5,0.25],"shape":"box","color":"#3A3A3A","act":{"simple":"Tap"}},
-    {"id":"street.curb","place":"street","kind":"usable","label":"a loose curb stone","at":["A",60,-30,2.6],"size":[0.5,0.15,0.3],"shape":"box","color":"#7A7A7A","act":{"simple":"Wobble"}},
-    {"id":"street.barrel","place":"street","kind":"usable","label":"a rain barrel","at":["A",80,-15,3.0],"size":[0.6,0.8,0.6],"shape":"cylinder","color":"#5A4A3A","act":{"toggle":["Lift lid","Close lid"]}},
-    {"id":"street.gull_post","place":"street","kind":"usable","label":"a gull on a post","at":["A",-15,5,3.8],"size":[0.3,0.3,0.3],"shape":"box","color":"#E8E8E8","act":{"simple":"Shoo"}},
-    {"id":"street.pot","place":"street","kind":"usable","label":"a geranium pot on the shop's sill","at":["B",109,-7,1.75],"size":[0.25,0.25,0.25],"shape":"cylinder","color":"#B85C38","act":{"simple":"Rock"}},
-    {"id":"street.sign","place":"street","kind":"usable","label":"the shop's painted sign: a cat's eye","at":["B",60,25,2.2],"size":[0.8,0.5,0.06],"shape":"box","color":"#C9A24E","act":{"simple":"Swing"}},
-    {"id":"street.window_cat","place":"street","kind":"usable","label":"the cat asleep in the shop window","at":["B",48,3,2.1],"size":[0.5,0.3,0.3],"shape":"box","color":"#D98C3F","act":{"simple":"Stroke"},"night":false},
-    {"id":"street.letterbox","place":"street","kind":"usable","label":"a letterbox","at":["B",66,-10,2.0],"size":[0.25,0.12,0.08],"shape":"box","color":"#5A5A5A","act":{"toggle":["Open","Close"]}},
-    {"id":"street.doorbell","place":"street","kind":"usable","label":"a doorbell","at":["B",58,6,1.95],"size":[0.08,0.08,0.04],"shape":"box","color":"#C9A24E","act":{"simple":"Ring"}},
-    {"id":"street.shutter","place":"street","kind":"usable","label":"a window shutter","at":["B",125,14,2.6],"size":[0.4,1.0,0.05],"shape":"box","color":"#2F5F86","act":{"toggle":["Close","Open"]}},
-    {"id":"street.drainpipe","place":"street","kind":"usable","label":"a drainpipe","at":["B",38,12,2.4],"size":[0.1,2.0,0.1],"shape":"cylinder","color":"#4A4A4A","act":{"simple":"Tap"}},
-    {"id":"street.windowbox","place":"street","kind":"usable","label":"a window box with a snail in it","at":["B",132,-4,2.8],"size":[0.8,0.25,0.3],"shape":"box","color":"#5A7A3A","act":{"simple":"Nudge"}},
-    {"id":"street_night.cat_step","place":"street_night","kind":"usable","home":"B","label":"the cat on the shop's step, looking up at the moon","size":[0.5,0.35,0.3],"shape":"box","color":"#D98C3F","act":{"simple":"Stroke"},"pos":[-3.9,0.35,-8.2]},
-    {"id":"shop.blue_drawer","place":"shop","kind":"usable","label":"a small drawer painted blue","at":["B",-95,-10,1.3],"size":[0.22,0.12,0.3],"shape":"box","color":"#3F6FBF","states":["closed","open"],"initial":"closed","transitions":[{"from":"closed","to":"open","verb":"Open","effects":[{"type":"step","id":"open_blue_drawer"},{"type":"play_sfx","id":"slide"},{"type":"change_state","object":"shop.drawer_inside","to":"ready"}]}],"visual":{"open":{"offset":[-0.3,0,0]}}},
-    {"id":"shop.drawer_inside","place":"shop","kind":"dive","to":"drawer","label":"the inside of the blue drawer","at":["B",-95,-12,1.32],"size":[0.2,0.04,0.28],"shape":"box","color":"#F1E6CF","states":["shut","ready"],"initial":"shut","visual":{"shut":{"hidden":true},"ready":{"offset":[-0.34,0,0]}}},
-    {"id":"shop.teacup_star","place":"shop","kind":"hidden","label":"a teacup with a star on its side","at":["B",-55,30,2.4],"size":[0.07,0.06,0.07],"shape":"cylinder","color":"#F1E6CF","verb":"Look"},
-    {"id":"shop.marble","place":"shop","kind":"hidden","label":"a glass marble","at":["A",-15,-28,3.9],"size":[0.03,0.03,0.03],"shape":"sphere","color":"#2F7F86","verb":"Take"},
-    {"id":"shop.drawer_1","place":"shop","kind":"usable","label":"a small brown drawer","at":["B",-102,-4,1.3],"size":[0.22,0.12,0.3],"shape":"box","color":"#6B4A2E","act":{"toggle":["Open","Close"]}},
-    {"id":"shop.drawer_2","place":"shop","kind":"usable","label":"a small brown drawer","at":["B",-88,-4,1.3],"size":[0.22,0.12,0.3],"shape":"box","color":"#6B4A2E","act":{"toggle":["Open","Close"]}},
-    {"id":"shop.drawer_3","place":"shop","kind":"usable","label":"a small brown drawer","at":["B",-81,-4,1.3],"size":[0.22,0.12,0.3],"shape":"box","color":"#6B4A2E","act":{"toggle":["Open","Close"]}},
-    {"id":"shop.drawer_4","place":"shop","kind":"usable","label":"a small brown drawer","at":["B",-102,-16,1.3],"size":[0.22,0.12,0.3],"shape":"box","color":"#6B4A2E","act":{"toggle":["Open","Close"]}},
-    {"id":"shop.drawer_5","place":"shop","kind":"usable","label":"a small brown drawer","at":["B",-88,-16,1.3],"size":[0.22,0.12,0.3],"shape":"box","color":"#6B4A2E","act":{"toggle":["Open","Close"]}},
-    {"id":"shop.drawer_6","place":"shop","kind":"usable","label":"a small brown drawer","at":["B",-81,-16,1.3],"size":[0.22,0.12,0.3],"shape":"box","color":"#6B4A2E","act":{"toggle":["Open","Close"]}},
-    {"id":"shop.drawer_7","place":"shop","kind":"usable","label":"a small brown drawer","at":["B",-102,4,1.3],"size":[0.22,0.12,0.3],"shape":"box","color":"#6B4A2E","act":{"toggle":["Open","Close"]}},
-    {"id":"shop.drawer_8","place":"shop","kind":"usable","label":"a small brown drawer","at":["B",-88,4,1.3],"size":[0.22,0.12,0.3],"shape":"box","color":"#6B4A2E","act":{"toggle":["Open","Close"]}},
-    {"id":"shop.cuckoo","place":"shop","kind":"usable","label":"a cuckoo clock","at":["B",-50,25,2.2],"size":[0.3,0.4,0.2],"shape":"box","color":"#6B3F22","act":{"simple":"Tap"}},
-    {"id":"shop.jar_buttons","place":"shop","kind":"usable","label":"a jar of buttons","at":["B",-70,18,2.0],"size":[0.15,0.2,0.15],"shape":"cylinder","color":"#9AB8C8","act":{"toggle":["Open","Close"]}},
-    {"id":"shop.stuffed_fish","place":"shop","kind":"usable","label":"a stuffed fish on the wall","at":["B",-130,20,2.4],"size":[0.7,0.25,0.15],"shape":"box","color":"#6E8E9E","act":{"simple":"Poke"}},
-    {"id":"shop.globe","place":"shop","kind":"usable","label":"a globe","at":["B",-150,-10,2.3],"size":[0.35,0.35,0.35],"shape":"sphere","color":"#2F7F86","act":{"simple":"Spin"}},
-    {"id":"shop.music_box","place":"shop","kind":"usable","label":"a music box","at":["B",-120,-25,2.0],"size":[0.25,0.15,0.2],"shape":"box","color":"#8A3A3A","act":{"simple":"Wind"}},
-    {"id":"shop.wall_clock","place":"shop","kind":"usable","label":"a wall clock","at":["A",30,25,2.5],"size":[0.35,0.35,0.1],"shape":"cylinder","color":"#C9A24E","act":{"simple":"Tap"},"rot":[90,0,0]},
-    {"id":"shop.counter_bell","place":"shop","kind":"usable","label":"the counter bell","at":["A",-20,-14,2.5],"size":[0.12,0.1,0.12],"shape":"sphere","color":"#C9A24E","act":{"simple":"Ding"}},
-    {"id":"shop.scales","place":"shop","kind":"usable","label":"the brass scales on the counter","at":["A",-4,-12,2.5],"size":[0.4,0.4,0.2],"shape":"box","color":"#C9A24E","act":{"simple":"Swing"}},
-    {"id":"shop.map","place":"shop","kind":"usable","label":"a rolled map","at":["A",50,-10,2.3],"size":[0.5,0.08,0.08],"shape":"cylinder","color":"#F1E6CF","act":{"simple":"Unroll"},"rot":[0,0,90]},
-    {"id":"shop.big_book","place":"shop","kind":"usable","label":"a big book","at":["A",-50,-20,2.2],"size":[0.4,0.1,0.3],"shape":"box","color":"#5A2A2A","act":{"toggle":["Open","Close"]}},
-    {"id":"shop.birdcage","place":"shop","kind":"usable","label":"an empty birdcage","at":["A",20,35,2.4],"size":[0.3,0.4,0.3],"shape":"cylinder","color":"#C9A24E","act":{"simple":"Swing"}},
-    {"id":"shop.telescope","place":"shop","kind":"usable","label":"a brass telescope","at":["A",70,10,2.3],"size":[0.6,0.1,0.1],"shape":"cylinder","color":"#C9A24E","act":{"simple":"Turn"},"rot":[0,0,90]},
-    {"id":"shop.oil_lamp","place":"shop","kind":"usable","label":"an oil lamp","at":["A",-70,10,2.2],"size":[0.15,0.3,0.15],"shape":"cylinder","color":"#F2B75B","act":{"toggle":["Dim","Brighten"]}},
-    {"id":"shop.cash_drawer","place":"shop","kind":"usable","label":"the cash drawer","at":["A",-28,-22,2.5],"size":[0.4,0.12,0.3],"shape":"box","color":"#3A3A3A","act":{"toggle":["Open","Close"]}},
-    {"id":"shop.mirror","place":"shop","kind":"usable","label":"a hand mirror","at":["A",-80,5,2.1],"size":[0.2,0.3,0.03],"shape":"box","color":"#B0C4D8","act":{"simple":"Look"}},
-    {"id":"shop.door_sign","place":"shop","kind":"usable","label":"the door sign: a drawn sun on one side, a moon on the other","at":["A",100,15,1.4],"size":[0.3,0.2,0.02],"shape":"box","color":"#F1E6CF","act":{"simple":"Flip"}},
-    {"id":"drawer.envelope","place":"drawer","kind":"usable","label":"an envelope with its flap up","at":["B",50,-15,8],"size":[6,0.3,4],"shape":"box","color":"#F1E6CF","states":["sealed","open"],"initial":"sealed","transitions":[{"from":"sealed","to":"open","verb":"Open","effects":[{"type":"step","id":"open_envelope"},{"type":"play_sfx","id":"paper"},{"type":"change_state","object":"drawer.feather","to":"shown"}]}],"visual":{"open":{"rot":[0,0,25]}}},
-    {"id":"drawer.feather","place":"drawer","kind":"usable","label":"a small grey feather","at":["B",50,-11,7.8],"size":[0.6,2.0,0.3],"shape":"box","color":"#9A9A9A","states":["hidden","shown","taken"],"initial":"hidden","transitions":[{"from":"shown","to":"taken","verb":"Take","effects":[{"type":"take_item","item":"feather"},{"type":"step","id":"take_feather"},{"type":"play_sfx","id":"pick"}]}],"visual":{"hidden":{"hidden":true},"taken":{"hidden":true}}},
-    {"id":"drawer.cat_nose","place":"drawer","kind":"usable","label":"the cat's nose","at":["B",-35,5,11],"size":[1.2,1.0,1.0],"shape":"sphere","color":"#E8A0A0","states":["asleep","stirred"],"initial":"asleep","transitions":[{"from":"asleep","to":"asleep","verb":"Use","conditions":[{"not_has_item":"feather"}],"effects":[{"type":"play_sfx","id":"purr"},{"type":"anim","id":"wiggle"}]},{"from":"asleep","to":"stirred","verb":"Use","conditions":[{"has_item":"feather"}],"effects":[{"type":"step","id":"use_feather_on_nose"},{"type":"play_sfx","id":"sneeze"},{"type":"change_state","object":"drawer.cat_neck","to":"ready"}]}],"visual":{"stirred":{"offset":[0,0.8,0]}}},
-    {"id":"drawer.cat_neck","place":"drawer","kind":"dive","to":"cat","label":"the fur of the cat's neck","at":["B",-25,8,11.5],"size":[6,5,5],"shape":"sphere","color":"#D98C3F","states":["shut","ready"],"initial":"shut","visual":{"ready":{"offset":[0,1.0,0],"color":"#E9A45A"}}},
-    {"id":"drawer.paper_boat","place":"drawer","kind":"hidden","label":"a paper boat","at":["A",25,-7,33.3],"size":[2,1.2,0.8],"shape":"box","color":"#FFFFFF","verb":"Take"},
-    {"id":"drawer.stamp_moon","place":"drawer","kind":"hidden","label":"a stamp showing a night sky with a hole where the moon should be","at":["B",30,6,20.3],"size":[1.6,2,0.1],"shape":"box","color":"#B8C4E8","verb":"Look"},
-    {"id":"drawer.env_1","place":"drawer","kind":"usable","label":"an old envelope","at":["B",70,-20,7],"size":[6,0.3,4],"shape":"box","color":"#EDE2C8","act":{"toggle":["Open","Close"]}},
-    {"id":"drawer.env_2","place":"drawer","kind":"usable","label":"an old envelope","at":["B",85,-10,8],"size":[6,0.3,4],"shape":"box","color":"#EDE2C8","act":{"toggle":["Open","Close"]}},
-    {"id":"drawer.env_3","place":"drawer","kind":"usable","label":"an old envelope","at":["B",-60,-25,8],"size":[6,0.3,4],"shape":"box","color":"#EDE2C8","act":{"toggle":["Open","Close"]}},
-    {"id":"drawer.env_4","place":"drawer","kind":"usable","label":"an old envelope","at":["B",-75,-12,9],"size":[6,0.3,4],"shape":"box","color":"#EDE2C8","act":{"toggle":["Open","Close"]}},
-    {"id":"drawer.env_5","place":"drawer","kind":"usable","label":"an old envelope","at":["B",110,-15,8],"size":[6,0.3,4],"shape":"box","color":"#EDE2C8","act":{"toggle":["Open","Close"]}},
-    {"id":"drawer.env_6","place":"drawer","kind":"usable","label":"an old envelope","at":["B",-100,-20,9],"size":[6,0.3,4],"shape":"box","color":"#EDE2C8","act":{"toggle":["Open","Close"]}},
-    {"id":"drawer.thimble","place":"drawer","kind":"usable","label":"a thimble","at":["B",20,-30,8],"size":[1.0,1.2,1.0],"shape":"cylinder","color":"#C9C9C9","act":{"simple":"Ring"}},
-    {"id":"drawer.spool","place":"drawer","kind":"usable","label":"a spool of thread","at":["B",-15,-35,6],"size":[1.5,2,1.5],"shape":"cylinder","color":"#B85C38","act":{"simple":"Unroll"}},
-    {"id":"drawer.pencil","place":"drawer","kind":"usable","label":"a pencil stub","at":["B",95,-30,8],"size":[4,0.6,0.6],"shape":"cylinder","color":"#E3B341","act":{"simple":"Roll"},"rot":[0,0,90]},
-    {"id":"drawer.wax_seal","place":"drawer","kind":"usable","label":"a wax seal","at":["B",60,-35,6],"size":[1.2,0.4,1.2],"shape":"cylinder","color":"#8A2A2A","act":{"simple":"Press"}},
-    {"id":"drawer.matchbox","place":"drawer","kind":"usable","label":"a matchbox","at":["B",-50,-38,7],"size":[3,1,2],"shape":"box","color":"#3F6FBF","act":{"toggle":["Open","Close"]}},
-    {"id":"drawer.tiny_bell","place":"drawer","kind":"usable","label":"a tiny bell","at":["B",5,-25,7],"size":[1,1,1],"shape":"sphere","color":"#C9A24E","act":{"simple":"Ring"}},
-    {"id":"drawer.ribbon","place":"drawer","kind":"usable","label":"a ribbon","at":["B",35,-22,9],"size":[6,0.3,1],"shape":"box","color":"#B0281E","act":{"simple":"Pull"}},
-    {"id":"drawer.sock","place":"drawer","kind":"usable","label":"a sock on the pillow","at":["B",-10,-5,12],"size":[5,2,3],"shape":"box","color":"#8C8A85","act":{"simple":"Wiggle"}},
-    {"id":"drawer.cat_tail","place":"drawer","kind":"usable","label":"the cat's tail","at":["B",10,0,12],"size":[1.5,1.5,8],"shape":"cylinder","color":"#D98C3F","act":{"simple":"Tickle"},"rot":[90,0,0]},
-    {"id":"drawer.paperclip","place":"drawer","kind":"usable","label":"a chain of paperclips","at":["B",-120,-10,8],"size":[0.4,6,0.4],"shape":"cylinder","color":"#C9C9C9","act":{"simple":"Sway"}},
-    {"id":"drawer.bridge_key","place":"drawer","kind":"usable","label":"a key in the bridge","at":["B",30,-18,12],"size":[3,0.4,1],"shape":"box","color":"#C9A24E","act":{"simple":"Turn"}},
-    {"id":"drawer.coin","place":"drawer","kind":"usable","label":"a coin","at":["A",-30,-25,9],"size":[1.4,0.2,1.4],"shape":"cylinder","color":"#C9A24E","act":{"simple":"Spin"}},
-    {"id":"drawer.ticket","place":"drawer","kind":"usable","label":"a ticket stub","at":["A",-45,-18,10],"size":[3,0.1,1.5],"shape":"box","color":"#EDE2C8","act":{"simple":"Flip"}},
-    {"id":"drawer.photo","place":"drawer","kind":"usable","label":"an old photograph","at":["A",45,-15,10],"size":[4,0.1,3],"shape":"box","color":"#D8D0C0","act":{"simple":"Flip"}},
-    {"id":"drawer.button_pile","place":"drawer","kind":"usable","label":"a pile of buttons","at":["A",60,-20,8],"size":[3,1,3],"shape":"sphere","color":"#6E7E8E","act":{"simple":"Spill"}},
-    {"id":"drawer.loose_stamp","place":"drawer","kind":"usable","label":"a loose stamp","at":["A",-60,-10,10],"size":[1.6,0.1,2],"shape":"box","color":"#9AB8C8","act":{"simple":"Flip"}},
-    {"id":"drawer.dried_flower","place":"drawer","kind":"usable","label":"a dried flower","at":["A",30,-30,7],"size":[1.5,0.5,1.5],"shape":"box","color":"#B8A0C8","act":{"simple":"Touch"}},
-    {"id":"drawer.pin","place":"drawer","kind":"usable","label":"a pin","at":["A",-15,-28,8],"size":[0.2,2,0.2],"shape":"cylinder","color":"#C9C9C9","act":{"simple":"Pull"}},
-    {"id":"cat.ear","place":"cat","kind":"usable","label":"the ear","at":["A",15,45,55],"size":[30,40,10],"shape":"cone","color":"#D98C3F","states":["still","flicked"],"initial":"still","transitions":[{"from":"still","to":"still","verb":"Use","conditions":[{"not_has_item":"feather"}],"effects":[{"type":"play_sfx","id":"twitch"},{"type":"anim","id":"wiggle"}]},{"from":"still","to":"flicked","verb":"Use","conditions":[{"has_item":"feather"}],"effects":[{"type":"consume_item","item":"feather"},{"type":"step","id":"use_feather_on_ear"},{"type":"play_sfx","id":"purr"},{"type":"change_state","object":"cat.eye","to":"ready"}]}],"visual":{"flicked":{"rot":[0,0,-20]}}},
-    {"id":"cat.eye","place":"cat","kind":"dive","to":"eye","label":"the eye","at":["A",5,30,58],"size":[40,25,20],"shape":"sphere","color":"#C9803A","states":["shut","ready"],"initial":"shut","visual":{"ready":{"color":"#1B3A8A"}}},
-    {"id":"cat.flea","place":"cat","kind":"hidden","label":"a flea wearing a tiny hat","at":["A",-40,20,45],"size":[2,2.5,2],"shape":"box","color":"#333333","verb":"Look"},
-    {"id":"cat.fishbone","place":"cat","kind":"hidden","label":"a fish bone","at":["B",-45,-10,30],"size":[12,2,3],"shape":"box","color":"#F1E6CF","verb":"Take"},
-    {"id":"cat.hair_1","place":"cat","kind":"usable","label":"a tall hair","at":["A",-75,10,30],"size":[2,30,2],"shape":"cylinder","color":"#E9A45A","act":{"simple":"Part"}},
-    {"id":"cat.hair_2","place":"cat","kind":"usable","label":"a tall hair","at":["A",60,25,35],"size":[2,30,2],"shape":"cylinder","color":"#E9A45A","act":{"simple":"Part"}},
-    {"id":"cat.whisker","place":"cat","kind":"usable","label":"a whisker","at":["A",-60,50,50],"size":[1.5,1.5,80],"shape":"cylinder","color":"#F1E6CF","act":{"simple":"Twang"},"rot":[90,0,0]},
-    {"id":"cat.burr","place":"cat","kind":"usable","label":"a burr","at":["A",-70,-5,30],"size":[5,5,5],"shape":"sphere","color":"#6E5A3A","act":{"simple":"Roll"}},
-    {"id":"cat.claw","place":"cat","kind":"usable","label":"a claw","at":["A",90,-20,50],"size":[4,10,4],"shape":"cone","color":"#F1E6CF","act":{"simple":"Flex"}},
-    {"id":"cat.paw_pad","place":"cat","kind":"usable","label":"a paw pad","at":["A",110,-25,55],"size":[14,4,12],"shape":"sphere","color":"#E8A0A0","act":{"simple":"Press"}},
-    {"id":"cat.milk_drop","place":"cat","kind":"usable","label":"a drop of milk on the chin","at":["A",-25,35,50],"size":[4,4,4],"shape":"sphere","color":"#FFFFFF","act":{"simple":"Wobble"}},
-    {"id":"cat.moth","place":"cat","kind":"usable","label":"a moth on the fur","at":["A",40,55,45],"size":[6,2,4],"shape":"box","color":"#C8B89A","act":{"simple":"Shoo"}},
-    {"id":"cat.knot","place":"cat","kind":"usable","label":"a knot of fur","at":["A",-90,15,40],"size":[8,8,8],"shape":"sphere","color":"#B86A2A","act":{"simple":"Untie"}},
-    {"id":"cat.nose","place":"cat","kind":"usable","label":"the nose","at":["A",45,5,58],"size":[10,8,8],"shape":"sphere","color":"#E8A0A0","act":{"simple":"Boop"}},
-    {"id":"cat.eyelid_edge","place":"cat","kind":"usable","label":"the edge of the eyelid","at":["A",-15,28,56],"size":[12,3,6],"shape":"box","color":"#C9803A","act":{"simple":"Twitch"}},
-    {"id":"cat.crumb","place":"cat","kind":"usable","label":"a crumb","at":["A",30,-20,40],"size":[3,2,3],"shape":"box","color":"#C8B89A","act":{"simple":"Roll"}},
-    {"id":"cat.fish_charm","place":"cat","kind":"usable","label":"the fish charm","at":["B",-30,0,35],"size":[10,6,2],"shape":"box","color":"#7FC8D8","act":{"simple":"Swing"}},
-    {"id":"cat.house_charm","place":"cat","kind":"usable","label":"the house charm, with a tiny door","at":["B",-10,3,38],"size":[8,9,2],"shape":"box","color":"#F1E6CF","act":{"toggle":["Open","Close"]}},
-    {"id":"cat.bell_charm","place":"cat","kind":"usable","label":"the bell charm","at":["B",10,5,42],"size":[7,8,7],"shape":"sphere","color":"#F2D66B","act":{"simple":"Ring"}},
-    {"id":"cat.heart_charm","place":"cat","kind":"usable","label":"the heart charm","at":["B",30,3,45],"size":[7,7,2],"shape":"box","color":"#E06070","act":{"simple":"Turn"}},
-    {"id":"cat.tag","place":"cat","kind":"usable","label":"the tag with a paw print","at":["B",50,0,50],"size":[8,8,1],"shape":"cylinder","color":"#DDDDDD","act":{"simple":"Flip"},"rot":[90,0,0]},
-    {"id":"cat.buckle","place":"cat","kind":"usable","label":"the collar buckle","at":["B",-70,-15,40],"size":[10,10,3],"shape":"box","color":"#9A9A9A","act":{"simple":"Click"}},
-    {"id":"cat.loose_hair","place":"cat","kind":"usable","label":"a loose hair","at":["B",70,30,40],"size":[1.2,25,1.2],"shape":"cylinder","color":"#E9A45A","act":{"simple":"Blow"}},
-    {"id":"cat.flea2","place":"cat","kind":"usable","label":"a second flea, with no hat","at":["B",-60,20,45],"size":[2,2,2],"shape":"box","color":"#333333","act":{"simple":"Shoo"}},
-    {"id":"cat.dust","place":"cat","kind":"usable","label":"a dust mote","at":["B",100,40,50],"size":[2,2,2],"shape":"sphere","color":"#DDDDDD","act":{"simple":"Blow"}},
-    {"id":"eye.reflected_lamp","place":"eye","kind":"usable","label":"a reflected lamp in the wet shine","at":["A",-20,45,38],"size":[5,5,5],"shape":"sphere","color":"#FFE39A","states":["lit","covered"],"initial":"lit","transitions":[{"from":"lit","to":"covered","verb":"Cover","effects":[{"type":"step","id":"cover_reflected_lamp"},{"type":"play_sfx","id":"hush"},{"type":"change_state","object":"eye.pupil","to":"ready"}]}],"visual":{"covered":{"color":"#3A3A3A"}}},
-    {"id":"eye.pupil","place":"eye","kind":"dive","to":"moon","label":"the pupil","at":["B",0,5,30],"size":[6,20,4],"shape":"box","color":"#05060C","states":["shut","ready"],"initial":"shut","visual":{"ready":{"scale":[3.4,1,1]}}},
-    {"id":"eye.comet","place":"eye","kind":"hidden","label":"a comet with a tail","at":["B",-35,25,45],"size":[3,1,1],"shape":"box","color":"#FFFFFF","verb":"Look"},
-    {"id":"eye.lighthouse_reflection","place":"eye","kind":"hidden","label":"a tiny reflected lighthouse","at":["A",-30,40,40],"size":[1,3,1],"shape":"cylinder","color":"#F1E6CF","verb":"Look"},
-    {"id":"eye.star_1","place":"eye","kind":"usable","label":"a star","at":["A",30,20,38],"size":[1.0,1.0,1.0],"shape":"sphere","color":"#FFFFFF","act":{"simple":"Touch"}},
-    {"id":"eye.star_2","place":"eye","kind":"usable","label":"a star","at":["A",-50,15,38],"size":[1.0,1.0,1.0],"shape":"sphere","color":"#FFFFFF","act":{"simple":"Touch"}},
-    {"id":"eye.ring_seg","place":"eye","kind":"usable","label":"a segment of a gold ring","at":["A",45,5,35],"size":[20,1,3],"shape":"box","color":"#E3B341","act":{"simple":"Hum"}},
-    {"id":"eye.refl_window","place":"eye","kind":"usable","label":"a reflected window frame","at":["A",-45,55,40],"size":[8,6,0.5],"shape":"box","color":"#C8D0E8","act":{"simple":"Part"}},
-    {"id":"eye.refl_bottle","place":"eye","kind":"usable","label":"a reflected bottle on a reflected sill","at":["A",-55,42,40],"size":[1.5,4,1.5],"shape":"cylinder","color":"#2F7F86","act":{"simple":"Roll"}},
-    {"id":"eye.speck","place":"eye","kind":"usable","label":"a floating speck","at":["A",10,60,30],"size":[1,1,1],"shape":"sphere","color":"#DDDDDD","act":{"simple":"Blow"}},
-    {"id":"eye.gold_fleck","place":"eye","kind":"usable","label":"a fleck of gold","at":["A",70,10,30],"size":[2,2,0.5],"shape":"box","color":"#E3B341","act":{"simple":"Turn"}},
-    {"id":"eye.refl_boat","place":"eye","kind":"usable","label":"a tiny reflected boat","at":["A",-10,50,40],"size":[4,1.5,2],"shape":"box","color":"#B85C38","act":{"simple":"Rock"}},
-    {"id":"eye.lash_shadow","place":"eye","kind":"usable","label":"an eyelash shadow at the edge","at":["A",90,20,30],"size":[2,30,2],"shape":"cylinder","color":"#0A0C18","act":{"simple":"Sweep"}},
-    {"id":"eye.refl_clock","place":"eye","kind":"usable","label":"a reflected clock","at":["A",-70,35,40],"size":[4,4,1],"shape":"cylinder","color":"#F1E6CF","act":{"simple":"Tap"},"rot":[90,0,0]},
-    {"id":"eye.pupil_edge","place":"eye","kind":"usable","label":"the edge of the pupil","at":["B",20,-5,30],"size":[3,10,2],"shape":"box","color":"#1B1F2A","act":{"simple":"Touch"}},
-    {"id":"eye.cloud","place":"eye","kind":"usable","label":"a small cloud in the iris","at":["B",-60,30,35],"size":[10,4,6],"shape":"sphere","color":"#3A4A7A","act":{"simple":"Part"}},
-    {"id":"eye.refl_gull","place":"eye","kind":"usable","label":"a reflected gull","at":["B",60,45,35],"size":[4,1,4],"shape":"box","color":"#EEEEEE","act":{"simple":"Flap"}},
-    {"id":"eye.dark_fleck","place":"eye","kind":"usable","label":"a dark fleck","at":["B",-90,10,30],"size":[2,2,0.5],"shape":"box","color":"#05060C","act":{"simple":"Blink"}},
-    {"id":"eye.ring_cross","place":"eye","kind":"usable","label":"where two rings cross","at":["B",110,5,30],"size":[6,1,6],"shape":"box","color":"#E3B341","act":{"simple":"Chime"}},
-    {"id":"eye.refl_lamppost","place":"eye","kind":"usable","label":"a reflected lamp post","at":["B",100,40,35],"size":[1,8,1],"shape":"cylinder","color":"#3A3A3A","act":{"simple":"Flicker"}},
-    {"id":"eye.star_cluster","place":"eye","kind":"usable","label":"a cluster of stars","at":["B",40,50,38],"size":[5,5,5],"shape":"sphere","color":"#E8E8FF","act":{"simple":"Spin"}},
-    {"id":"moon.light","place":"moon","kind":"usable","label":"a faint spark in a small crater","at":["A",10,-30,3.0],"size":[0.08,0.08,0.08],"shape":"sphere","color":"#FFE39A","states":["in_crater","taken"],"initial":"in_crater","transitions":[{"from":"in_crater","to":"taken","verb":"Take","effects":[{"type":"take_item","item":"light"},{"type":"step","id":"take_light"},{"type":"play_sfx","id":"chime"}]}],"visual":{"taken":{"hidden":true}}},
-    {"id":"moon.lamp","place":"moon","kind":"usable","label":"an old lamp, dark","at":["B",15,10,2.4],"size":[0.4,1.2,0.4],"shape":"box","color":"#4A4A4A","states":["dark","lit"],"initial":"dark","transitions":[{"from":"dark","to":"dark","verb":"Use","conditions":[{"not_has_item":"light"}],"effects":[{"type":"play_sfx","id":"rattle"},{"type":"anim","id":"wiggle"}]},{"from":"dark","to":"lit","verb":"Use","conditions":[{"has_item":"light"}],"effects":[{"type":"consume_item","item":"light"},{"type":"step","id":"use_light_on_lamp"},{"type":"play_sfx","id":"glow"},{"type":"change_state","object":"moon.edge","to":"ready"}]}],"visual":{"lit":{"color":"#FFE39A"}}},
-    {"id":"moon.edge","place":"moon","kind":"dive","to":"street_night","label":"the moon's edge, with the harbor far below","at":["B",24,-56,3.0],"size":[2,0.3,1],"shape":"box","color":"#7A8088","states":["shut","ready"],"initial":"shut","visual":{"ready":{"color":"#CFD6DC"}}},
-    {"id":"moon.footprint","place":"moon","kind":"hidden","label":"a footprint in the dust","at":["A",35,-25,4.0],"size":[0.3,0.02,0.12],"shape":"box","color":"#6E747C","verb":"Look"},
-    {"id":"moon.glove","place":"moon","kind":"hidden","label":"a lost glove, half-buried","at":["A",-50,-15,5.0],"size":[0.25,0.08,0.3],"shape":"box","color":"#8C8A85","verb":"Take"},
-    {"id":"moon.rock_1","place":"moon","kind":"usable","label":"a rock","at":["A",60,-20,2.8],"size":[0.4,0.3,0.4],"shape":"box","color":"#7A8088","act":{"simple":"Turn over"}},
-    {"id":"moon.big_rock","place":"moon","kind":"usable","label":"a big rock","at":["A",-100,-10,3.0],"size":[1.2,1.0,1.2],"shape":"box","color":"#6E747C","act":{"simple":"Push"}},
-    {"id":"moon.crater_echo","place":"moon","kind":"usable","label":"a small crater","at":["A",-20,-35,3.0],"size":[1.0,0.1,1.0],"shape":"cylinder","color":"#8A9098","act":{"simple":"Call into"}},
-    {"id":"moon.pebble","place":"moon","kind":"usable","label":"a pebble","at":["A",80,-30,2.5],"size":[0.1,0.08,0.1],"shape":"sphere","color":"#9DA3AB","act":{"simple":"Skip"}},
-    {"id":"moon.dust_pile","place":"moon","kind":"usable","label":"a pile of dust","at":["A",-70,-30,2.6],"size":[0.5,0.2,0.5],"shape":"cone","color":"#B0B6BC","act":{"simple":"Puff"}},
-    {"id":"moon.meteorite","place":"moon","kind":"usable","label":"a small meteorite","at":["A",120,-15,3.0],"size":[0.3,0.3,0.3],"shape":"sphere","color":"#3A3A3A","act":{"simple":"Touch"}},
-    {"id":"moon.crack","place":"moon","kind":"usable","label":"a crack in the ground","at":["A",-30,-25,2.5],"size":[0.1,0.02,1.5],"shape":"box","color":"#2A2E3A","act":{"simple":"Peer into"}},
-    {"id":"moon.bottle","place":"moon","kind":"usable","label":"a bottle","at":["A",140,-25,2.8],"size":[0.1,0.3,0.1],"shape":"cylinder","color":"#2F7F86","act":{"simple":"Roll"}},
-    {"id":"moon.coin","place":"moon","kind":"usable","label":"a coin","at":["A",-130,-28,2.6],"size":[0.12,0.01,0.12],"shape":"cylinder","color":"#C9A24E","act":{"simple":"Spin"}},
-    {"id":"moon.tin_cup","place":"moon","kind":"usable","label":"a tin cup","at":["A",25,-40,2.2],"size":[0.12,0.12,0.12],"shape":"cylinder","color":"#C9C9C9","act":{"simple":"Ring"}},
-    {"id":"moon.footprint_trail","place":"moon","kind":"usable","label":"a trail of footprints that leads nowhere","at":["A",50,-32,3.1],"size":[0.3,0.02,1.2],"shape":"box","color":"#6E747C","act":{"simple":"Follow"}},
-    {"id":"moon.dust_bunny","place":"moon","kind":"usable","label":"a dust bunny","at":["A",-10,-42,2.4],"size":[0.2,0.2,0.2],"shape":"sphere","color":"#B0B6BC","act":{"simple":"Roll"}},
-    {"id":"moon.plant","place":"moon","kind":"usable","label":"a pale plant","at":["A",100,-30,2.7],"size":[0.2,0.3,0.2],"shape":"cone","color":"#C8D0C8","act":{"simple":"Touch"}},
-    {"id":"moon.sky_star","place":"moon","kind":"usable","label":"a star in the sky","at":["A",30,50,3.0],"size":[0.05,0.05,0.05],"shape":"sphere","color":"#FFFFFF","act":{"simple":"Touch"}},
-    {"id":"moon.lamp_glass","place":"moon","kind":"usable","label":"the lamp's glass","at":["B",12,20,2.4],"size":[0.3,0.3,0.3],"shape":"box","color":"#B0C4D8","act":{"simple":"Rattle"}},
-    {"id":"moon.flag","place":"moon","kind":"usable","label":"a flag with a picture on it","at":["B",50,15,3.0],"size":[0.6,0.4,0.02],"shape":"box","color":"#B85C38","act":{"simple":"Flap"}},
-    {"id":"moon.telescope","place":"moon","kind":"usable","label":"a telescope on a stand","at":["B",-60,5,2.8],"size":[0.6,0.12,0.12],"shape":"cylinder","color":"#C9A24E","act":{"simple":"Turn"},"rot":[0,0,90]},
-    {"id":"moon.signpost","place":"moon","kind":"usable","label":"a signpost with pictures","at":["B",80,10,3.0],"size":[0.5,0.15,0.03],"shape":"box","color":"#8C6A4A","act":{"simple":"Spin"}},
-    {"id":"moon.rope_end","place":"moon","kind":"usable","label":"a rope end","at":["B",-90,-20,2.8],"size":[0.4,0.05,0.05],"shape":"box","color":"#A08A5A","act":{"simple":"Fray"}},
-    {"id":"moon.crater_rim","place":"moon","kind":"usable","label":"a crater rim","at":["B",-100,-30,3.0],"size":[1.2,0.15,0.3],"shape":"box","color":"#8A9098","act":{"simple":"Peer over"}}
+    {
+      "id": "street.doorway",
+      "place": "street",
+      "kind": "dive",
+      "to": "shop",
+      "label": "the open doorway of the shop",
+      "at": [
+        "B",
+        80,
+        2,
+        1.9
+      ],
+      "size": [
+        0.02,
+        2.0,
+        0.9
+      ],
+      "shape": "box",
+      "color": "#2A1A0C",
+      "states": [
+        "ready"
+      ],
+      "initial": "ready"
+    },
+    {
+      "id": "street.umbrella",
+      "place": "street",
+      "kind": "hidden",
+      "label": "a folded red umbrella leaning behind the fish stall, beside the oars",
+      "at": [
+        "A",
+        -19.6,
+        -12.5,
+        5.33
+      ],
+      "size": [
+        0.12,
+        0.9,
+        0.12
+      ],
+      "shape": "box",
+      "color": "#B0281E",
+      "verb": "Take"
+    },
+    {
+      "id": "street.ship_bottle",
+      "place": "street",
+      "kind": "hidden",
+      "label": "a ship in a bottle on a windowsill",
+      "at": [
+        "A",
+        -20,
+        22,
+        8.5
+      ],
+      "size": [
+        0.22,
+        0.1,
+        0.08
+      ],
+      "shape": "box",
+      "color": "#2F7F86",
+      "verb": "Look"
+    },
+    {
+      "id": "street.chalkboard",
+      "place": "street",
+      "kind": "usable",
+      "label": "the stall's chalkboard, with pictures of fish",
+      "at": [
+        "A",
+        -33,
+        -4,
+        3.9
+      ],
+      "size": [
+        0.6,
+        0.8,
+        0.05
+      ],
+      "shape": "box",
+      "color": "#2E3A2E",
+      "act": {
+        "simple": "Flip"
+      }
+    },
+    {
+      "id": "street.scale",
+      "place": "street",
+      "kind": "usable",
+      "label": "the stall's brass scale",
+      "at": [
+        "A",
+        -58,
+        2,
+        3.8
+      ],
+      "size": [
+        0.4,
+        0.5,
+        0.3
+      ],
+      "shape": "box",
+      "color": "#C9A24E",
+      "act": {
+        "simple": "Swing"
+      }
+    },
+    {
+      "id": "street.gull_post",
+      "place": "street",
+      "kind": "usable",
+      "label": "a gull on a post",
+      "at": [
+        "A",
+        -15,
+        5,
+        3.8
+      ],
+      "size": [
+        0.3,
+        0.3,
+        0.3
+      ],
+      "shape": "box",
+      "color": "#E8E8E8",
+      "act": {
+        "simple": "Shoo"
+      }
+    },
+    {
+      "id": "street.sign",
+      "place": "street",
+      "kind": "usable",
+      "label": "the shop's painted sign: a cat's eye",
+      "at": [
+        "B",
+        60,
+        25,
+        2.2
+      ],
+      "size": [
+        0.8,
+        0.5,
+        0.06
+      ],
+      "shape": "box",
+      "color": "#C9A24E",
+      "act": {
+        "simple": "Swing"
+      }
+    },
+    {
+      "id": "street.window_cat",
+      "place": "street",
+      "kind": "usable",
+      "label": "the cat asleep in the shop window",
+      "at": [
+        "B",
+        48,
+        3,
+        2.1
+      ],
+      "size": [
+        0.5,
+        0.3,
+        0.3
+      ],
+      "shape": "box",
+      "color": "#D98C3F",
+      "act": {
+        "simple": "Stroke"
+      },
+      "night": false
+    },
+    {
+      "id": "street.doorbell",
+      "place": "street",
+      "kind": "usable",
+      "label": "a doorbell",
+      "at": [
+        "B",
+        58,
+        6,
+        1.95
+      ],
+      "size": [
+        0.08,
+        0.08,
+        0.04
+      ],
+      "shape": "box",
+      "color": "#C9A24E",
+      "act": {
+        "simple": "Ring"
+      }
+    },
+    {
+      "id": "street_night.cat_step",
+      "place": "street_night",
+      "kind": "usable",
+      "home": "B",
+      "label": "the cat on the shop's step, looking up at the moon",
+      "size": [
+        0.5,
+        0.35,
+        0.3
+      ],
+      "shape": "box",
+      "color": "#D98C3F",
+      "act": {
+        "simple": "Stroke"
+      },
+      "pos": [
+        -3.9,
+        0.35,
+        -8.2
+      ]
+    },
+    {
+      "id": "shop.blue_drawer",
+      "place": "shop",
+      "kind": "usable",
+      "label": "a small drawer painted blue, with a keyhole",
+      "at": [
+        "B",
+        -95,
+        -10,
+        1.3
+      ],
+      "size": [
+        0.22,
+        0.12,
+        0.3
+      ],
+      "shape": "box",
+      "color": "#3F6FBF",
+      "states": [
+        "locked",
+        "open"
+      ],
+      "initial": "locked",
+      "transitions": [
+        {
+          "from": "locked",
+          "to": "locked",
+          "verb": "Use",
+          "conditions": [
+            {
+              "not_has_item": "key"
+            }
+          ],
+          "effects": [
+            {
+              "type": "play_sfx",
+              "id": "rattle"
+            },
+            {
+              "type": "anim",
+              "id": "wiggle"
+            }
+          ]
+        },
+        {
+          "from": "locked",
+          "to": "open",
+          "verb": "Unlock",
+          "conditions": [
+            {
+              "has_item": "key"
+            }
+          ],
+          "effects": [
+            {
+              "type": "consume_item",
+              "item": "key"
+            },
+            {
+              "type": "step",
+              "id": "unlock_blue_drawer"
+            },
+            {
+              "type": "play_sfx",
+              "id": "slide"
+            },
+            {
+              "type": "change_state",
+              "object": "shop.drawer_inside",
+              "to": "ready"
+            }
+          ]
+        }
+      ],
+      "visual": {
+        "open": {
+          "offset": [
+            -0.3,
+            0,
+            0
+          ]
+        }
+      }
+    },
+    {
+      "id": "shop.key",
+      "place": "shop",
+      "kind": "usable",
+      "label": "a tiny brass key on the counter",
+      "at": [
+        "A",
+        -1,
+        -9,
+        3.9
+      ],
+      "size": [
+        0.08,
+        0.02,
+        0.04
+      ],
+      "shape": "box",
+      "color": "#C9A24E",
+      "states": [
+        "on_counter",
+        "taken"
+      ],
+      "initial": "on_counter",
+      "transitions": [
+        {
+          "from": "on_counter",
+          "to": "taken",
+          "verb": "Take",
+          "effects": [
+            {
+              "type": "take_item",
+              "item": "key"
+            },
+            {
+              "type": "step",
+              "id": "take_key"
+            },
+            {
+              "type": "play_sfx",
+              "id": "pick"
+            }
+          ]
+        }
+      ],
+      "visual": {
+        "taken": {
+          "hidden": true
+        }
+      }
+    },
+    {
+      "id": "shop.drawer_inside",
+      "place": "shop",
+      "kind": "dive",
+      "to": "drawer",
+      "label": "the inside of the blue drawer",
+      "at": [
+        "B",
+        -95,
+        -12,
+        1.32
+      ],
+      "size": [
+        0.2,
+        0.04,
+        0.28
+      ],
+      "shape": "box",
+      "color": "#F1E6CF",
+      "states": [
+        "shut",
+        "ready"
+      ],
+      "initial": "shut",
+      "visual": {
+        "shut": {
+          "hidden": true
+        },
+        "ready": {
+          "offset": [
+            -0.34,
+            0,
+            0
+          ]
+        }
+      }
+    },
+    {
+      "id": "shop.teacup_star",
+      "place": "shop",
+      "kind": "hidden",
+      "label": "a teacup with a star on its side",
+      "at": [
+        "B",
+        -143,
+        34,
+        1.8
+      ],
+      "size": [
+        0.07,
+        0.06,
+        0.07
+      ],
+      "shape": "cylinder",
+      "color": "#F1E6CF",
+      "verb": "Look"
+    },
+    {
+      "id": "shop.marble",
+      "place": "shop",
+      "kind": "hidden",
+      "label": "a glass marble",
+      "at": [
+        "A",
+        -20.4,
+        -23,
+        4.06
+      ],
+      "size": [
+        0.03,
+        0.03,
+        0.03
+      ],
+      "shape": "sphere",
+      "color": "#2F7F86",
+      "verb": "Take"
+    },
+    {
+      "id": "shop.drawer_1",
+      "place": "shop",
+      "kind": "usable",
+      "label": "a small brown drawer",
+      "at": [
+        "B",
+        -102,
+        -4,
+        1.3
+      ],
+      "size": [
+        0.22,
+        0.12,
+        0.3
+      ],
+      "shape": "box",
+      "color": "#6B4A2E",
+      "act": {
+        "toggle": [
+          "Open",
+          "Close"
+        ]
+      }
+    },
+    {
+      "id": "shop.drawer_2",
+      "place": "shop",
+      "kind": "usable",
+      "label": "a small brown drawer",
+      "at": [
+        "B",
+        -88,
+        -4,
+        1.3
+      ],
+      "size": [
+        0.22,
+        0.12,
+        0.3
+      ],
+      "shape": "box",
+      "color": "#6B4A2E",
+      "act": {
+        "toggle": [
+          "Open",
+          "Close"
+        ]
+      }
+    },
+    {
+      "id": "shop.drawer_3",
+      "place": "shop",
+      "kind": "usable",
+      "label": "a small brown drawer",
+      "at": [
+        "B",
+        -81,
+        -4,
+        1.3
+      ],
+      "size": [
+        0.22,
+        0.12,
+        0.3
+      ],
+      "shape": "box",
+      "color": "#6B4A2E",
+      "act": {
+        "toggle": [
+          "Open",
+          "Close"
+        ]
+      }
+    },
+    {
+      "id": "shop.drawer_4",
+      "place": "shop",
+      "kind": "usable",
+      "label": "a small brown drawer",
+      "at": [
+        "B",
+        -102,
+        -16,
+        1.3
+      ],
+      "size": [
+        0.22,
+        0.12,
+        0.3
+      ],
+      "shape": "box",
+      "color": "#6B4A2E",
+      "act": {
+        "toggle": [
+          "Open",
+          "Close"
+        ]
+      }
+    },
+    {
+      "id": "shop.drawer_5",
+      "place": "shop",
+      "kind": "usable",
+      "label": "a small brown drawer",
+      "at": [
+        "B",
+        -88,
+        -16,
+        1.3
+      ],
+      "size": [
+        0.22,
+        0.12,
+        0.3
+      ],
+      "shape": "box",
+      "color": "#6B4A2E",
+      "act": {
+        "toggle": [
+          "Open",
+          "Close"
+        ]
+      }
+    },
+    {
+      "id": "shop.drawer_6",
+      "place": "shop",
+      "kind": "usable",
+      "label": "a small brown drawer",
+      "at": [
+        "B",
+        -81,
+        -16,
+        1.3
+      ],
+      "size": [
+        0.22,
+        0.12,
+        0.3
+      ],
+      "shape": "box",
+      "color": "#6B4A2E",
+      "act": {
+        "toggle": [
+          "Open",
+          "Close"
+        ]
+      }
+    },
+    {
+      "id": "shop.drawer_7",
+      "place": "shop",
+      "kind": "usable",
+      "label": "a small brown drawer",
+      "at": [
+        "B",
+        -102,
+        4,
+        1.3
+      ],
+      "size": [
+        0.22,
+        0.12,
+        0.3
+      ],
+      "shape": "box",
+      "color": "#6B4A2E",
+      "act": {
+        "toggle": [
+          "Open",
+          "Close"
+        ]
+      }
+    },
+    {
+      "id": "shop.drawer_8",
+      "place": "shop",
+      "kind": "usable",
+      "label": "a small brown drawer",
+      "at": [
+        "B",
+        -88,
+        4,
+        1.3
+      ],
+      "size": [
+        0.22,
+        0.12,
+        0.3
+      ],
+      "shape": "box",
+      "color": "#6B4A2E",
+      "act": {
+        "toggle": [
+          "Open",
+          "Close"
+        ]
+      }
+    },
+    {
+      "id": "shop.cuckoo",
+      "place": "shop",
+      "kind": "usable",
+      "label": "a cuckoo clock",
+      "at": [
+        "B",
+        -50,
+        25,
+        2.2
+      ],
+      "size": [
+        0.3,
+        0.4,
+        0.2
+      ],
+      "shape": "box",
+      "color": "#6B3F22",
+      "act": {
+        "simple": "Tap"
+      }
+    },
+    {
+      "id": "shop.jar_buttons",
+      "place": "shop",
+      "kind": "usable",
+      "label": "a jar of buttons",
+      "at": [
+        "B",
+        -70,
+        18,
+        2.0
+      ],
+      "size": [
+        0.15,
+        0.2,
+        0.15
+      ],
+      "shape": "cylinder",
+      "color": "#9AB8C8",
+      "act": {
+        "toggle": [
+          "Open",
+          "Close"
+        ]
+      }
+    },
+    {
+      "id": "shop.stuffed_fish",
+      "place": "shop",
+      "kind": "usable",
+      "label": "a stuffed fish on the wall",
+      "at": [
+        "B",
+        -130,
+        20,
+        2.4
+      ],
+      "size": [
+        0.7,
+        0.25,
+        0.15
+      ],
+      "shape": "box",
+      "color": "#6E8E9E",
+      "act": {
+        "simple": "Poke"
+      }
+    },
+    {
+      "id": "shop.globe",
+      "place": "shop",
+      "kind": "usable",
+      "label": "a globe",
+      "at": [
+        "B",
+        -150,
+        -10,
+        2.3
+      ],
+      "size": [
+        0.35,
+        0.35,
+        0.35
+      ],
+      "shape": "sphere",
+      "color": "#2F7F86",
+      "act": {
+        "simple": "Spin"
+      }
+    },
+    {
+      "id": "shop.music_box",
+      "place": "shop",
+      "kind": "usable",
+      "label": "a music box",
+      "at": [
+        "B",
+        -120,
+        -25,
+        2.0
+      ],
+      "size": [
+        0.25,
+        0.15,
+        0.2
+      ],
+      "shape": "box",
+      "color": "#8A3A3A",
+      "act": {
+        "simple": "Wind"
+      }
+    },
+    {
+      "id": "shop.wall_clock",
+      "place": "shop",
+      "kind": "usable",
+      "label": "a wall clock",
+      "at": [
+        "A",
+        30,
+        25,
+        2.5
+      ],
+      "size": [
+        0.35,
+        0.35,
+        0.1
+      ],
+      "shape": "cylinder",
+      "color": "#C9A24E",
+      "act": {
+        "simple": "Tap"
+      },
+      "rot": [
+        90,
+        0,
+        0
+      ]
+    },
+    {
+      "id": "shop.counter_bell",
+      "place": "shop",
+      "kind": "usable",
+      "label": "the counter bell",
+      "at": [
+        "A",
+        -20,
+        -14,
+        2.5
+      ],
+      "size": [
+        0.12,
+        0.1,
+        0.12
+      ],
+      "shape": "sphere",
+      "color": "#C9A24E",
+      "act": {
+        "simple": "Ding"
+      }
+    },
+    {
+      "id": "shop.scales",
+      "place": "shop",
+      "kind": "usable",
+      "label": "the brass scales on the counter",
+      "at": [
+        "A",
+        -4,
+        -12,
+        2.5
+      ],
+      "size": [
+        0.4,
+        0.4,
+        0.2
+      ],
+      "shape": "box",
+      "color": "#C9A24E",
+      "act": {
+        "simple": "Swing"
+      }
+    },
+    {
+      "id": "shop.map",
+      "place": "shop",
+      "kind": "usable",
+      "label": "a rolled map",
+      "at": [
+        "A",
+        50,
+        -10,
+        2.3
+      ],
+      "size": [
+        0.5,
+        0.08,
+        0.08
+      ],
+      "shape": "cylinder",
+      "color": "#F1E6CF",
+      "act": {
+        "simple": "Unroll"
+      },
+      "rot": [
+        0,
+        0,
+        90
+      ]
+    },
+    {
+      "id": "shop.big_book",
+      "place": "shop",
+      "kind": "usable",
+      "label": "a big book",
+      "at": [
+        "A",
+        -50,
+        -20,
+        2.2
+      ],
+      "size": [
+        0.4,
+        0.1,
+        0.3
+      ],
+      "shape": "box",
+      "color": "#5A2A2A",
+      "act": {
+        "toggle": [
+          "Open",
+          "Close"
+        ]
+      }
+    },
+    {
+      "id": "shop.birdcage",
+      "place": "shop",
+      "kind": "usable",
+      "label": "an empty birdcage",
+      "at": [
+        "A",
+        20,
+        35,
+        2.4
+      ],
+      "size": [
+        0.3,
+        0.4,
+        0.3
+      ],
+      "shape": "cylinder",
+      "color": "#C9A24E",
+      "act": {
+        "simple": "Swing"
+      }
+    },
+    {
+      "id": "shop.telescope",
+      "place": "shop",
+      "kind": "usable",
+      "label": "a brass telescope",
+      "at": [
+        "A",
+        70,
+        10,
+        2.3
+      ],
+      "size": [
+        0.6,
+        0.1,
+        0.1
+      ],
+      "shape": "cylinder",
+      "color": "#C9A24E",
+      "act": {
+        "simple": "Turn"
+      },
+      "rot": [
+        0,
+        0,
+        90
+      ]
+    },
+    {
+      "id": "shop.oil_lamp",
+      "place": "shop",
+      "kind": "usable",
+      "label": "an oil lamp",
+      "at": [
+        "A",
+        -70,
+        10,
+        2.2
+      ],
+      "size": [
+        0.15,
+        0.3,
+        0.15
+      ],
+      "shape": "cylinder",
+      "color": "#F2B75B",
+      "act": {
+        "toggle": [
+          "Dim",
+          "Brighten"
+        ]
+      }
+    },
+    {
+      "id": "shop.cash_drawer",
+      "place": "shop",
+      "kind": "usable",
+      "label": "the cash drawer",
+      "at": [
+        "A",
+        -28,
+        -22,
+        2.5
+      ],
+      "size": [
+        0.4,
+        0.12,
+        0.3
+      ],
+      "shape": "box",
+      "color": "#3A3A3A",
+      "act": {
+        "toggle": [
+          "Open",
+          "Close"
+        ]
+      }
+    },
+    {
+      "id": "shop.mirror",
+      "place": "shop",
+      "kind": "usable",
+      "label": "a hand mirror",
+      "at": [
+        "A",
+        -80,
+        5,
+        2.1
+      ],
+      "size": [
+        0.2,
+        0.3,
+        0.03
+      ],
+      "shape": "box",
+      "color": "#B0C4D8",
+      "act": {
+        "simple": "Look"
+      }
+    },
+    {
+      "id": "shop.door_sign",
+      "place": "shop",
+      "kind": "usable",
+      "label": "the door sign: a drawn sun on one side, a moon on the other",
+      "at": [
+        "A",
+        100,
+        15,
+        1.4
+      ],
+      "size": [
+        0.3,
+        0.2,
+        0.02
+      ],
+      "shape": "box",
+      "color": "#F1E6CF",
+      "act": {
+        "simple": "Flip"
+      }
+    },
+    {
+      "id": "drawer.envelope",
+      "place": "drawer",
+      "kind": "usable",
+      "label": "an envelope with its flap up",
+      "at": [
+        "B",
+        50,
+        -15,
+        8
+      ],
+      "size": [
+        6,
+        0.3,
+        4
+      ],
+      "shape": "box",
+      "color": "#F1E6CF",
+      "states": [
+        "sealed",
+        "open"
+      ],
+      "initial": "sealed",
+      "transitions": [
+        {
+          "from": "sealed",
+          "to": "open",
+          "verb": "Open",
+          "effects": [
+            {
+              "type": "step",
+              "id": "open_envelope"
+            },
+            {
+              "type": "play_sfx",
+              "id": "paper"
+            },
+            {
+              "type": "change_state",
+              "object": "drawer.feather",
+              "to": "shown"
+            }
+          ]
+        }
+      ],
+      "visual": {
+        "open": {
+          "rot": [
+            0,
+            0,
+            25
+          ]
+        }
+      }
+    },
+    {
+      "id": "drawer.feather",
+      "place": "drawer",
+      "kind": "usable",
+      "label": "a small grey feather",
+      "at": [
+        "B",
+        50,
+        -11,
+        7.8
+      ],
+      "size": [
+        0.6,
+        2.0,
+        0.3
+      ],
+      "shape": "box",
+      "color": "#9A9A9A",
+      "states": [
+        "hidden",
+        "shown",
+        "taken"
+      ],
+      "initial": "hidden",
+      "transitions": [
+        {
+          "from": "shown",
+          "to": "taken",
+          "verb": "Take",
+          "effects": [
+            {
+              "type": "take_item",
+              "item": "feather"
+            },
+            {
+              "type": "step",
+              "id": "take_feather"
+            },
+            {
+              "type": "play_sfx",
+              "id": "pick"
+            }
+          ]
+        }
+      ],
+      "visual": {
+        "hidden": {
+          "hidden": true
+        },
+        "taken": {
+          "hidden": true
+        }
+      }
+    },
+    {
+      "id": "drawer.cat_nose",
+      "place": "drawer",
+      "kind": "usable",
+      "label": "the cat's nose",
+      "at": [
+        "B",
+        -35,
+        5,
+        11
+      ],
+      "size": [
+        1.2,
+        1.0,
+        1.0
+      ],
+      "shape": "sphere",
+      "color": "#E8A0A0",
+      "states": [
+        "asleep",
+        "stirred"
+      ],
+      "initial": "asleep",
+      "transitions": [
+        {
+          "from": "asleep",
+          "to": "asleep",
+          "verb": "Use",
+          "conditions": [
+            {
+              "not_has_item": "feather"
+            }
+          ],
+          "effects": [
+            {
+              "type": "play_sfx",
+              "id": "purr"
+            },
+            {
+              "type": "anim",
+              "id": "wiggle"
+            }
+          ]
+        },
+        {
+          "from": "asleep",
+          "to": "stirred",
+          "verb": "Use",
+          "conditions": [
+            {
+              "has_item": "feather"
+            }
+          ],
+          "effects": [
+            {
+              "type": "step",
+              "id": "use_feather_on_nose"
+            },
+            {
+              "type": "play_sfx",
+              "id": "sneeze"
+            },
+            {
+              "type": "change_state",
+              "object": "drawer.cat_neck",
+              "to": "ready"
+            }
+          ]
+        }
+      ],
+      "visual": {
+        "stirred": {
+          "offset": [
+            0,
+            0.8,
+            0
+          ]
+        }
+      }
+    },
+    {
+      "id": "drawer.cat_neck",
+      "place": "drawer",
+      "kind": "dive",
+      "to": "cat",
+      "label": "the fur of the cat's neck",
+      "at": [
+        "B",
+        -25,
+        8,
+        11.5
+      ],
+      "size": [
+        6,
+        5,
+        5
+      ],
+      "shape": "sphere",
+      "color": "#D98C3F",
+      "states": [
+        "shut",
+        "ready"
+      ],
+      "initial": "shut",
+      "visual": {
+        "ready": {
+          "offset": [
+            0,
+            1.0,
+            0
+          ],
+          "color": "#E9A45A"
+        }
+      }
+    },
+    {
+      "id": "drawer.paper_boat",
+      "place": "drawer",
+      "kind": "hidden",
+      "label": "a paper boat",
+      "at": [
+        "A",
+        26.7,
+        -7.4,
+        31.4
+      ],
+      "size": [
+        2,
+        1.2,
+        0.8
+      ],
+      "shape": "box",
+      "color": "#FFFFFF",
+      "verb": "Take"
+    },
+    {
+      "id": "drawer.stamp_moon",
+      "place": "drawer",
+      "kind": "hidden",
+      "label": "a stamp showing a night sky with a hole where the moon should be",
+      "at": [
+        "B",
+        30,
+        6,
+        20.0
+      ],
+      "size": [
+        1.6,
+        2,
+        0.1
+      ],
+      "shape": "box",
+      "color": "#B8C4E8",
+      "verb": "Look"
+    },
+    {
+      "id": "drawer.env_1",
+      "place": "drawer",
+      "kind": "usable",
+      "label": "an old envelope",
+      "at": [
+        "B",
+        70,
+        -20,
+        7
+      ],
+      "size": [
+        6,
+        0.3,
+        4
+      ],
+      "shape": "box",
+      "color": "#EDE2C8",
+      "act": {
+        "toggle": [
+          "Open",
+          "Close"
+        ]
+      }
+    },
+    {
+      "id": "drawer.env_2",
+      "place": "drawer",
+      "kind": "usable",
+      "label": "an old envelope",
+      "at": [
+        "B",
+        85,
+        -10,
+        8
+      ],
+      "size": [
+        6,
+        0.3,
+        4
+      ],
+      "shape": "box",
+      "color": "#EDE2C8",
+      "act": {
+        "toggle": [
+          "Open",
+          "Close"
+        ]
+      }
+    },
+    {
+      "id": "drawer.env_3",
+      "place": "drawer",
+      "kind": "usable",
+      "label": "an old envelope",
+      "at": [
+        "B",
+        -60,
+        -25,
+        8
+      ],
+      "size": [
+        6,
+        0.3,
+        4
+      ],
+      "shape": "box",
+      "color": "#EDE2C8",
+      "act": {
+        "toggle": [
+          "Open",
+          "Close"
+        ]
+      }
+    },
+    {
+      "id": "drawer.env_4",
+      "place": "drawer",
+      "kind": "usable",
+      "label": "an old envelope",
+      "at": [
+        "B",
+        -75,
+        -12,
+        9
+      ],
+      "size": [
+        6,
+        0.3,
+        4
+      ],
+      "shape": "box",
+      "color": "#EDE2C8",
+      "act": {
+        "toggle": [
+          "Open",
+          "Close"
+        ]
+      }
+    },
+    {
+      "id": "drawer.env_5",
+      "place": "drawer",
+      "kind": "usable",
+      "label": "an old envelope",
+      "at": [
+        "B",
+        110,
+        -15,
+        8
+      ],
+      "size": [
+        6,
+        0.3,
+        4
+      ],
+      "shape": "box",
+      "color": "#EDE2C8",
+      "act": {
+        "toggle": [
+          "Open",
+          "Close"
+        ]
+      }
+    },
+    {
+      "id": "drawer.env_6",
+      "place": "drawer",
+      "kind": "usable",
+      "label": "an old envelope",
+      "at": [
+        "B",
+        -100,
+        -20,
+        9
+      ],
+      "size": [
+        6,
+        0.3,
+        4
+      ],
+      "shape": "box",
+      "color": "#EDE2C8",
+      "act": {
+        "toggle": [
+          "Open",
+          "Close"
+        ]
+      }
+    },
+    {
+      "id": "drawer.thimble",
+      "place": "drawer",
+      "kind": "usable",
+      "label": "a thimble",
+      "at": [
+        "B",
+        20,
+        -30,
+        8
+      ],
+      "size": [
+        1.0,
+        1.2,
+        1.0
+      ],
+      "shape": "cylinder",
+      "color": "#C9C9C9",
+      "act": {
+        "simple": "Ring"
+      }
+    },
+    {
+      "id": "drawer.spool",
+      "place": "drawer",
+      "kind": "usable",
+      "label": "a spool of thread",
+      "at": [
+        "B",
+        -15,
+        -35,
+        6
+      ],
+      "size": [
+        1.5,
+        2,
+        1.5
+      ],
+      "shape": "cylinder",
+      "color": "#B85C38",
+      "act": {
+        "simple": "Unroll"
+      }
+    },
+    {
+      "id": "drawer.pencil",
+      "place": "drawer",
+      "kind": "usable",
+      "label": "a pencil stub",
+      "at": [
+        "B",
+        95,
+        -30,
+        8
+      ],
+      "size": [
+        4,
+        0.6,
+        0.6
+      ],
+      "shape": "cylinder",
+      "color": "#E3B341",
+      "act": {
+        "simple": "Roll"
+      },
+      "rot": [
+        0,
+        0,
+        90
+      ]
+    },
+    {
+      "id": "drawer.wax_seal",
+      "place": "drawer",
+      "kind": "usable",
+      "label": "a wax seal",
+      "at": [
+        "B",
+        60,
+        -35,
+        6
+      ],
+      "size": [
+        1.2,
+        0.4,
+        1.2
+      ],
+      "shape": "cylinder",
+      "color": "#8A2A2A",
+      "act": {
+        "simple": "Press"
+      }
+    },
+    {
+      "id": "drawer.matchbox",
+      "place": "drawer",
+      "kind": "usable",
+      "label": "a matchbox",
+      "at": [
+        "B",
+        -50,
+        -38,
+        7
+      ],
+      "size": [
+        3,
+        1,
+        2
+      ],
+      "shape": "box",
+      "color": "#3F6FBF",
+      "act": {
+        "toggle": [
+          "Open",
+          "Close"
+        ]
+      }
+    },
+    {
+      "id": "drawer.tiny_bell",
+      "place": "drawer",
+      "kind": "usable",
+      "label": "a tiny bell",
+      "at": [
+        "B",
+        5,
+        -25,
+        7
+      ],
+      "size": [
+        1,
+        1,
+        1
+      ],
+      "shape": "sphere",
+      "color": "#C9A24E",
+      "act": {
+        "simple": "Ring"
+      }
+    },
+    {
+      "id": "drawer.ribbon",
+      "place": "drawer",
+      "kind": "usable",
+      "label": "a ribbon",
+      "at": [
+        "B",
+        35,
+        -22,
+        9
+      ],
+      "size": [
+        6,
+        0.3,
+        1
+      ],
+      "shape": "box",
+      "color": "#B0281E",
+      "act": {
+        "simple": "Pull"
+      }
+    },
+    {
+      "id": "drawer.sock",
+      "place": "drawer",
+      "kind": "usable",
+      "label": "a sock on the pillow",
+      "at": [
+        "B",
+        -10,
+        -5,
+        12
+      ],
+      "size": [
+        5,
+        2,
+        3
+      ],
+      "shape": "box",
+      "color": "#8C8A85",
+      "act": {
+        "simple": "Wiggle"
+      }
+    },
+    {
+      "id": "drawer.cat_tail",
+      "place": "drawer",
+      "kind": "usable",
+      "label": "the cat's tail",
+      "at": [
+        "B",
+        10,
+        0,
+        12
+      ],
+      "size": [
+        1.5,
+        1.5,
+        8
+      ],
+      "shape": "cylinder",
+      "color": "#D98C3F",
+      "act": {
+        "simple": "Tickle"
+      },
+      "rot": [
+        90,
+        0,
+        0
+      ]
+    },
+    {
+      "id": "drawer.paperclip",
+      "place": "drawer",
+      "kind": "usable",
+      "label": "a chain of paperclips",
+      "at": [
+        "B",
+        -120,
+        -10,
+        8
+      ],
+      "size": [
+        0.4,
+        6,
+        0.4
+      ],
+      "shape": "cylinder",
+      "color": "#C9C9C9",
+      "act": {
+        "simple": "Sway"
+      }
+    },
+    {
+      "id": "drawer.bridge_key",
+      "place": "drawer",
+      "kind": "usable",
+      "label": "a key in the bridge",
+      "at": [
+        "B",
+        30,
+        -18,
+        12
+      ],
+      "size": [
+        3,
+        0.4,
+        1
+      ],
+      "shape": "box",
+      "color": "#C9A24E",
+      "act": {
+        "simple": "Turn"
+      }
+    },
+    {
+      "id": "drawer.coin",
+      "place": "drawer",
+      "kind": "usable",
+      "label": "a coin",
+      "at": [
+        "A",
+        -30,
+        -25,
+        9
+      ],
+      "size": [
+        1.4,
+        0.2,
+        1.4
+      ],
+      "shape": "cylinder",
+      "color": "#C9A24E",
+      "act": {
+        "simple": "Spin"
+      }
+    },
+    {
+      "id": "drawer.ticket",
+      "place": "drawer",
+      "kind": "usable",
+      "label": "a ticket stub",
+      "at": [
+        "A",
+        -45,
+        -18,
+        10
+      ],
+      "size": [
+        3,
+        0.1,
+        1.5
+      ],
+      "shape": "box",
+      "color": "#EDE2C8",
+      "act": {
+        "simple": "Flip"
+      }
+    },
+    {
+      "id": "drawer.photo",
+      "place": "drawer",
+      "kind": "usable",
+      "label": "an old photograph",
+      "at": [
+        "A",
+        45,
+        -15,
+        10
+      ],
+      "size": [
+        4,
+        0.1,
+        3
+      ],
+      "shape": "box",
+      "color": "#D8D0C0",
+      "act": {
+        "simple": "Flip"
+      }
+    },
+    {
+      "id": "drawer.button_pile",
+      "place": "drawer",
+      "kind": "usable",
+      "label": "a pile of buttons",
+      "at": [
+        "A",
+        60,
+        -20,
+        8
+      ],
+      "size": [
+        3,
+        1,
+        3
+      ],
+      "shape": "sphere",
+      "color": "#6E7E8E",
+      "act": {
+        "simple": "Spill"
+      }
+    },
+    {
+      "id": "drawer.loose_stamp",
+      "place": "drawer",
+      "kind": "usable",
+      "label": "a loose stamp",
+      "at": [
+        "A",
+        -60,
+        -10,
+        10
+      ],
+      "size": [
+        1.6,
+        0.1,
+        2
+      ],
+      "shape": "box",
+      "color": "#9AB8C8",
+      "act": {
+        "simple": "Flip"
+      }
+    },
+    {
+      "id": "drawer.dried_flower",
+      "place": "drawer",
+      "kind": "usable",
+      "label": "a dried flower",
+      "at": [
+        "A",
+        30,
+        -30,
+        7
+      ],
+      "size": [
+        1.5,
+        0.5,
+        1.5
+      ],
+      "shape": "box",
+      "color": "#B8A0C8",
+      "act": {
+        "simple": "Touch"
+      }
+    },
+    {
+      "id": "drawer.pin",
+      "place": "drawer",
+      "kind": "usable",
+      "label": "a pin",
+      "at": [
+        "A",
+        -15,
+        -28,
+        8
+      ],
+      "size": [
+        0.2,
+        2,
+        0.2
+      ],
+      "shape": "cylinder",
+      "color": "#C9C9C9",
+      "act": {
+        "simple": "Pull"
+      }
+    },
+    {
+      "id": "cat.ear",
+      "place": "cat",
+      "kind": "usable",
+      "label": "the ear",
+      "at": [
+        "A",
+        15,
+        45,
+        55
+      ],
+      "size": [
+        30,
+        40,
+        10
+      ],
+      "shape": "cone",
+      "color": "#D98C3F",
+      "states": [
+        "still",
+        "flicked"
+      ],
+      "initial": "still",
+      "transitions": [
+        {
+          "from": "still",
+          "to": "still",
+          "verb": "Use",
+          "conditions": [
+            {
+              "not_has_item": "feather"
+            }
+          ],
+          "effects": [
+            {
+              "type": "play_sfx",
+              "id": "twitch"
+            },
+            {
+              "type": "anim",
+              "id": "wiggle"
+            }
+          ]
+        },
+        {
+          "from": "still",
+          "to": "flicked",
+          "verb": "Use",
+          "conditions": [
+            {
+              "has_item": "feather"
+            }
+          ],
+          "effects": [
+            {
+              "type": "consume_item",
+              "item": "feather"
+            },
+            {
+              "type": "step",
+              "id": "use_feather_on_ear"
+            },
+            {
+              "type": "play_sfx",
+              "id": "purr"
+            },
+            {
+              "type": "change_state",
+              "object": "cat.eye",
+              "to": "ready"
+            }
+          ]
+        }
+      ],
+      "visual": {
+        "flicked": {
+          "rot": [
+            0,
+            0,
+            -20
+          ]
+        }
+      }
+    },
+    {
+      "id": "cat.eye",
+      "place": "cat",
+      "kind": "dive",
+      "to": "eye",
+      "label": "the eye",
+      "at": [
+        "A",
+        5,
+        30,
+        58
+      ],
+      "size": [
+        40,
+        25,
+        20
+      ],
+      "shape": "sphere",
+      "color": "#C9803A",
+      "states": [
+        "shut",
+        "ready"
+      ],
+      "initial": "shut",
+      "visual": {
+        "ready": {
+          "color": "#1B3A8A"
+        }
+      }
+    },
+    {
+      "id": "cat.flea",
+      "place": "cat",
+      "kind": "hidden",
+      "label": "a flea wearing a tiny hat",
+      "at": [
+        "A",
+        -40,
+        20,
+        45
+      ],
+      "size": [
+        2,
+        2.5,
+        2
+      ],
+      "shape": "box",
+      "color": "#333333",
+      "verb": "Look"
+    },
+    {
+      "id": "cat.fishbone",
+      "place": "cat",
+      "kind": "hidden",
+      "label": "a fish bone",
+      "at": [
+        "B",
+        -45,
+        -10,
+        30
+      ],
+      "size": [
+        12,
+        2,
+        3
+      ],
+      "shape": "box",
+      "color": "#F1E6CF",
+      "verb": "Take"
+    },
+    {
+      "id": "cat.hair_1",
+      "place": "cat",
+      "kind": "usable",
+      "label": "a tall hair",
+      "at": [
+        "A",
+        -75,
+        10,
+        30
+      ],
+      "size": [
+        2,
+        30,
+        2
+      ],
+      "shape": "cylinder",
+      "color": "#E9A45A",
+      "act": {
+        "simple": "Part"
+      }
+    },
+    {
+      "id": "cat.hair_2",
+      "place": "cat",
+      "kind": "usable",
+      "label": "a tall hair",
+      "at": [
+        "A",
+        60,
+        25,
+        35
+      ],
+      "size": [
+        2,
+        30,
+        2
+      ],
+      "shape": "cylinder",
+      "color": "#E9A45A",
+      "act": {
+        "simple": "Part"
+      }
+    },
+    {
+      "id": "cat.whisker",
+      "place": "cat",
+      "kind": "usable",
+      "label": "a whisker",
+      "at": [
+        "A",
+        -60,
+        50,
+        50
+      ],
+      "size": [
+        1.5,
+        1.5,
+        80
+      ],
+      "shape": "cylinder",
+      "color": "#F1E6CF",
+      "act": {
+        "simple": "Twang"
+      },
+      "rot": [
+        90,
+        0,
+        0
+      ]
+    },
+    {
+      "id": "cat.burr",
+      "place": "cat",
+      "kind": "usable",
+      "label": "a burr",
+      "at": [
+        "A",
+        -70,
+        -5,
+        30
+      ],
+      "size": [
+        5,
+        5,
+        5
+      ],
+      "shape": "sphere",
+      "color": "#6E5A3A",
+      "act": {
+        "simple": "Roll"
+      }
+    },
+    {
+      "id": "cat.claw",
+      "place": "cat",
+      "kind": "usable",
+      "label": "a claw",
+      "at": [
+        "A",
+        90,
+        -20,
+        50
+      ],
+      "size": [
+        4,
+        10,
+        4
+      ],
+      "shape": "cone",
+      "color": "#F1E6CF",
+      "act": {
+        "simple": "Flex"
+      }
+    },
+    {
+      "id": "cat.paw_pad",
+      "place": "cat",
+      "kind": "usable",
+      "label": "a paw pad",
+      "at": [
+        "A",
+        110,
+        -25,
+        55
+      ],
+      "size": [
+        14,
+        4,
+        12
+      ],
+      "shape": "sphere",
+      "color": "#E8A0A0",
+      "act": {
+        "simple": "Press"
+      }
+    },
+    {
+      "id": "cat.milk_drop",
+      "place": "cat",
+      "kind": "usable",
+      "label": "a drop of milk on the chin",
+      "at": [
+        "A",
+        -25,
+        35,
+        50
+      ],
+      "size": [
+        4,
+        4,
+        4
+      ],
+      "shape": "sphere",
+      "color": "#FFFFFF",
+      "act": {
+        "simple": "Wobble"
+      }
+    },
+    {
+      "id": "cat.moth",
+      "place": "cat",
+      "kind": "usable",
+      "label": "a moth on the fur",
+      "at": [
+        "A",
+        40,
+        55,
+        45
+      ],
+      "size": [
+        6,
+        2,
+        4
+      ],
+      "shape": "box",
+      "color": "#C8B89A",
+      "act": {
+        "simple": "Shoo"
+      }
+    },
+    {
+      "id": "cat.knot",
+      "place": "cat",
+      "kind": "usable",
+      "label": "a knot of fur",
+      "at": [
+        "A",
+        -90,
+        15,
+        40
+      ],
+      "size": [
+        8,
+        8,
+        8
+      ],
+      "shape": "sphere",
+      "color": "#B86A2A",
+      "act": {
+        "simple": "Untie"
+      }
+    },
+    {
+      "id": "cat.nose",
+      "place": "cat",
+      "kind": "usable",
+      "label": "the nose",
+      "at": [
+        "A",
+        45,
+        5,
+        58
+      ],
+      "size": [
+        10,
+        8,
+        8
+      ],
+      "shape": "sphere",
+      "color": "#E8A0A0",
+      "act": {
+        "simple": "Boop"
+      }
+    },
+    {
+      "id": "cat.eyelid_edge",
+      "place": "cat",
+      "kind": "usable",
+      "label": "the edge of the eyelid",
+      "at": [
+        "A",
+        -15,
+        28,
+        56
+      ],
+      "size": [
+        12,
+        3,
+        6
+      ],
+      "shape": "box",
+      "color": "#C9803A",
+      "act": {
+        "simple": "Twitch"
+      }
+    },
+    {
+      "id": "cat.crumb",
+      "place": "cat",
+      "kind": "usable",
+      "label": "a crumb",
+      "at": [
+        "A",
+        30,
+        -20,
+        40
+      ],
+      "size": [
+        3,
+        2,
+        3
+      ],
+      "shape": "box",
+      "color": "#C8B89A",
+      "act": {
+        "simple": "Roll"
+      }
+    },
+    {
+      "id": "cat.fish_charm",
+      "place": "cat",
+      "kind": "usable",
+      "label": "the fish charm",
+      "at": [
+        "B",
+        -30,
+        0,
+        35
+      ],
+      "size": [
+        10,
+        6,
+        2
+      ],
+      "shape": "box",
+      "color": "#7FC8D8",
+      "act": {
+        "simple": "Swing"
+      }
+    },
+    {
+      "id": "cat.house_charm",
+      "place": "cat",
+      "kind": "usable",
+      "label": "the house charm, with a tiny door",
+      "at": [
+        "B",
+        -10,
+        3,
+        38
+      ],
+      "size": [
+        8,
+        9,
+        2
+      ],
+      "shape": "box",
+      "color": "#F1E6CF",
+      "act": {
+        "toggle": [
+          "Open",
+          "Close"
+        ]
+      }
+    },
+    {
+      "id": "cat.bell_charm",
+      "place": "cat",
+      "kind": "usable",
+      "label": "the bell charm",
+      "at": [
+        "B",
+        10,
+        5,
+        42
+      ],
+      "size": [
+        7,
+        8,
+        7
+      ],
+      "shape": "sphere",
+      "color": "#F2D66B",
+      "act": {
+        "simple": "Ring"
+      }
+    },
+    {
+      "id": "cat.heart_charm",
+      "place": "cat",
+      "kind": "usable",
+      "label": "the heart charm",
+      "at": [
+        "B",
+        30,
+        3,
+        45
+      ],
+      "size": [
+        7,
+        7,
+        2
+      ],
+      "shape": "box",
+      "color": "#E06070",
+      "act": {
+        "simple": "Turn"
+      }
+    },
+    {
+      "id": "cat.tag",
+      "place": "cat",
+      "kind": "usable",
+      "label": "the tag with a paw print",
+      "at": [
+        "B",
+        50,
+        0,
+        50
+      ],
+      "size": [
+        8,
+        8,
+        1
+      ],
+      "shape": "cylinder",
+      "color": "#DDDDDD",
+      "act": {
+        "simple": "Flip"
+      },
+      "rot": [
+        90,
+        0,
+        0
+      ]
+    },
+    {
+      "id": "cat.buckle",
+      "place": "cat",
+      "kind": "usable",
+      "label": "the collar buckle",
+      "at": [
+        "B",
+        -70,
+        -15,
+        40
+      ],
+      "size": [
+        10,
+        10,
+        3
+      ],
+      "shape": "box",
+      "color": "#9A9A9A",
+      "act": {
+        "simple": "Click"
+      }
+    },
+    {
+      "id": "cat.loose_hair",
+      "place": "cat",
+      "kind": "usable",
+      "label": "a loose hair",
+      "at": [
+        "B",
+        70,
+        30,
+        40
+      ],
+      "size": [
+        1.2,
+        25,
+        1.2
+      ],
+      "shape": "cylinder",
+      "color": "#E9A45A",
+      "act": {
+        "simple": "Blow"
+      }
+    },
+    {
+      "id": "cat.flea2",
+      "place": "cat",
+      "kind": "usable",
+      "label": "a second flea, with no hat",
+      "at": [
+        "B",
+        -60,
+        20,
+        45
+      ],
+      "size": [
+        2,
+        2,
+        2
+      ],
+      "shape": "box",
+      "color": "#333333",
+      "act": {
+        "simple": "Shoo"
+      }
+    },
+    {
+      "id": "cat.dust",
+      "place": "cat",
+      "kind": "usable",
+      "label": "a dust mote",
+      "at": [
+        "B",
+        100,
+        40,
+        50
+      ],
+      "size": [
+        2,
+        2,
+        2
+      ],
+      "shape": "sphere",
+      "color": "#DDDDDD",
+      "act": {
+        "simple": "Blow"
+      }
+    },
+    {
+      "id": "eye.reflected_lamp",
+      "place": "eye",
+      "kind": "usable",
+      "label": "a reflected lamp in the wet shine",
+      "at": [
+        "A",
+        -20,
+        45,
+        38
+      ],
+      "size": [
+        5,
+        5,
+        5
+      ],
+      "shape": "sphere",
+      "color": "#FFE39A",
+      "states": [
+        "lit",
+        "covered"
+      ],
+      "initial": "lit",
+      "transitions": [
+        {
+          "from": "lit",
+          "to": "covered",
+          "verb": "Cover",
+          "effects": [
+            {
+              "type": "step",
+              "id": "cover_reflected_lamp"
+            },
+            {
+              "type": "play_sfx",
+              "id": "hush"
+            },
+            {
+              "type": "change_state",
+              "object": "eye.pupil",
+              "to": "ready"
+            }
+          ]
+        }
+      ],
+      "visual": {
+        "covered": {
+          "color": "#3A3A3A"
+        }
+      }
+    },
+    {
+      "id": "eye.pupil",
+      "place": "eye",
+      "kind": "dive",
+      "to": "moon",
+      "label": "the pupil",
+      "at": [
+        "B",
+        0,
+        5,
+        30
+      ],
+      "size": [
+        6,
+        20,
+        4
+      ],
+      "shape": "box",
+      "color": "#05060C",
+      "states": [
+        "shut",
+        "ready"
+      ],
+      "initial": "shut",
+      "visual": {
+        "ready": {
+          "scale": [
+            3.4,
+            1,
+            1
+          ]
+        }
+      }
+    },
+    {
+      "id": "eye.comet",
+      "place": "eye",
+      "kind": "hidden",
+      "label": "a comet with a tail",
+      "at": [
+        "B",
+        -35,
+        25,
+        45
+      ],
+      "size": [
+        3,
+        1,
+        1
+      ],
+      "shape": "box",
+      "color": "#FFFFFF",
+      "verb": "Look"
+    },
+    {
+      "id": "eye.lighthouse_reflection",
+      "place": "eye",
+      "kind": "hidden",
+      "label": "a tiny reflected lighthouse",
+      "at": [
+        "A",
+        -30,
+        40,
+        40
+      ],
+      "size": [
+        1,
+        3,
+        1
+      ],
+      "shape": "cylinder",
+      "color": "#F1E6CF",
+      "verb": "Look"
+    },
+    {
+      "id": "eye.star_1",
+      "place": "eye",
+      "kind": "usable",
+      "label": "a star",
+      "at": [
+        "A",
+        30,
+        20,
+        38
+      ],
+      "size": [
+        1.0,
+        1.0,
+        1.0
+      ],
+      "shape": "sphere",
+      "color": "#FFFFFF",
+      "act": {
+        "simple": "Touch"
+      }
+    },
+    {
+      "id": "eye.star_2",
+      "place": "eye",
+      "kind": "usable",
+      "label": "a star",
+      "at": [
+        "A",
+        -50,
+        15,
+        38
+      ],
+      "size": [
+        1.0,
+        1.0,
+        1.0
+      ],
+      "shape": "sphere",
+      "color": "#FFFFFF",
+      "act": {
+        "simple": "Touch"
+      }
+    },
+    {
+      "id": "eye.ring_seg",
+      "place": "eye",
+      "kind": "usable",
+      "label": "a segment of a gold ring",
+      "at": [
+        "A",
+        45,
+        5,
+        35
+      ],
+      "size": [
+        20,
+        1,
+        3
+      ],
+      "shape": "box",
+      "color": "#E3B341",
+      "act": {
+        "simple": "Hum"
+      }
+    },
+    {
+      "id": "eye.refl_window",
+      "place": "eye",
+      "kind": "usable",
+      "label": "a reflected window frame",
+      "at": [
+        "A",
+        -45,
+        55,
+        40
+      ],
+      "size": [
+        8,
+        6,
+        0.5
+      ],
+      "shape": "box",
+      "color": "#C8D0E8",
+      "act": {
+        "simple": "Part"
+      }
+    },
+    {
+      "id": "eye.refl_bottle",
+      "place": "eye",
+      "kind": "usable",
+      "label": "a reflected bottle on a reflected sill",
+      "at": [
+        "A",
+        -55,
+        42,
+        40
+      ],
+      "size": [
+        1.5,
+        4,
+        1.5
+      ],
+      "shape": "cylinder",
+      "color": "#2F7F86",
+      "act": {
+        "simple": "Roll"
+      }
+    },
+    {
+      "id": "eye.speck",
+      "place": "eye",
+      "kind": "usable",
+      "label": "a floating speck",
+      "at": [
+        "A",
+        10,
+        60,
+        30
+      ],
+      "size": [
+        1,
+        1,
+        1
+      ],
+      "shape": "sphere",
+      "color": "#DDDDDD",
+      "act": {
+        "simple": "Blow"
+      }
+    },
+    {
+      "id": "eye.gold_fleck",
+      "place": "eye",
+      "kind": "usable",
+      "label": "a fleck of gold",
+      "at": [
+        "A",
+        70,
+        10,
+        30
+      ],
+      "size": [
+        2,
+        2,
+        0.5
+      ],
+      "shape": "box",
+      "color": "#E3B341",
+      "act": {
+        "simple": "Turn"
+      }
+    },
+    {
+      "id": "eye.refl_boat",
+      "place": "eye",
+      "kind": "usable",
+      "label": "a tiny reflected boat",
+      "at": [
+        "A",
+        -10,
+        50,
+        40
+      ],
+      "size": [
+        4,
+        1.5,
+        2
+      ],
+      "shape": "box",
+      "color": "#B85C38",
+      "act": {
+        "simple": "Rock"
+      }
+    },
+    {
+      "id": "eye.lash_shadow",
+      "place": "eye",
+      "kind": "usable",
+      "label": "an eyelash shadow at the edge",
+      "at": [
+        "A",
+        90,
+        20,
+        30
+      ],
+      "size": [
+        2,
+        30,
+        2
+      ],
+      "shape": "cylinder",
+      "color": "#0A0C18",
+      "act": {
+        "simple": "Sweep"
+      }
+    },
+    {
+      "id": "eye.refl_clock",
+      "place": "eye",
+      "kind": "usable",
+      "label": "a reflected clock",
+      "at": [
+        "A",
+        -70,
+        35,
+        40
+      ],
+      "size": [
+        4,
+        4,
+        1
+      ],
+      "shape": "cylinder",
+      "color": "#F1E6CF",
+      "act": {
+        "simple": "Tap"
+      },
+      "rot": [
+        90,
+        0,
+        0
+      ]
+    },
+    {
+      "id": "eye.pupil_edge",
+      "place": "eye",
+      "kind": "usable",
+      "label": "the edge of the pupil",
+      "at": [
+        "B",
+        20,
+        -5,
+        30
+      ],
+      "size": [
+        3,
+        10,
+        2
+      ],
+      "shape": "box",
+      "color": "#1B1F2A",
+      "act": {
+        "simple": "Touch"
+      }
+    },
+    {
+      "id": "eye.cloud",
+      "place": "eye",
+      "kind": "usable",
+      "label": "a small cloud in the iris",
+      "at": [
+        "B",
+        -60,
+        30,
+        35
+      ],
+      "size": [
+        10,
+        4,
+        6
+      ],
+      "shape": "sphere",
+      "color": "#3A4A7A",
+      "act": {
+        "simple": "Part"
+      }
+    },
+    {
+      "id": "eye.refl_gull",
+      "place": "eye",
+      "kind": "usable",
+      "label": "a reflected gull",
+      "at": [
+        "B",
+        60,
+        45,
+        35
+      ],
+      "size": [
+        4,
+        1,
+        4
+      ],
+      "shape": "box",
+      "color": "#EEEEEE",
+      "act": {
+        "simple": "Flap"
+      }
+    },
+    {
+      "id": "eye.dark_fleck",
+      "place": "eye",
+      "kind": "usable",
+      "label": "a dark fleck",
+      "at": [
+        "B",
+        -90,
+        10,
+        30
+      ],
+      "size": [
+        2,
+        2,
+        0.5
+      ],
+      "shape": "box",
+      "color": "#05060C",
+      "act": {
+        "simple": "Blink"
+      }
+    },
+    {
+      "id": "eye.ring_cross",
+      "place": "eye",
+      "kind": "usable",
+      "label": "where two rings cross",
+      "at": [
+        "B",
+        110,
+        5,
+        30
+      ],
+      "size": [
+        6,
+        1,
+        6
+      ],
+      "shape": "box",
+      "color": "#E3B341",
+      "act": {
+        "simple": "Chime"
+      }
+    },
+    {
+      "id": "eye.refl_lamppost",
+      "place": "eye",
+      "kind": "usable",
+      "label": "a reflected lamp post",
+      "at": [
+        "B",
+        100,
+        40,
+        35
+      ],
+      "size": [
+        1,
+        8,
+        1
+      ],
+      "shape": "cylinder",
+      "color": "#3A3A3A",
+      "act": {
+        "simple": "Flicker"
+      }
+    },
+    {
+      "id": "eye.star_cluster",
+      "place": "eye",
+      "kind": "usable",
+      "label": "a cluster of stars",
+      "at": [
+        "B",
+        40,
+        50,
+        38
+      ],
+      "size": [
+        5,
+        5,
+        5
+      ],
+      "shape": "sphere",
+      "color": "#E8E8FF",
+      "act": {
+        "simple": "Spin"
+      }
+    },
+    {
+      "id": "moon.light",
+      "place": "moon",
+      "kind": "usable",
+      "label": "a faint spark in a small crater",
+      "at": [
+        "A",
+        10,
+        -30,
+        3.0
+      ],
+      "size": [
+        0.08,
+        0.08,
+        0.08
+      ],
+      "shape": "sphere",
+      "color": "#FFE39A",
+      "states": [
+        "in_crater",
+        "taken"
+      ],
+      "initial": "in_crater",
+      "transitions": [
+        {
+          "from": "in_crater",
+          "to": "taken",
+          "verb": "Take",
+          "effects": [
+            {
+              "type": "take_item",
+              "item": "light"
+            },
+            {
+              "type": "step",
+              "id": "take_light"
+            },
+            {
+              "type": "play_sfx",
+              "id": "chime"
+            }
+          ]
+        }
+      ],
+      "visual": {
+        "taken": {
+          "hidden": true
+        }
+      }
+    },
+    {
+      "id": "moon.lamp",
+      "place": "moon",
+      "kind": "usable",
+      "label": "an old lamp, dark",
+      "at": [
+        "B",
+        15,
+        10,
+        2.4
+      ],
+      "size": [
+        0.4,
+        1.2,
+        0.4
+      ],
+      "shape": "box",
+      "color": "#4A4A4A",
+      "states": [
+        "dark",
+        "lit"
+      ],
+      "initial": "dark",
+      "transitions": [
+        {
+          "from": "dark",
+          "to": "dark",
+          "verb": "Use",
+          "conditions": [
+            {
+              "not_has_item": "light"
+            }
+          ],
+          "effects": [
+            {
+              "type": "play_sfx",
+              "id": "rattle"
+            },
+            {
+              "type": "anim",
+              "id": "wiggle"
+            }
+          ]
+        },
+        {
+          "from": "dark",
+          "to": "lit",
+          "verb": "Use",
+          "conditions": [
+            {
+              "has_item": "light"
+            }
+          ],
+          "effects": [
+            {
+              "type": "consume_item",
+              "item": "light"
+            },
+            {
+              "type": "step",
+              "id": "use_light_on_lamp"
+            },
+            {
+              "type": "play_sfx",
+              "id": "glow"
+            },
+            {
+              "type": "change_state",
+              "object": "moon.edge",
+              "to": "ready"
+            }
+          ]
+        }
+      ],
+      "visual": {
+        "lit": {
+          "color": "#FFE39A"
+        }
+      }
+    },
+    {
+      "id": "moon.edge",
+      "place": "moon",
+      "kind": "dive",
+      "to": "street_night",
+      "label": "the moon's edge, with the harbor far below",
+      "at": [
+        "B",
+        24,
+        -56,
+        3.0
+      ],
+      "size": [
+        2,
+        0.3,
+        1
+      ],
+      "shape": "box",
+      "color": "#7A8088",
+      "states": [
+        "shut",
+        "ready"
+      ],
+      "initial": "shut",
+      "visual": {
+        "ready": {
+          "color": "#CFD6DC"
+        }
+      }
+    },
+    {
+      "id": "moon.footprint",
+      "place": "moon",
+      "kind": "hidden",
+      "label": "a footprint in the dust",
+      "at": [
+        "A",
+        35,
+        -23.4,
+        4.0
+      ],
+      "size": [
+        0.3,
+        0.02,
+        0.12
+      ],
+      "shape": "box",
+      "color": "#6E747C",
+      "verb": "Look"
+    },
+    {
+      "id": "moon.glove",
+      "place": "moon",
+      "kind": "hidden",
+      "label": "a lost glove, half-buried",
+      "at": [
+        "A",
+        -50,
+        -15,
+        5.0
+      ],
+      "size": [
+        0.25,
+        0.08,
+        0.3
+      ],
+      "shape": "box",
+      "color": "#8C8A85",
+      "verb": "Take"
+    },
+    {
+      "id": "moon.rock_1",
+      "place": "moon",
+      "kind": "usable",
+      "label": "a rock",
+      "at": [
+        "A",
+        60,
+        -20,
+        2.8
+      ],
+      "size": [
+        0.4,
+        0.3,
+        0.4
+      ],
+      "shape": "box",
+      "color": "#7A8088",
+      "act": {
+        "simple": "Turn over"
+      }
+    },
+    {
+      "id": "moon.big_rock",
+      "place": "moon",
+      "kind": "usable",
+      "label": "a big rock",
+      "at": [
+        "A",
+        -100,
+        -10,
+        3.0
+      ],
+      "size": [
+        1.2,
+        1.0,
+        1.2
+      ],
+      "shape": "box",
+      "color": "#6E747C",
+      "act": {
+        "simple": "Push"
+      }
+    },
+    {
+      "id": "moon.crater_echo",
+      "place": "moon",
+      "kind": "usable",
+      "label": "a small crater",
+      "at": [
+        "A",
+        -20,
+        -35,
+        3.0
+      ],
+      "size": [
+        1.0,
+        0.1,
+        1.0
+      ],
+      "shape": "cylinder",
+      "color": "#8A9098",
+      "act": {
+        "simple": "Call into"
+      }
+    },
+    {
+      "id": "moon.pebble",
+      "place": "moon",
+      "kind": "usable",
+      "label": "a pebble",
+      "at": [
+        "A",
+        80,
+        -30,
+        2.5
+      ],
+      "size": [
+        0.1,
+        0.08,
+        0.1
+      ],
+      "shape": "sphere",
+      "color": "#9DA3AB",
+      "act": {
+        "simple": "Skip"
+      }
+    },
+    {
+      "id": "moon.dust_pile",
+      "place": "moon",
+      "kind": "usable",
+      "label": "a pile of dust",
+      "at": [
+        "A",
+        -70,
+        -30,
+        2.6
+      ],
+      "size": [
+        0.5,
+        0.2,
+        0.5
+      ],
+      "shape": "cone",
+      "color": "#B0B6BC",
+      "act": {
+        "simple": "Puff"
+      }
+    },
+    {
+      "id": "moon.meteorite",
+      "place": "moon",
+      "kind": "usable",
+      "label": "a small meteorite",
+      "at": [
+        "A",
+        120,
+        -15,
+        3.0
+      ],
+      "size": [
+        0.3,
+        0.3,
+        0.3
+      ],
+      "shape": "sphere",
+      "color": "#3A3A3A",
+      "act": {
+        "simple": "Touch"
+      }
+    },
+    {
+      "id": "moon.crack",
+      "place": "moon",
+      "kind": "usable",
+      "label": "a crack in the ground",
+      "at": [
+        "A",
+        -30,
+        -25,
+        2.5
+      ],
+      "size": [
+        0.1,
+        0.02,
+        1.5
+      ],
+      "shape": "box",
+      "color": "#2A2E3A",
+      "act": {
+        "simple": "Peer into"
+      }
+    },
+    {
+      "id": "moon.bottle",
+      "place": "moon",
+      "kind": "usable",
+      "label": "a bottle",
+      "at": [
+        "A",
+        140,
+        -25,
+        2.8
+      ],
+      "size": [
+        0.1,
+        0.3,
+        0.1
+      ],
+      "shape": "cylinder",
+      "color": "#2F7F86",
+      "act": {
+        "simple": "Roll"
+      }
+    },
+    {
+      "id": "moon.coin",
+      "place": "moon",
+      "kind": "usable",
+      "label": "a coin",
+      "at": [
+        "A",
+        -130,
+        -28,
+        2.6
+      ],
+      "size": [
+        0.12,
+        0.01,
+        0.12
+      ],
+      "shape": "cylinder",
+      "color": "#C9A24E",
+      "act": {
+        "simple": "Spin"
+      }
+    },
+    {
+      "id": "moon.tin_cup",
+      "place": "moon",
+      "kind": "usable",
+      "label": "a tin cup",
+      "at": [
+        "A",
+        25,
+        -40,
+        2.2
+      ],
+      "size": [
+        0.12,
+        0.12,
+        0.12
+      ],
+      "shape": "cylinder",
+      "color": "#C9C9C9",
+      "act": {
+        "simple": "Ring"
+      }
+    },
+    {
+      "id": "moon.footprint_trail",
+      "place": "moon",
+      "kind": "usable",
+      "label": "a trail of footprints that leads nowhere",
+      "at": [
+        "A",
+        50,
+        -32,
+        3.1
+      ],
+      "size": [
+        0.3,
+        0.02,
+        1.2
+      ],
+      "shape": "box",
+      "color": "#6E747C",
+      "act": {
+        "simple": "Follow"
+      }
+    },
+    {
+      "id": "moon.dust_bunny",
+      "place": "moon",
+      "kind": "usable",
+      "label": "a dust bunny",
+      "at": [
+        "A",
+        -10,
+        -42,
+        2.4
+      ],
+      "size": [
+        0.2,
+        0.2,
+        0.2
+      ],
+      "shape": "sphere",
+      "color": "#B0B6BC",
+      "act": {
+        "simple": "Roll"
+      }
+    },
+    {
+      "id": "moon.plant",
+      "place": "moon",
+      "kind": "usable",
+      "label": "a pale plant",
+      "at": [
+        "A",
+        100,
+        -30,
+        2.7
+      ],
+      "size": [
+        0.2,
+        0.3,
+        0.2
+      ],
+      "shape": "cone",
+      "color": "#C8D0C8",
+      "act": {
+        "simple": "Touch"
+      }
+    },
+    {
+      "id": "moon.sky_star",
+      "place": "moon",
+      "kind": "usable",
+      "label": "a star in the sky",
+      "at": [
+        "A",
+        30,
+        50,
+        3.0
+      ],
+      "size": [
+        0.05,
+        0.05,
+        0.05
+      ],
+      "shape": "sphere",
+      "color": "#FFFFFF",
+      "act": {
+        "simple": "Touch"
+      }
+    },
+    {
+      "id": "moon.lamp_glass",
+      "place": "moon",
+      "kind": "usable",
+      "label": "the lamp's glass",
+      "at": [
+        "B",
+        12,
+        20,
+        2.4
+      ],
+      "size": [
+        0.3,
+        0.3,
+        0.3
+      ],
+      "shape": "box",
+      "color": "#B0C4D8",
+      "act": {
+        "simple": "Rattle"
+      }
+    },
+    {
+      "id": "moon.flag",
+      "place": "moon",
+      "kind": "usable",
+      "label": "a flag with a picture on it",
+      "at": [
+        "B",
+        50,
+        15,
+        3.0
+      ],
+      "size": [
+        0.6,
+        0.4,
+        0.02
+      ],
+      "shape": "box",
+      "color": "#B85C38",
+      "act": {
+        "simple": "Flap"
+      }
+    },
+    {
+      "id": "moon.telescope",
+      "place": "moon",
+      "kind": "usable",
+      "label": "a telescope on a stand",
+      "at": [
+        "B",
+        -60,
+        5,
+        2.8
+      ],
+      "size": [
+        0.6,
+        0.12,
+        0.12
+      ],
+      "shape": "cylinder",
+      "color": "#C9A24E",
+      "act": {
+        "simple": "Turn"
+      },
+      "rot": [
+        0,
+        0,
+        90
+      ]
+    },
+    {
+      "id": "moon.signpost",
+      "place": "moon",
+      "kind": "usable",
+      "label": "a signpost with pictures",
+      "at": [
+        "B",
+        80,
+        10,
+        3.0
+      ],
+      "size": [
+        0.5,
+        0.15,
+        0.03
+      ],
+      "shape": "box",
+      "color": "#8C6A4A",
+      "act": {
+        "simple": "Spin"
+      }
+    },
+    {
+      "id": "moon.rope_end",
+      "place": "moon",
+      "kind": "usable",
+      "label": "a rope end",
+      "at": [
+        "B",
+        -90,
+        -20,
+        2.8
+      ],
+      "size": [
+        0.4,
+        0.05,
+        0.05
+      ],
+      "shape": "box",
+      "color": "#A08A5A",
+      "act": {
+        "simple": "Fray"
+      }
+    },
+    {
+      "id": "moon.crater_rim",
+      "place": "moon",
+      "kind": "usable",
+      "label": "a crater rim",
+      "at": [
+        "B",
+        -100,
+        -30,
+        3.0
+      ],
+      "size": [
+        1.2,
+        0.15,
+        0.3
+      ],
+      "shape": "box",
+      "color": "#8A9098",
+      "act": {
+        "simple": "Peer over"
+      }
+    }
   ]
 }

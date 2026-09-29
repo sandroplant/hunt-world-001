@@ -1,5 +1,5 @@
 {
-  "_notes": "Data only. Units differ per place. All headings are 0: yaw is measured in world terms (0 faces -Z, +90 faces -X) and stays the same when moving between spots. yaw limits are a full turn; pitch limits stay. reach = max distance for a verb to show. eye = eye height above the spot mark. moveSpeed = glide speed in place units per second. approach = where the portal camera stands relative to the arrival spot (back along the view, up, and its pitch).",
+  "_notes": "Data only. Units differ per place. All headings are 0: yaw is measured in world terms (0 faces -Z, +90 faces -X). viewpoints are named spots: authoring anchors for `at` placement, the dive arrival point (`arrive`), and describe text; the player walks freely. reach = max distance for a verb to show. eye = eye height above the floor. moveSpeed = walking speed in place units per second. walk = the body radius and the walkable zones (rectangles [x0, z0, x1, z1] or {circle: [cx, cz, r]}); solid props and objects block automatically; props with platform:true raise the floor. approach = where the portal camera stands relative to the arrival spot.",
   "order": [
     "street",
     "shop",
@@ -156,6 +156,17 @@
         "back": 1.5,
         "up": 0,
         "pitch": 0
+      },
+      "walk": {
+        "radius": 0.3,
+        "zones": [
+          [
+            -5.2,
+            -19.7,
+            6.4,
+            13
+          ]
+        ]
       }
     },
     "street_night": {
@@ -290,6 +301,17 @@
         "back": 12,
         "up": 18,
         "pitch": -56
+      },
+      "walk": {
+        "radius": 0.3,
+        "zones": [
+          [
+            -5.2,
+            -19.7,
+            6.4,
+            13
+          ]
+        ]
       }
     },
     "shop": {
@@ -422,6 +444,17 @@
         "back": 1.6,
         "up": 0,
         "pitch": 0
+      },
+      "walk": {
+        "radius": 0.28,
+        "zones": [
+          [
+            -3.4,
+            -7.4,
+            3.4,
+            0.6
+          ]
+        ]
       }
     },
     "drawer": {
@@ -498,9 +531,9 @@
         },
         "D": {
           "pos": [
-            8,
+            14,
             4,
-            -26
+            -22
           ],
           "heading": 0,
           "yaw": [
@@ -554,6 +587,17 @@
         "back": 7,
         "up": 0,
         "pitch": 0
+      },
+      "walk": {
+        "radius": 0.9,
+        "zones": [
+          [
+            -20.5,
+            -40.5,
+            20.5,
+            1.5
+          ]
+        ]
       }
     },
     "cat": {
@@ -597,7 +641,7 @@
         "B": {
           "pos": [
             40,
-            12,
+            15,
             -40
           ],
           "heading": 0,
@@ -686,6 +730,17 @@
         "back": 28,
         "up": 0,
         "pitch": 0
+      },
+      "walk": {
+        "radius": 3.3,
+        "zones": [
+          [
+            -205,
+            -225,
+            285,
+            265
+          ]
+        ]
       }
     },
     "eye": {
@@ -818,6 +873,18 @@
         "back": 30,
         "up": 0,
         "pitch": 0
+      },
+      "walk": {
+        "radius": 1.2,
+        "zones": [
+          {
+            "circle": [
+              0,
+              -100,
+              118
+            ]
+          }
+        ]
       }
     },
     "moon": {
@@ -950,6 +1017,17 @@
         "back": 8,
         "up": 0,
         "pitch": 0
+      },
+      "walk": {
+        "radius": 0.32,
+        "zones": [
+          [
+            -39.7,
+            -19.7,
+            39.7,
+            23.7
+          ]
+        ]
       }
     }
   }

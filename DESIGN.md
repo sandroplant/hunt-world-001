@@ -119,22 +119,24 @@ The player lands back in place 1. It is night. The lamps are lit. The windows ar
 
 ## 4. Moving and travelling
 
-**Moving inside a place: stand spots.** Each place has 3–5 spots on the ground, shown as faint rings. A ring brightens under the crosshair or under the mouse. Tap or click a ring, press E or Enter with the crosshair on it, or press W, A, S or D to move toward the nearest spot in that direction. The camera glides there at a fixed speed for the place and keeps facing the same way. There is no free walking.
+**Moving inside a place: walking.** Tap or click anywhere on the ground and the player walks there at a fixed speed for the place, facing the same way. On a keyboard, W A S D walk. Walls, furniture and the edges of a place block; the player slides along them or stops. Hills and rises can be walked up. There are no marks on the ground and nothing to find before you can move.
 
-**Looking.** Every spot allows a full 360° turn. Up and down are limited per place. The world follows the finger or mouse: drag right to look left, drag down to look up. Arrow keys turn; zoomed in, they turn more slowly.
+**Looking.** A full 360° turn everywhere. Up and down are limited per place. The world follows the finger or mouse: drag right to look left, drag down to look up. Arrow keys turn; zoomed in, they turn more slowly.
 
-**Seeing what can be entered.** The next place is visible inside its opening before the dive: the lit shop and the sleeping cat through the shop window and the open door; the drawer world inside the open blue drawer; the cat's fur in the cat's neck; the iris in the open eye; the moon inside the round pupil; the night street below the moon's edge. These openings are live pictures of the real next place, not paintings. Plain scenery never reacts to the crosshair; only things you can act on do. The dull moon in the street sky is scenery.
+**Seeing what can be entered.** The next place is visible inside its opening before the dive: the lit shop and the sleeping cat through the shop's open door and its window; the drawer world inside the open blue drawer; the cat's fur in the cat's neck; the iris in the open eye; the moon inside the round pupil; the night street below the moon's edge. These openings are live pictures of the real next place, not paintings. An opening you can go into glows softly at its rim. Plain scenery never reacts to the crosshair; only things you can act on do. The dull moon in the street sky is scenery.
+
+**The first place teaches.** The shop door stands open from the start. Nothing is required in the street: look, walk to the door, hold the lens on it. The first dive is possible within a minute. The street keeps only six ordinary things to use; the sketch and the two hidden things are there for players who look. The first lock comes in the shop.
 
 **The dive is the only way between places, and it is the same on every device.**
 - Dive targets are physical openings: the open shop door, the open blue drawer, the cat's neck, the open eye, the round pupil, and the moon's edge.
 - Hold the lens on an opening from close range. A thin ring fills over 1 second. When it is full, the dive starts. Let go before then and it cancels. Tapping, clicking, E or Enter on a centered opening also starts it.
 - The dive is one continuous forward move: the camera flies into the opening until the opening fills the screen, and at that instant the real next place takes over from the same camera position, so there is no cut. It continues forward into the place. About 2 seconds, the same length everywhere. No loading screen. No page change.
 - **Reduced motion:** a 0.6-second cross-fade instead. The total travel time stays the same.
-- **Back out** is always available. It runs the same path in reverse and returns the player to the spot they dived from, facing the opening. Found things stay found.
+- **Back out** is always available. It runs the same path in reverse and returns the player to where they dived from, facing the opening. Found things stay found.
 
-**Locked things show it without words.** A locked door has a small dark keyhole mark and rattles when used. The dark lamp on the moon has an empty socket and rattles too.
+**Locked things show it without words.** A locked drawer has a small dark keyhole mark and rattles when used. The dark lamp on the moon has an empty socket and rattles too.
 
-**If nothing happens for 45 seconds,** the most useful next thing glints once. No text. If it is out of reach from where the player stands, the ring of the spot it can be reached from glints instead.
+**If nothing happens for 45 seconds,** the most useful next thing glints once. No text.
 
 **The trail** at the top shows the places already reached by name, and the places ahead as dots. It is not a control and does not look like one. On phones it sits below the buttons.
 
@@ -143,20 +145,20 @@ The player lands back in place 1. It is night. The lamps are lit. The windows ar
 | Action | Phone | Laptop mouse | Keyboard only |
 |---|---|---|---|
 | Look around (full turn) | drag | drag | arrow keys |
-| Move to a spot | tap its ring | click its ring | W A S D toward it, or E on it |
+| Walk | tap the ground | click the ground | hold W A S D |
 | Zoom (lens) | pinch, or hold the lens button | scroll wheel, or hold the right button | hold Z |
-| Open or use | tap when the verb shows | click | E or Enter |
+| Open or use | tap near the crosshair when the verb shows | click near the crosshair | E or Enter |
 | Dive | hold the lens on the opening, or tap it | same | hold Z on it, or Enter |
 | Back out | Back button | Back button or Esc | X or Backspace |
 | Sketchbook | book button | book button | B |
 | Hints | ? button | ? button | H |
 | Describe surroundings | menu | menu | V |
 
-Tab is never a game key. The first time the player sees a place, two small wordless hints appear in place (a hand for drag, a magnifier for zoom) and fade once used.
+Tab is never a game key. The start screen shows three pictures with a few words each: drag to look, tap the ground to walk, hold the lens on a glowing opening. The same three pictures sit in the view until each has been done once.
 
 ## 6. Searching, clues and fairness
 
-**No glowing hotspots and no labels.** Nothing glows or shows a label from a distance. When the view is centered and close enough on a usable thing, the crosshair changes and one verb appears: *Open*, *Use*, *Take*, *Look closer*, *Stand here*. Important and ordinary things use exactly the same affordance.
+**No glowing hotspots and no labels.** Nothing glows or shows a label from a distance. When the view is centered and close enough on a usable thing, the crosshair changes and one verb appears: *Open*, *Use*, *Take*, *Look closer*. Important and ordinary things use exactly the same affordance.
 
 **Decoys.** Every place has at least 4 ordinary usable things for every important one. Ordinary things do ordinary things: a clock chimes, a jar opens and has buttons in it, a letter unfolds and shows a doodle, a bell rings, a shutter closes. Clicking everything is not a winning strategy, because there is a lot of everything.
 

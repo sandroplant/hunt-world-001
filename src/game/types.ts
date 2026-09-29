@@ -2,14 +2,24 @@
 
 export type Vec3 = [number, number, number];
 export type Shape = 'box' | 'sphere' | 'cylinder' | 'cone';
-export type ObjectKind = 'usable' | 'hidden' | 'dive' | 'stand';
+export type ObjectKind = 'usable' | 'hidden' | 'dive';
 
+/** A named spot: an authoring anchor (objects are placed relative to it), the dive arrival point, and a "describe" name. */
 export interface ViewpointData {
   pos: Vec3;
   heading: number; // base yaw in degrees; 0 faces -Z, +90 faces -X
   yaw: [number, number];
   pitch: [number, number];
   describe: string;
+}
+
+/** A walkable zone on the ground: a rectangle [x0, z0, x1, z1] or a disc. */
+export type WalkZone = [number, number, number, number] | { circle: [number, number, number] };
+
+export interface WalkData {
+  /** The player's body radius in the place's units. Walls and furniture are kept this far away. */
+  radius: number;
+  zones: WalkZone[];
 }
 
 export interface LandmarkData {
@@ -29,8 +39,9 @@ export interface PlaceData {
   unit: string;
   reach: number;
   eye: number;
-  moveSpeed: number;
+  moveSpeed: number; // walking speed in place units per second
   approach: Approach;
+  walk: WalkData;
   near: number;
   far: number;
   sky: string;
@@ -93,7 +104,6 @@ export interface WorldObject {
   visual?: Record<string, VisualState>;
   verb?: string; // hidden objects
   to?: string; // dive targets
-  target?: string; // stand marks
   night?: boolean; // false = absent at night
 }
 
@@ -120,6 +130,12 @@ export interface PropData {
   face?: string;
   /** For a portal on a wall: the direction the opening faces. Otherwise it faces the `face` spot. */
   normal?: Vec3;
+  /** A dive opening glows softly so it reads as "you can go in". */
+  glow?: boolean;
+  /** The player can walk onto this (a hill, a rise). Its top sets the floor height instead of blocking. */
+  platform?: boolean;
+  /** false: never blocks walking (thin hairs, whiskers). */
+  solid?: boolean;
 }
 
 export interface SketchData {
@@ -138,10 +154,13 @@ export interface Settings {
 }
 
 export interface GameState {
-  version: 1;
+  version: 2;
   place: string;
-  viewpoint: string;
-  stack: Array<{ place: string; viewpoint: string }>;
+  /** The player's eye position in the place's units. */
+  pos: Vec3;
+  stack: Array<{ place: string; pos: Vec3 }>;
+  /** Places the player has dived out of (counted as finds: spec §3 says 24 in total). */
+  dived: Record<string, true>;
   yaw: number;
   pitch: number;
   zoom: number;
@@ -156,7 +175,7 @@ export interface GameState {
   ended: boolean;
   endedAt: number | null;
   settings: Settings;
-  onboarded: { drag: boolean; lens: boolean };
+  onboarded: { drag: boolean; lens: boolean; walk: boolean };
 }
 
 export type GameEvent =

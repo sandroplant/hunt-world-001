@@ -31,7 +31,8 @@ export function installDebug(app: App): void {
     frames++;
     if (now - last > 500) {
       const st = app.renderer.stats();
-      fps.textContent = `${Math.round((frames * 1000) / (now - last))} fps · calls ${st.calls} · tris ${st.triangles} · ${app.state.place}/${app.state.viewpoint} yaw ${app.camera.yaw.toFixed(1)} pitch ${app.camera.pitch.toFixed(1)} zoom ${app.camera.zoom.toFixed(2)}`;
+      const e = app.camera.eye;
+      fps.textContent = `${Math.round((frames * 1000) / (now - last))} fps · calls ${st.calls} · tris ${st.triangles} · ${app.state.place} (${e[0].toFixed(1)}, ${e[2].toFixed(1)}) yaw ${app.camera.yaw.toFixed(1)} pitch ${app.camera.pitch.toFixed(1)} zoom ${app.camera.zoom.toFixed(2)}`;
       dump.textContent = JSON.stringify({ steps: Object.keys(app.state.steps), items: app.state.items, found: Object.keys(app.state.found), stack: app.state.stack.map((s) => s.place) }, null, 1);
       frames = 0;
       last = now;
@@ -39,12 +40,12 @@ export function installDebug(app: App): void {
   });
   (window as unknown as { __hunt: unknown }).__hunt = {
     state: () => app.state,
-    view: () => ({ place: app.state.place, viewpoint: app.state.viewpoint, yaw: app.camera.yaw, pitch: app.camera.pitch, zoom: app.camera.zoom }),
+    view: () => ({ place: app.state.place, pos: app.camera.eye, spot: app.world.nearestSpot(app.state.place, app.camera.eye), yaw: app.camera.yaw, pitch: app.camera.pitch, zoom: app.camera.zoom, walking: app.camera.walking }),
     setView: (yaw: number, pitch: number, zoom: number) => app.debugSetView(yaw, pitch, zoom),
     stand: (vp: string) => app.standAt(vp),
     act: () => app.act(),
     tap: (x: number, y: number) => app.actAt(x, y),
-    move: (dir: 'forward' | 'back' | 'left' | 'right') => app.moveToward(dir),
+    walkTo: (x: number, z: number) => app.walkToGround(x, z),
     glint: () => app.debugGlint(),
     freezeDive: (t: number | null) => app.debugFreezeDive(t),
     lens: (held: boolean) => app.setLens(held),

@@ -1,10 +1,10 @@
 // The rules engine. It reads world data and applies object transitions.
 // It never decides whether something is found: it asks the judge.
-import type { Condition, GameEvent, GameState, Settings, Transition, WorldObject } from './types';
+import type { Condition, GameEvent, GameState, Settings, Transition, Vec3, WorldObject } from './types';
 import type { World } from './world';
 import { judge } from './judge';
 
-export const SAVE_VERSION = 1 as const;
+export const SAVE_VERSION = 2 as const;
 
 export function defaultSettings(): Settings {
   return { reducedMotion: false, largeText: false, quality: 'auto' };
@@ -17,8 +17,9 @@ export function createInitialState(world: World, settings: Settings = defaultSet
   return {
     version: SAVE_VERSION,
     place,
-    viewpoint: world.places[place]!.arrive,
+    pos: [...world.places[place]!.viewpoints[world.places[place]!.arrive]!.pos] as Vec3,
     stack: [],
+    dived: {},
     yaw: 0,
     pitch: 0,
     zoom: 1,
@@ -33,7 +34,7 @@ export function createInitialState(world: World, settings: Settings = defaultSet
     ended: false,
     endedAt: null,
     settings,
-    onboarded: { drag: false, lens: false },
+    onboarded: { drag: false, lens: false, walk: false },
   };
 }
 
@@ -61,12 +62,10 @@ export function availableTransition(obj: WorldObject, state: GameState): Transit
 }
 
 /** The verb the UI may show for an object, given the state. Null means nothing to do. */
-export function verbFor(world: World, obj: WorldObject, state: GameState, lookCloser: string, standHere: string): string | null {
+export function verbFor(world: World, obj: WorldObject, state: GameState, lookCloser: string): string | null {
   switch (obj.kind) {
     case 'hidden':
       return state.found[obj.id] ? null : (obj.verb ?? 'Look');
-    case 'stand':
-      return obj.target && obj.target !== state.viewpoint ? standHere : null;
     case 'dive': {
       const d = judge.canDive(state.place, state.steps);
       return d && d.object === obj.id ? lookCloser : null;
@@ -142,14 +141,17 @@ export function recordSketchLocked(state: GameState, sketchId: string): GameStat
   return next;
 }
 
-export function standAt(world: World, state: GameState, viewpoint: string): GameState {
-  const place = world.places[state.place];
-  if (!place || !place.viewpoints[viewpoint] || state.viewpoint === viewpoint) return state;
+/** The player stands at a new eye position (after a walk). The view direction is kept. */
+export function moveTo(state: GameState, pos: Vec3): GameState {
   const next = cloneState(state);
-  next.viewpoint = viewpoint;
-  next.yaw = 0;
-  next.pitch = 0;
+  next.pos = [pos[0], pos[1], pos[2]];
   return next;
+}
+
+/** Teleport to a named spot of the current place (tests and debug tools; the game itself walks). */
+export function standAt(world: World, state: GameState, spot: string): GameState {
+  const vp = world.places[state.place]?.viewpoints[spot];
+  return vp ? moveTo(state, vp.pos) : state;
 }
 
 /** Dive into the place's active target. Refused unless the judge says the target is active. */
@@ -157,9 +159,11 @@ export function dive(world: World, state: GameState): { state: GameState; to: st
   const d = judge.canDive(state.place, state.steps);
   if (!d || !world.places[d.to]) return null;
   const next = cloneState(state);
-  next.stack.push({ place: state.place, viewpoint: state.viewpoint });
+  next.stack.push({ place: state.place, pos: [...state.pos] as Vec3 });
+  next.dived[state.place] = true;
+  const to = world.places[d.to]!;
   next.place = d.to;
-  next.viewpoint = world.places[d.to]!.arrive;
+  next.pos = [...to.viewpoints[to.arrive]!.pos] as Vec3;
   next.yaw = 0;
   next.pitch = 0;
   next.zoom = 1;
@@ -176,7 +180,7 @@ export function backOut(state: GameState): { state: GameState; to: string } | nu
   const next = cloneState(state);
   next.stack.pop();
   next.place = top.place;
-  next.viewpoint = top.viewpoint;
+  next.pos = [...top.pos] as Vec3;
   next.yaw = 0;
   next.pitch = 0;
   next.zoom = 1;
@@ -206,16 +210,16 @@ export function hintTargets(world: World, state: GameState): string[] {
   return out.filter((t) => world.hints[t]);
 }
 
-/** Finds = sketches locked + hidden objects found + places whose required step is complete (spec §3: 24 in total). */
+/** Finds = sketches locked + hidden objects found + places dived out of (spec §3: 24 in total). */
 export function progress(world: World, state: GameState): { finds: number; total: number; steps: number; stepsTotal: number } {
   const sketches = world.sketches.length;
   const hidden = world.sketches.reduce((n, s) => n + s.hidden.length, 0);
-  const placesWithSteps = judge.order().filter((p) => judge.requiredSteps(p).length > 0);
-  const placesDone = placesWithSteps.filter((p) => judge.placeComplete(p, state.steps)).length;
+  const divePlaces = judge.order().filter((p) => judge.diveTarget(p) !== null);
+  const dived = divePlaces.filter((p) => state.dived[p]).length;
   const stepsTotal = judge.allRequiredSteps().length;
   const steps = Object.keys(state.steps).length;
   const found = Object.keys(state.found).length;
-  return { finds: found + placesDone, total: sketches + hidden + placesWithSteps.length, steps, stepsTotal };
+  return { finds: found + dived, total: sketches + hidden + divePlaces.length, steps, stepsTotal };
 }
 
 // ---- Save and load -------------------------------------------------------------
@@ -247,7 +251,7 @@ export function load(store: Store, world: World): GameState | null {
     const raw = store.get(SAVE_KEY);
     if (!raw) return null;
     const parsed = JSON.parse(raw) as Partial<GameState>;
-    if (parsed.version !== SAVE_VERSION || !parsed.place || !world.places[parsed.place]) return null;
+    if (parsed.version !== SAVE_VERSION || !parsed.place || !world.places[parsed.place] || !Array.isArray(parsed.pos)) return null;
     const base = createInitialState(world, { ...defaultSettings(), ...(parsed.settings ?? {}) });
     return { ...base, ...parsed, objectStates: { ...base.objectStates, ...(parsed.objectStates ?? {}) } } as GameState;
   } catch {

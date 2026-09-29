@@ -72,7 +72,14 @@ button { font: inherit; color: inherit; }
 #onboard { position: absolute; left: 50%; top: calc(50% + 5rem); transform: translateX(-50%); display: flex; gap: 1.2rem; font-size: 0.9rem; opacity: 0.85; }
 #onboard .hint { display: flex; flex-direction: column; align-items: center; gap: 0.2rem; transition: opacity 600ms; }
 #onboard .hint.done { opacity: 0; }
-#onboard .icon { font-size: 1.6rem; }
+#onboard .picto { width: 2.4rem; height: 2.4rem; color: var(--paper); }
+.picto svg { width: 100%; height: 100%; display: block; }
+#title .teach { display: grid; grid-template-columns: repeat(3, 1fr); gap: 0.8rem; margin: 1.2rem 0 0.4rem; }
+#title .tile { display: flex; flex-direction: column; align-items: center; gap: 0.4rem; padding: 0.8rem 0.4rem; border: 1px solid rgba(27,31,42,0.18); border-radius: 0.5rem; background: #f7efdc; text-align: center; }
+#title .tile .picto { width: 4.2rem; height: 4.2rem; color: var(--ink); }
+#title .tile .cap { font-size: 0.9rem; line-height: 1.25; }
+#title .keys { text-align: center; margin-bottom: 0; }
+@media (max-width: 480px) { #title .tile .picto { width: 3rem; height: 3rem; } #title .tile .cap { font-size: 0.8rem; } }
 #arrow { position: absolute; left: 50%; top: 50%; width: 0; height: 0; display: none; }
 #arrow.show { display: block; }
 #arrow .tip { position: absolute; left: 0; top: 0; transform-origin: 0 0; font-size: 2.2rem; color: var(--amber); text-shadow: 0 0 0.4rem #000; }

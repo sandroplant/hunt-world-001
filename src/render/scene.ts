@@ -3,7 +3,7 @@
 import * as THREE from 'three';
 import type { GameState, PropData, Shape, WorldObject } from '../game/types';
 import type { World } from '../game/world';
-import { rng } from '../game/geom';
+import { propCount, propInstances } from '../game/props';
 
 export type Quality = 'high' | 'low';
 
@@ -38,9 +38,10 @@ export class PlaceScene {
   private wiggles: WiggleEntry[] = [];
   private lastStates = new Map<string, string>();
   private conditional: Array<{ mesh: THREE.Object3D; when: { object: string; is: string } }> = [];
-  readonly portals: Array<{ mesh: THREE.Mesh; to: string; width: number; height: number; when?: { object: string; is: string } }> = [];
-  private highlighted: string | null = null;
+  readonly portals: Array<{ mesh: THREE.Mesh; to: string; width: number; height: number; when?: { object: string; is: string }; glow?: THREE.Mesh }> = [];
   private glints: Array<{ mesh: THREE.Mesh; start: number; baseScale: THREE.Vector3 }> = [];
+  /** Solid meshes for line-of-sight checks (everything except portals and glow rims). */
+  readonly solids: THREE.Object3D[] = [];
   readonly night: boolean;
 
   constructor(readonly world: World, readonly placeId: string, readonly quality: Quality) {
@@ -94,7 +95,21 @@ export class PlaceScene {
       if (face) mesh.lookAt(new THREE.Vector3(...face.pos));
     }
     this.root.add(mesh);
-    this.portals.push({ mesh, to: p.portal!, width: w, height: h, when: p.when });
+    let glow: THREE.Mesh | undefined;
+    if (p.glow) {
+      // A soft amber rim just behind the opening: "you can go in" without words (founder, third round).
+      const rimGeometry = new THREE.PlaneGeometry(w * 1.16, h * 1.16);
+      this.geometries.push(rimGeometry);
+      const rimMaterial = new THREE.MeshBasicMaterial({ color: '#F2B75B', fog: false, transparent: true, opacity: 0.35, depthWrite: false, blending: THREE.AdditiveBlending });
+      this.materials.push(rimMaterial);
+      glow = new THREE.Mesh(rimGeometry, rimMaterial);
+      glow.name = `${p.id}_glow`;
+      glow.position.copy(mesh.position).addScaledVector(new THREE.Vector3(0, 0, 1).applyQuaternion(mesh.quaternion), -Math.max(w, h) * 0.006);
+      glow.quaternion.copy(mesh.quaternion);
+      this.root.add(glow);
+      if (p.when) this.conditional.push({ mesh: glow, when: p.when });
+    }
+    this.portals.push({ mesh, to: p.portal!, width: w, height: h, when: p.when, glow });
     if (p.when) this.conditional.push({ mesh, when: p.when });
   }
 
@@ -111,10 +126,10 @@ export class PlaceScene {
     }
   }
 
-  /** The opening used for the dive to `to`: the one tied to the dive target's state, else the first. */
+  /** The opening used for the dive to `to`: the one tied to the dive target's state, else the glowing one, else the first. */
   divePortal(to: string, targetObject: string | null): { mesh: THREE.Mesh; width: number; height: number } | null {
     const list = this.portals.filter((p) => p.to === to);
-    return list.find((p) => p.when?.object === targetObject) ?? list[0] ?? null;
+    return list.find((p) => p.when?.object === targetObject) ?? list.find((p) => p.glow) ?? list[0] ?? null;
   }
 
   private addProp(p: PropData): void {
@@ -125,9 +140,7 @@ export class PlaceScene {
     const nightOverride = this.night ? p.night : undefined;
     const color = nightOverride?.color ?? p.color;
     const emissive = nightOverride?.emissive ?? p.emissive ?? false;
-    const count = Math.max(1, p.count ?? 1);
-    const dropForLow = this.quality === 'low' && count > 40 ? 0.5 : 1;
-    const n = Math.max(1, Math.round(count * dropForLow));
+    const n = propCount(p, this.quality);
     let geometry: THREE.BufferGeometry;
     if (p.ring) {
       geometry = new THREE.TorusGeometry(p.size[0] / 2, p.size[1], 6, 48);
@@ -144,56 +157,36 @@ export class PlaceScene {
       if (p.rot) mesh.rotation.set(p.rot[0] * THREE.MathUtils.DEG2RAD, p.rot[1] * THREE.MathUtils.DEG2RAD, p.rot[2] * THREE.MathUtils.DEG2RAD);
       mesh.name = p.id;
       this.root.add(mesh);
+      this.solids.push(mesh);
       if (p.ambient) this.ambient.push({ mesh, kind: p.ambient, base: mesh.position.clone(), phase: 0, scale: p.size[1] });
       if (p.when) this.conditional.push({ mesh, when: p.when });
       return;
     }
     const inst = new THREE.InstancedMesh(geometry, material, n);
     inst.name = p.id;
-    const rand = rng(p.seed ?? 1);
     const m = new THREE.Matrix4();
     const q = new THREE.Quaternion();
     const s = new THREE.Vector3();
     const pos = new THREE.Vector3();
-    const spread = p.spread ?? [0, 0, 0];
-    const baseRot = new THREE.Euler(
-      (p.rot?.[0] ?? 0) * THREE.MathUtils.DEG2RAD,
-      (p.rot?.[1] ?? 0) * THREE.MathUtils.DEG2RAD,
-      (p.rot?.[2] ?? 0) * THREE.MathUtils.DEG2RAD,
-    );
     const colorAttr = p.palette ? new THREE.Color() : null;
+    const instances = propInstances(p, this.quality);
     for (let i = 0; i < n; i++) {
-      pos.set(p.pos[0] + (rand() * 2 - 1) * spread[0], p.pos[1] + (rand() * 2 - 1) * spread[1], p.pos[2] + (rand() * 2 - 1) * spread[2]);
-      const jitter = 0.7 + rand() * 0.6;
-      s.set(p.size[0] * jitter, p.size[1] * (0.8 + rand() * 0.4), p.size[2] * jitter);
-      q.setFromEuler(new THREE.Euler(baseRot.x, baseRot.y + rand() * 0.6 - 0.3, baseRot.z));
+      const it = instances[i]!;
+      pos.set(...it.pos);
+      s.set(...it.size);
+      q.setFromEuler(new THREE.Euler(it.rot[0] * THREE.MathUtils.DEG2RAD, it.rot[1] * THREE.MathUtils.DEG2RAD, it.rot[2] * THREE.MathUtils.DEG2RAD));
       m.compose(pos, q, s);
       inst.setMatrixAt(i, m);
-      if (colorAttr && p.palette) inst.setColorAt(i, colorAttr.set(p.palette[Math.floor(rand() * p.palette.length)]!));
+      if (colorAttr && p.palette) inst.setColorAt(i, colorAttr.set(p.palette[it.paletteIndex]!));
     }
     inst.instanceMatrix.needsUpdate = true;
     if (inst.instanceColor) inst.instanceColor.needsUpdate = true;
     this.root.add(inst);
-    if (p.ambient) this.ambient.push({ mesh: inst, kind: p.ambient, base: inst.position.clone(), phase: rand() * 6, scale: p.size[1] });
+    this.solids.push(inst);
+    if (p.ambient) this.ambient.push({ mesh: inst, kind: p.ambient, base: inst.position.clone(), phase: (p.seed ?? 1) % 6, scale: p.size[1] });
   }
 
   private addObject(o: WorldObject): void {
-    if (o.kind === 'stand') {
-      // A faint ring on the ground. It brightens under the crosshair or the pointer (founder change 2).
-      const r = o.size[0] / 2;
-      const geometry = new THREE.RingGeometry(r * 0.72, r, 40);
-      this.geometries.push(geometry);
-      const material = new THREE.MeshBasicMaterial({ color: '#F1E6CF', transparent: true, opacity: 0.3, side: THREE.DoubleSide, depthWrite: false });
-      this.materials.push(material);
-      const mesh = new THREE.Mesh(geometry, material);
-      mesh.name = o.id;
-      mesh.position.set(...o.pos);
-      mesh.rotation.x = -Math.PI / 2;
-      mesh.userData = { base: mesh.position.clone(), baseRot: mesh.rotation.clone(), baseScale: mesh.scale.clone(), baseColor: o.color, stand: true };
-      this.root.add(mesh);
-      this.objects.set(o.id, mesh);
-      return;
-    }
     const mesh = new THREE.Mesh(this.geometry(o.shape), this.material(o.color, false));
     mesh.name = o.id;
     mesh.position.set(...o.pos);
@@ -201,6 +194,7 @@ export class PlaceScene {
     if (o.rot) mesh.rotation.set(o.rot[0] * THREE.MathUtils.DEG2RAD, o.rot[1] * THREE.MathUtils.DEG2RAD, o.rot[2] * THREE.MathUtils.DEG2RAD);
     mesh.userData = { base: mesh.position.clone(), baseRot: mesh.rotation.clone(), baseScale: mesh.scale.clone(), baseColor: o.color };
     this.root.add(mesh);
+    this.solids.push(mesh);
     this.objects.set(o.id, mesh);
   }
 
@@ -212,10 +206,6 @@ export class PlaceScene {
     }
     for (const [id, mesh] of this.objects) {
       const o = this.world.objects[id]!;
-      if (o.kind === 'stand') {
-        mesh.visible = o.target !== state.viewpoint;
-        continue;
-      }
       const s = o.kind === 'hidden' ? (state.found[id] ? 'found' : 'unfound') : (state.objectStates[id] ?? o.initial);
       if (this.lastStates.get(id) === s) continue;
       this.lastStates.set(id, s);
@@ -242,20 +232,6 @@ export class PlaceScene {
     }
   }
 
-  /** Brighten one stand mark (under the crosshair or the pointer). */
-  setMarkHighlight(objectId: string | null): void {
-    if (this.highlighted === objectId) return;
-    for (const id of [this.highlighted, objectId]) {
-      if (!id) continue;
-      const mesh = this.objects.get(id);
-      if (!mesh || !mesh.userData.stand) continue;
-      const on = id === objectId;
-      (mesh.material as THREE.MeshBasicMaterial).opacity = on ? 0.95 : 0.3;
-      mesh.scale.setScalar(on ? 1.18 : 1);
-    }
-    this.highlighted = objectId;
-  }
-
   /** One short glint on a thing (founder change 4). No text. */
   glint(objectId: string, now: number): void {
     const mesh = this.objects.get(objectId);
@@ -267,6 +243,33 @@ export class PlaceScene {
     const mesh = this.objects.get(objectId);
     if (!mesh) return;
     this.wiggles.push({ mesh, until: now + 350, base: (mesh.userData.stateBase as THREE.Vector3 | undefined)?.clone() ?? mesh.position.clone() });
+  }
+
+  /**
+   * True when some part of an object can be seen from an eye position: rays to its centre and to the corners of its
+   * box, and at least one reaches it without meeting another solid first. So a hidden thing is never "found" through
+   * a wall, while a marble half sunk in the floor still counts.
+   */
+  visibleFrom(objectId: string, eye: THREE.Vector3): boolean {
+    const mesh = this.objects.get(objectId);
+    if (!mesh) return false;
+    mesh.updateMatrixWorld(true);
+    const box = new THREE.Box3().setFromObject(mesh);
+    const samples = [box.getCenter(new THREE.Vector3())];
+    for (const sx of [0.1, 0.9]) for (const sy of [0.1, 0.9]) for (const sz of [0.1, 0.9]) {
+      samples.push(new THREE.Vector3(box.min.x + (box.max.x - box.min.x) * sx, box.min.y + (box.max.y - box.min.y) * sy, box.min.z + (box.max.z - box.min.z) * sz));
+    }
+    const ray = new THREE.Raycaster();
+    for (const target of samples) {
+      const dir = target.clone().sub(eye);
+      const dist = dir.length();
+      if (dist < 1e-6) return true;
+      ray.set(eye, dir.normalize());
+      ray.far = dist;
+      const first = ray.intersectObjects(this.solids, false).find((h) => h.object.visible);
+      if (!first || first.object === mesh || first.distance >= dist - 1e-3) return true;
+    }
+    return false;
   }
 
   worldPosition(objectId: string): THREE.Vector3 | null {
@@ -290,18 +293,21 @@ export class PlaceScene {
     for (let i = this.glints.length - 1; i >= 0; i--) {
       const g = this.glints[i]!;
       const k = (now - g.start) / 900;
-      const mat = g.mesh.material as THREE.MeshLambertMaterial & { emissive?: THREE.Color; opacity?: number };
+      const mat = g.mesh.material as THREE.MeshLambertMaterial & { emissive?: THREE.Color };
       if (k >= 1) {
         g.mesh.scale.copy(g.baseScale);
         if (mat.emissive) mat.emissive.set('#000000');
-        if (g.mesh.userData.stand) mat.opacity = this.highlighted === g.mesh.name ? 0.95 : 0.3;
         this.glints.splice(i, 1);
         continue;
       }
       const pulse = Math.sin(k * Math.PI);
       g.mesh.scale.copy(g.baseScale).multiplyScalar(1 + 0.35 * pulse);
       if (mat.emissive) mat.emissive.set('#FFE39A').multiplyScalar(0.7 * pulse);
-      if (g.mesh.userData.stand) mat.opacity = 0.3 + 0.7 * pulse;
+    }
+    // The rims of the openings breathe slowly, even in test mode (a steady value there, so screenshots stay the same).
+    for (const p of this.portals) {
+      if (!p.glow) continue;
+      (p.glow.material as THREE.MeshBasicMaterial).opacity = paused ? 0.4 : 0.28 + 0.2 * (0.5 + 0.5 * Math.sin(now / 700));
     }
     if (paused) return;
     const t = now / 1000;

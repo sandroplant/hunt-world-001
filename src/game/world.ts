@@ -7,6 +7,7 @@ import hintsJson from '../world/hints.json';
 import stringsJson from '../world/strings.json';
 import type { HintLevel, PlaceData, PropData, SketchData, Transition, Vec3, WorldObject } from './types';
 import { posFromAt } from './geom';
+import { WalkMap } from './walk';
 
 type RawObject = Record<string, unknown> & { id: string; place: string; kind: string };
 
@@ -25,6 +26,10 @@ export interface World {
   objectsIn(placeId: string): WorldObject[];
   propsIn(placeId: string): PropData[];
   sketchFor(placeId: string): SketchData | undefined;
+  /** The walkable floor of a place (built once, on first use). */
+  walkMap(placeId: string): WalkMap;
+  /** The named spot nearest to a position (for "describe" and for hints). */
+  nearestSpot(placeId: string, pos: Vec3): string;
 }
 
 function expandAct(raw: RawObject): { states: string[]; initial: string; transitions: Transition[] } {
@@ -49,9 +54,6 @@ function expandAct(raw: RawObject): { states: string[]; initial: string; transit
   }
   if (raw.kind === 'hidden') {
     return { states: ['unfound', 'found'], initial: 'unfound', transitions: [] };
-  }
-  if (raw.kind === 'stand') {
-    return { states: ['idle'], initial: 'idle', transitions: [] };
   }
   return {
     states: (raw.states as string[]) ?? ['idle'],
@@ -97,7 +99,6 @@ function normalizeObject(raw: RawObject, places: Record<string, PlaceData>): Wor
   if (raw.visual) obj.visual = raw.visual as WorldObject['visual'];
   if (raw.verb) obj.verb = raw.verb as string;
   if (raw.to) obj.to = raw.to as string;
-  if (raw.target) obj.target = raw.target as string;
   if (raw.night === false) obj.night = false;
   return obj;
 }
@@ -124,28 +125,6 @@ export function loadWorld(): World {
   }
   const props = (propsJson.props as unknown as Array<PropData & { at?: [string, number, number, number] }>).map((p) => resolveProp(p, places));
 
-  // Stand spots are ordinary objects with the verb "Stand here", generated from each place's viewpoints.
-  for (const [pid, place] of Object.entries(places)) {
-    for (const [vid, vp] of Object.entries(place.viewpoints)) {
-      const id = `${pid}.stand_${vid}`;
-      const markSize = place.reach * 0.22;
-      objects[id] = {
-        id,
-        place: pid,
-        kind: 'stand',
-        label: vp.describe,
-        pos: [vp.pos[0], vp.pos[1] - place.eye + markSize * 0.02, vp.pos[2]],
-        size: [markSize, markSize * 0.03, markSize],
-        shape: 'cylinder',
-        color: '#F1E6CF',
-        states: ['idle'],
-        initial: 'idle',
-        transitions: [],
-        target: vid,
-      };
-    }
-  }
-
   const baseOf = (placeId: string): string => places[placeId]?.variantOf ?? placeId;
   const byPlace = new Map<string, WorldObject[]>();
   for (const id of Object.keys(places)) {
@@ -160,6 +139,7 @@ export function loadWorld(): World {
     propsByPlace.set(id, props.filter((p) => p.place === id || p.place === base));
   }
   const sketches = sketchesJson.sketches as SketchData[];
+  const walkMaps = new Map<string, WalkMap>();
 
   return {
     order: placesJson.order,
@@ -175,5 +155,26 @@ export function loadWorld(): World {
     objectsIn: (placeId) => byPlace.get(placeId) ?? [],
     propsIn: (placeId) => propsByPlace.get(placeId) ?? [],
     sketchFor: (placeId) => sketches.find((s) => s.place === baseOf(placeId)),
+    walkMap: (placeId) => {
+      let m = walkMaps.get(placeId);
+      if (!m) {
+        m = new WalkMap(places[placeId]!, propsByPlace.get(placeId) ?? [], byPlace.get(placeId) ?? []);
+        walkMaps.set(placeId, m);
+      }
+      return m;
+    },
+    nearestSpot: (placeId, pos) => {
+      const place = places[placeId]!;
+      let best = place.arrive;
+      let bestD = Infinity;
+      for (const [id, vp] of Object.entries(place.viewpoints)) {
+        const d = Math.hypot(vp.pos[0] - pos[0], vp.pos[2] - pos[2]);
+        if (d < bestD) {
+          bestD = d;
+          best = id;
+        }
+      }
+      return best;
+    },
   };
 }

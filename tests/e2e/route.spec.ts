@@ -12,9 +12,11 @@ const answers = JSON.parse(readFileSync(new URL('../../src/world/answers.json', 
 const objects = JSON.parse(readFileSync(new URL('../../src/world/objects.json', import.meta.url), 'utf8')) as { objects: Array<{ id: string; at?: [string, number, number, number] }> };
 
 /**
- * The scripted route: every required step is done through the rules engine (debug "next step"),
+ * The scripted route on the dev build: every required step is done through the rules engine (debug "next step"),
  * every dive is done the real way (lens held on the active target until the ring fills),
  * plus one sketch lock and one hidden-object find through the judge.
+ * Hooks set this test up (teleport, set view); under the founder's rule they prove nothing about
+ * the controls. The controls are proven by the *.playtest.spec.ts tests with real input.
  */
 test('a scripted route completes the whole chain', async ({ page, baseURL }) => {
   test.setTimeout(180_000);
@@ -58,7 +60,7 @@ test('a scripted route completes the whole chain', async ({ page, baseURL }) => 
     const yaw = obj.at![1]!;
     const pitch = obj.at![2]!;
     await page.evaluate((v) => window.__hunt.stand(v), vp);
-    await page.waitForTimeout(1100);
+    await page.waitForTimeout(200);
     const pose: [number, number] = [yaw, pitch];
     await page.evaluate(([y, p]) => window.__hunt.setView(y, p, 1), pose);
     await page.waitForTimeout(150);
@@ -88,34 +90,41 @@ test('back out returns up the chain and keeps what was found', async ({ page }) 
   await page.evaluate(() => window.__hunt.back());
   await waitForDive(page, 'shop');
   s = await page.evaluate(() => window.__hunt.state());
-  expect(s.viewpoint).toBe('B');
-  expect(s.steps['open_blue_drawer']).toBe(true);
+  expect((await page.evaluate(() => window.__hunt.view())).spot).toBe('B');
+  expect(s.steps['unlock_blue_drawer']).toBe(true);
   await page.evaluate(() => window.__hunt.back());
   await waitForDive(page, 'street');
   s = await page.evaluate(() => window.__hunt.state());
   expect(s.stack.length).toBe(0);
 });
 
-test('spots: W A S D move to the nearest spot in that direction, and tapping a mark moves there', async ({ page }) => {
+test('walking (dev build, hooks read the position): W walks ahead, a wall stops it, and a tap on the ground walks there', async ({ page }) => {
   await boot(page);
   await begin(page);
-  await page.evaluate(() => window.__hunt.move('forward'));
-  await page.waitForFunction(() => window.__hunt.view().viewpoint === 'C');
-  await page.waitForTimeout(2600);
-  await page.evaluate(() => window.__hunt.move('back'));
-  await page.waitForFunction(() => window.__hunt.view().viewpoint !== 'C');
-  await page.waitForTimeout(2600);
-  // Face the shop step's mark and tap where it appears on screen.
-  await page.evaluate(() => window.__hunt.jump('street'));
-  await page.waitForTimeout(300);
-  await page.evaluate(() => window.__hunt.setView(28, -12, 1));
-  await page.waitForTimeout(200);
   const size = page.viewportSize()!;
-  await page.evaluate(([x, y]) => window.__hunt.tap(x, y), [size.width / 2, size.height / 2] as [number, number]);
-  await page.waitForFunction(() => window.__hunt.view().viewpoint === 'B');
-  // The view direction is kept while moving.
-  const v = await page.evaluate(() => window.__hunt.view());
-  expect(Math.abs(v.yaw - 28)).toBeLessThan(0.01);
+  const at = async () => (await page.evaluate(() => window.__hunt.view())).pos;
+  const start = await at();
+  await page.keyboard.down('w');
+  await page.waitForTimeout(700);
+  await page.keyboard.up('w');
+  const after = await at();
+  expect(start[2] - after[2]).toBeGreaterThan(1); // walked toward -Z (ahead) at about 3 m/s
+  // Face the shop's wall and keep walking: the wall stops the player short of it.
+  await page.evaluate(() => window.__hunt.setView(90, 0, 1));
+  await page.keyboard.down('w');
+  await page.waitForTimeout(3000);
+  await page.keyboard.up('w');
+  const wall = await at();
+  expect(wall[0]).toBeGreaterThan(-5.3);
+  expect(wall[0]).toBeLessThan(-4.6);
+  // A tap on the ground walks there.
+  await page.evaluate(() => window.__hunt.setView(0, -20, 1));
+  await page.waitForTimeout(200);
+  const before = await at();
+  await page.evaluate(([x, y]) => window.__hunt.tap(x, y), [size.width / 2, size.height * 0.75] as [number, number]);
+  await page.waitForFunction(() => !window.__hunt.view().walking, null, { timeout: 8000 });
+  const done = await at();
+  expect(before[2] - done[2]).toBeGreaterThan(1.5);
 });
 
 test('the idle glint fires once on the most useful next thing, without text', async ({ page }) => {

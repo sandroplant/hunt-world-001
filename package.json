@@ -2,7 +2,7 @@
   "name": "hunt-world-001",
   "version": "0.1.0",
   "private": true,
-  "description": "The Hunt — World 001, step 1: Into the Cat's Eye. Prototype · non-competitive · no prize.",
+  "description": "The Hunt \u2014 World 001, step 1: Into the Cat's Eye. Prototype \u00b7 non-competitive \u00b7 no prize.",
   "type": "module",
   "scripts": {
     "dev": "vite",
@@ -14,7 +14,8 @@
     "typecheck": "tsc --noEmit -p tsconfig.json",
     "test:unit": "vitest run",
     "test:e2e": "playwright test",
-    "test": "npm run typecheck && npm run lint && npm run test:unit && npm run build && npm run test:e2e"
+    "test": "npm run typecheck && npm run lint && npm run test:unit && npm run build && npm run build:playtest && npm run test:e2e",
+    "test:playtest": "playwright test --project playtest"
   },
   "dependencies": {
     "three": "0.186.1"

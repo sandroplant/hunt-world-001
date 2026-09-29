@@ -8,10 +8,8 @@ export interface InputHandlers {
   lens(held: boolean): void;
   /** A tap or click at a screen position (CSS px). */
   act(x: number, y: number): void;
-  /** The mouse moved without a button (for brightening a spot under the pointer). */
-  hover(x: number, y: number): void;
-  /** W, A, S or D: move toward the nearest spot in that direction relative to the view. */
-  move(dir: 'forward' | 'back' | 'left' | 'right'): void;
+  /** W, A, S or D held: walk this frame, in view-relative units of -1..1 (forward, right) times seconds. */
+  walk(forward: number, right: number, dt: number): void;
   enter(): void;
   back(): void;
   book(): void;
@@ -32,9 +30,6 @@ export class Input {
   constructor(private target: HTMLElement, private h: InputHandlers) {
     target.addEventListener('pointerdown', this.onPointerDown);
     target.addEventListener('pointermove', this.onPointerMove);
-    target.addEventListener('pointermove', (e) => {
-      if (e.pointerType === 'mouse' && e.buttons === 0) this.h.hover(e.clientX, e.clientY);
-    });
     target.addEventListener('pointerup', this.onPointerUp);
     target.addEventListener('pointercancel', this.onPointerUp);
     target.addEventListener('wheel', this.onWheel, { passive: false });
@@ -122,11 +117,15 @@ export class Input {
     const tag = (e.target as HTMLElement).tagName;
     if (tag === 'INPUT' || tag === 'TEXTAREA' || tag === 'SELECT') return;
     this.h.anyInput();
-    if (e.repeat && !['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight'].includes(e.key)) return;
+    const held = ['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight', 'w', 'a', 's', 'd', 'W', 'A', 'S', 'D'];
+    if (e.repeat && !held.includes(e.key)) return;
     switch (e.key) {
       case 'ArrowUp': case 'ArrowDown': case 'ArrowLeft': case 'ArrowRight':
         this.keys.add(e.key);
         e.preventDefault();
+        break;
+      case 'w': case 'W': case 'a': case 'A': case 's': case 'S': case 'd': case 'D':
+        this.keys.add(e.key.toLowerCase());
         break;
       case 'z': case 'Z':
         this.keyLens = true;
@@ -134,18 +133,6 @@ export class Input {
         break;
       case 'e': case 'E':
         this.h.act(window.innerWidth / 2, window.innerHeight / 2);
-        break;
-      case 'w': case 'W':
-        this.h.move('forward');
-        break;
-      case 's': case 'S':
-        this.h.move('back');
-        break;
-      case 'a': case 'A':
-        this.h.move('left');
-        break;
-      case 'd': case 'D':
-        this.h.move('right');
         break;
       case 'Enter':
         this.h.enter();
@@ -171,13 +158,14 @@ export class Input {
 
   private onKeyUp = (e: KeyboardEvent): void => {
     this.keys.delete(e.key);
+    this.keys.delete(e.key.toLowerCase());
     if (e.key === 'z' || e.key === 'Z') {
       this.keyLens = false;
       this.syncLens();
     }
   };
 
-  /** Called every frame: arrow keys turn the view at a steady rate (degrees per second). */
+  /** Called every frame: arrow keys turn the view at a steady rate (degrees per second); W A S D walk. */
   update(dt: number, degPerSec = 70): void {
     let dx = 0;
     let dy = 0;
@@ -186,5 +174,16 @@ export class Input {
     if (this.keys.has('ArrowUp')) dy += 1;
     if (this.keys.has('ArrowDown')) dy -= 1;
     if (dx || dy) this.h.turn(dx * degPerSec * dt, dy * degPerSec * dt);
+    let fwd = 0;
+    let right = 0;
+    if (this.keys.has('w')) fwd += 1;
+    if (this.keys.has('s')) fwd -= 1;
+    if (this.keys.has('d')) right += 1;
+    if (this.keys.has('a')) right -= 1;
+    if (fwd || right) this.h.walk(fwd, right, dt);
+  }
+
+  get walkingByKey(): boolean {
+    return this.keys.has('w') || this.keys.has('a') || this.keys.has('s') || this.keys.has('d');
   }
 }

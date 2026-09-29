@@ -10,12 +10,10 @@
     "street_night"
   ],
   "requiredSteps": {
-    "street": [
-      "take_key",
-      "use_key_on_door"
-    ],
+    "street": [],
     "shop": [
-      "open_blue_drawer"
+      "take_key",
+      "unlock_blue_drawer"
     ],
     "drawer": [
       "open_envelope",
@@ -37,12 +35,12 @@
   "diveTargets": {
     "street": {
       "object": "street.doorway",
-      "activeAfter": "use_key_on_door",
+      "activeAfter": null,
       "to": "shop"
     },
     "shop": {
       "object": "shop.drawer_inside",
-      "activeAfter": "open_blue_drawer",
+      "activeAfter": "unlock_blue_drawer",
       "to": "drawer"
     },
     "drawer": {
@@ -73,7 +71,8 @@
     "lockDeg": 10,
     "warmDeg": 25,
     "zoomTol": 0.35,
-    "holdMs": 800
+    "holdMs": 800,
+    "note": "A sketch locks when the player stands within posTol of pos (the spot it was drawn from), looks within lockDeg of the direction, and is zoomed within zoomTol, for holdMs."
   },
   "sketches": {
     "S1": {
@@ -81,42 +80,78 @@
       "viewpoint": "A",
       "yaw": 29,
       "pitch": 17,
-      "zoom": 1.8
+      "zoom": 1.8,
+      "pos": [
+        0,
+        1.6,
+        0
+      ],
+      "posTol": 1.2
     },
     "S2": {
       "place": "shop",
       "viewpoint": "A",
       "yaw": -12,
       "pitch": -3,
-      "zoom": 1.3
+      "zoom": 1.3,
+      "pos": [
+        0,
+        1.6,
+        0
+      ],
+      "posTol": 0.8
     },
     "S3": {
       "place": "drawer",
       "viewpoint": "B",
       "yaw": 35,
       "pitch": -14,
-      "zoom": 1.4
+      "zoom": 1.4,
+      "pos": [
+        -6,
+        6,
+        -18
+      ],
+      "posTol": 3.5
     },
     "S4": {
       "place": "cat",
       "viewpoint": "B",
       "yaw": 10,
       "pitch": 5,
-      "zoom": 2.0
+      "zoom": 2.0,
+      "pos": [
+        40,
+        15,
+        -40
+      ],
+      "posTol": 15
     },
     "S5": {
       "place": "eye",
       "viewpoint": "A",
       "yaw": 25,
       "pitch": 30,
-      "zoom": 2.0
+      "zoom": 2.0,
+      "pos": [
+        0,
+        5,
+        0
+      ],
+      "posTol": 12
     },
     "S6": {
       "place": "moon",
       "viewpoint": "B",
       "yaw": 30,
       "pitch": -40,
-      "zoom": 1.5
+      "zoom": 1.5,
+      "pos": [
+        0,
+        3.4,
+        -18
+      ],
+      "posTol": 1.2
     }
   },
   "hiddenDefaults": {
@@ -127,11 +162,11 @@
     "street.umbrella": {
       "place": "street",
       "pos": [
-        3.5058,
-        0.2094,
-        -2.4548
+        1.7456,
+        0.4464,
+        -4.9021
       ],
-      "refDist": 4.5,
+      "refDist": 5.33,
       "minZoom": 2.5,
       "hitDeg": 6
     },
@@ -148,42 +183,42 @@
     "shop.teacup_star": {
       "place": "shop",
       "pos": [
-        3.9026,
-        2.8,
-        -4.1922
+        3.0981,
+        2.6065,
+        -1.8082
       ],
-      "refDist": 2.4,
+      "refDist": 1.8,
       "minZoom": 3.0
     },
     "shop.marble": {
       "place": "shop",
       "pos": [
-        0.8912,
-        -0.2309,
-        -3.3262
+        1.3027,
+        0.0136,
+        -3.5029
       ],
-      "refDist": 3.9,
+      "refDist": 4.06,
       "minZoom": 3.0
     },
     "drawer.paper_boat": {
       "place": "drawer",
       "pos": [
-        -13.9683,
-        -0.0582,
-        -29.9551
+        -13.9911,
+        -0.0442,
+        -27.8182
       ],
-      "refDist": 33.3,
+      "refDist": 31.4,
       "minZoom": 2.5,
       "hitDeg": 4
     },
     "drawer.stamp_moon": {
       "place": "drawer",
       "pos": [
-        -16.0944,
-        8.1219,
-        -35.484
+        -15.9452,
+        8.0906,
+        -35.2256
       ],
-      "refDist": 20.3,
+      "refDist": 20.0,
       "minZoom": 3.0,
       "hitDeg": 4
     },
@@ -201,7 +236,7 @@
       "place": "cat",
       "pos": [
         60.8909,
-        6.7906,
+        9.7906,
         -60.8909
       ],
       "refDist": 30,
@@ -231,9 +266,9 @@
     "moon.footprint": {
       "place": "moon",
       "pos": [
-        -2.0793,
-        -0.0905,
-        -2.9696
+        -2.1056,
+        0.0114,
+        -3.0071
       ],
       "refDist": 4.0,
       "minZoom": 2.5,

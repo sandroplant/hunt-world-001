@@ -13,9 +13,10 @@ export function objectAt(id: string): [number, number, string] {
 declare global {
   interface Window {
     __hunt: {
-      state(): { place: string; viewpoint: string; steps: Record<string, true>; found: Record<string, true>; items: string[]; ended: boolean; stack: unknown[] };
-      view(): { place: string; viewpoint: string; yaw: number; pitch: number; zoom: number };
+      state(): { place: string; pos: [number, number, number]; steps: Record<string, true>; found: Record<string, true>; items: string[]; ended: boolean; stack: unknown[] };
+      view(): { place: string; pos: [number, number, number]; spot: string; yaw: number; pitch: number; zoom: number; walking: boolean };
       setView(yaw: number, pitch: number, zoom: number): void;
+      /** Teleport to a named spot: sets a test up; it never proves anything. */
       stand(vp: string): void;
       act(): void;
       lens(held: boolean): void;
@@ -26,7 +27,7 @@ declare global {
       enter(): void;
       diving(): boolean;
       tap(x: number, y: number): void;
-      move(dir: 'forward' | 'back' | 'left' | 'right'): void;
+      walkTo(x: number, z: number): boolean;
       glint(): void;
       freezeDive(t: number | null): void;
       stats(): { calls: number; triangles: number; geometries: number; textures: number };
