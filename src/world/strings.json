@@ -87,5 +87,11 @@
     "walk": "Tap the ground to walk",
     "lens": "Hold the lens on a glowing opening"
   },
-  "keys": "Keys: arrows look · W A S D walk · hold Z · E or Enter"
+  "keys": "Keys: arrows look · W A S D walk · hold Z · E or Enter",
+  "book": {
+    "current": "the current page",
+    "currentAlt": "A drawing of the next thing to find",
+    "hint": "A hint"
+  },
+  "loading": "Loading…"
 }

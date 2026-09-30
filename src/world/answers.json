@@ -173,11 +173,11 @@
     "street.ship_bottle": {
       "place": "street",
       "pos": [
-        2.6955,
-        4.7842,
-        -7.4058
+        6.2793,
+        3.7445,
+        -8.0082
       ],
-      "refDist": 8.5,
+      "refDist": 10.4,
       "minZoom": 3.0
     },
     "shop.teacup_star": {

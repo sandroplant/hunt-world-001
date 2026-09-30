@@ -167,7 +167,27 @@
             13
           ]
         ]
-      }
+      },
+      "style": "realistic",
+      "hdri": "belfast_sunset_puresky_2k",
+      "envRotation": -100,
+      "sun": {
+        "dir": [
+          0.45,
+          0.14,
+          -0.88
+        ],
+        "color": "#ffb27a",
+        "intensity": 3.2
+      },
+      "mist": [
+        "#66768e",
+        20,
+        140
+      ],
+      "exposure": 0.5,
+      "envIntensity": 0.55,
+      "skyIntensity": 0.7
     },
     "street_night": {
       "label": "Street",

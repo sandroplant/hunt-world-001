@@ -138,6 +138,8 @@ The player lands back in place 1. It is night. The lamps are lit. The windows ar
 
 **If nothing happens for 45 seconds,** the most useful next thing glints once. No text.
 
+**The sketchbook guides.** Its first page is always a drawing of the next thing needed on the main path (the key on the counter, then the blue drawer). The drawing names nothing; the player finds it in the world. After a minute without progress the book's button pulses once, and that page then offers a hint. A locked thing that rattles makes the thing it needs glint a moment later.
+
 **The trail** at the top shows the places already reached by name, and the places ahead as dots. It is not a control and does not look like one. On phones it sits below the buttons.
 
 ## 5. Controls
@@ -154,7 +156,7 @@ The player lands back in place 1. It is night. The lamps are lit. The windows ar
 | Hints | ? button | ? button | H |
 | Describe surroundings | menu | menu | V |
 
-Tab is never a game key. The start screen shows three pictures with a few words each: drag to look, tap the ground to walk, hold the lens on a glowing opening. The same three pictures sit in the view until each has been done once.
+Tab is never a game key. The start screen shows three pictures with a few words each: drag to look, tap the ground to walk, hold the lens on a glowing opening. The same three pictures sit in the view until each has been done once. Begin reads "Loading…" until the place is fully in, so play starts on a finished picture.
 
 ## 6. Searching, clues and fairness
 

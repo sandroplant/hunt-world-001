@@ -43,7 +43,12 @@
       ],
       "shape": "box",
       "color": "#B0281E",
-      "verb": "Take"
+      "verb": "Take",
+      "rot": [
+        12,
+        0,
+        -14
+      ]
     },
     {
       "id": "street.ship_bottle",
@@ -52,9 +57,9 @@
       "label": "a ship in a bottle on a windowsill",
       "at": [
         "A",
-        -20,
-        22,
-        8.5
+        -38.1,
+        11.9,
+        10.4
       ],
       "size": [
         0.22,
@@ -62,7 +67,7 @@
         0.08
       ],
       "shape": "box",
-      "color": "#2F7F86",
+      "color": "#7fb8c8",
       "verb": "Look"
     },
     {
@@ -73,7 +78,7 @@
       "at": [
         "A",
         -33,
-        -4,
+        -18,
         3.9
       ],
       "size": [
@@ -85,7 +90,12 @@
       "color": "#2E3A2E",
       "act": {
         "simple": "Flip"
-      }
+      },
+      "rot": [
+        0,
+        0,
+        8
+      ]
     },
     {
       "id": "street.scale",
@@ -94,9 +104,9 @@
       "label": "the stall's brass scale",
       "at": [
         "A",
-        -58,
-        2,
-        3.8
+        -52,
+        -5.3,
+        4.1
       ],
       "size": [
         0.4,
@@ -104,7 +114,7 @@
         0.3
       ],
       "shape": "box",
-      "color": "#C9A24E",
+      "color": "#5a4a28",
       "act": {
         "simple": "Swing"
       }
@@ -121,12 +131,12 @@
         3.8
       ],
       "size": [
-        0.3,
-        0.3,
-        0.3
+        0.28,
+        0.2,
+        0.34
       ],
-      "shape": "box",
-      "color": "#E8E8E8",
+      "shape": "sphere",
+      "color": "#e4e4e0",
       "act": {
         "simple": "Shoo"
       }
@@ -135,46 +145,50 @@
       "id": "street.sign",
       "place": "street",
       "kind": "usable",
-      "label": "the shop's painted sign: a cat's eye",
-      "at": [
-        "B",
-        60,
-        25,
-        2.2
-      ],
+      "label": "the shop's hanging sign: a painted cat's eye",
       "size": [
-        0.8,
-        0.5,
-        0.06
+        0.45,
+        0.35,
+        0.04
       ],
       "shape": "box",
-      "color": "#C9A24E",
+      "color": "#2a1a0c",
       "act": {
         "simple": "Swing"
-      }
+      },
+      "pos": [
+        -5.0,
+        2.55,
+        -8.05
+      ],
+      "home": "B",
+      "rot": [
+        0,
+        90,
+        0
+      ]
     },
     {
-      "id": "street.window_cat",
+      "id": "street.notice",
       "place": "street",
       "kind": "usable",
-      "label": "the cat asleep in the shop window",
+      "label": "a curling notice taped inside the shop window",
       "at": [
         "B",
-        48,
-        3,
-        2.1
+        52,
+        6,
+        2.05
       ],
       "size": [
-        0.5,
+        0.02,
         0.3,
-        0.3
+        0.22
       ],
       "shape": "box",
-      "color": "#D98C3F",
+      "color": "#e8e0c8",
       "act": {
-        "simple": "Stroke"
-      },
-      "night": false
+        "simple": "Flatten"
+      }
     },
     {
       "id": "street.doorbell",
@@ -185,7 +199,7 @@
         "B",
         58,
         6,
-        1.95
+        2.06
       ],
       "size": [
         0.08,

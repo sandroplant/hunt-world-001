@@ -47,6 +47,9 @@ export function installDebug(app: App): void {
     tap: (x: number, y: number) => app.actAt(x, y),
     walkTo: (x: number, z: number) => app.walkToGround(x, z),
     glint: () => app.debugGlint(),
+    stuck: () => app.debugStuck(),
+    log: () => app.log.text(),
+    startLog: () => app.log.start(),
     freezeDive: (t: number | null) => app.debugFreezeDive(t),
     lens: (held: boolean) => app.setLens(held),
     jump: (place: string) => app.debugJump(place),
@@ -64,5 +67,8 @@ export function installDebug(app: App): void {
     hit: (x: number, y: number) => app.debugHit(x, y),
     sketch: (yaw: number, pitch: number, zoom: number) => app.debugSketch(yaw, pitch, zoom),
     sketchImage: (id: string) => app.debugSketchImage(id),
+    ready: () => app.ready,
+    assetsRequested: () => [...app.assets.requested],
+    assets: () => app.assets,
   };
 }

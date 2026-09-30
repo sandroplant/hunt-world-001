@@ -1,14 +1,19 @@
 import { expect, test } from '@playwright/test';
+
+// The realistic street renders in software here; a smaller window and the low tier keep frames coming.
+test.use({ viewport: { width: 960, height: 600 } });
 import { capture } from './helpers';
 
 // Keyboard only, on the playtest build, no hooks: arrows to look, W to walk, Enter to dive, X to back out,
 // B for the sketchbook. Completes place 1 and returns. The full-chain keyboard run is a Phase B check (spec §10).
 test('place 1 is playable with the keyboard alone', async ({ page, baseURL }) => {
-  test.setTimeout(120_000);
+  test.setTimeout(300_000);
   const c = capture(page, baseURL!);
-  await page.goto('/');
+  await page.goto('/?quality=low');
   await expect(page.locator('#title')).toHaveClass(/show/, { timeout: 30_000 });
-  await page.keyboard.press('Enter'); // Begin has focus
+  await expect(page.getByRole('button', { name: 'Begin' })).toBeEnabled({ timeout: 120_000 });
+  await expect(page.getByRole('button', { name: 'Begin' })).toBeFocused();
+  await page.keyboard.press('Enter'); // Begin has focus once the assets are in
   await expect(page.locator('#title')).not.toHaveClass(/show/);
   const verb = page.locator('#verb');
   // Arrow keys turn at about 70 degrees per second. Look left toward the open shop door.

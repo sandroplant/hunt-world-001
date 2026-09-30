@@ -465,3 +465,18 @@ Rules and positions that changed in the redesign. Numbers in the tables above ar
 | Shop chest | back to x 3.62 so the drawer fronts stand proud of it (they were inside it) |
 | Line of sight | a hidden object is offered only when some part of it can be seen from the eye (`PlaceScene.visibleFrom`); `tests/unit/sight.test.ts` checks every hidden object from its home spot |
 | Fairness report (founder change 1) | after the moves above, every hidden object is in view from the spot its hints describe and needs at most 4× zoom from the nearest walkable point (`tests/unit/walk.test.ts`). Two are deliberately not visible from everywhere: the paper boat is under the bridge from above (see it from the pool's side), and the teacup is behind you when you face the chest. Nothing became unfair in the sense of "impossible from where the hints send you"; five things were unfair before this round (buried in shapes) and are fixed |
+
+---
+
+## 15. Fourth round: the street style frame (2026-09-30, `DECISIONS.md` D-010)
+
+Only the street's look changed; every other place is graybox. Positions that moved so nothing floats or hides:
+
+| What | Now |
+|---|---|
+| Houses | seven built houses replace the two rows: left z −23..−15 (5.4 m, plaster, door), −15..−9 (4.4 m, red plaster; low so the lighthouse shows in the notch for S1), −9..−3 (5.6 m, plaster; the shop's house), −3..7 (6.6 m, blue plaster, door); right z −23..−15 (5.8 m, red, door), −15..−3 (6.4 m, plaster; the lit window with the ship in a bottle), −3..3 (5.2 m, blue, door). The walk map's blockers are these boxes, as before |
+| Ordinary things (street) | chalkboard leans on the ground by the stall (A yaw −33, pitch −18, 3.9 m, tilted); brass scale sits on the stall table (A −52 / −5.3 / 4.1); gull is a pale oval on a pole (A −15 / 5 / 3.8, pole prop under it); doorbell flush on the shop front (B 58 / 6 / 2.06); the painted sign hangs perpendicular beside the window at (−5.0, 2.55, −8.05); the window cat became **a curling notice taped inside the shop window** (B 52 / 6 / 2.05, verb Flatten), since the cat itself is inside the shop and shows through the live window |
+| Hidden things (street) | ship in a bottle on the outside sill of the lit first-floor window across the street (A yaw −38.1, pitch 11.9, 10.4 m; hint text updated); umbrella unchanged in place, now leaning |
+| Stall | the wooden table model under a cloth canopy on four posts; crates and the bucket are models; three leaning oars behind it |
+| Dressing | 37.3 MB of Poly Haven assets; the list of what each prop uses is the `look` field in `props.json` |
+| Lighting | HDRI `belfast_sunset_puresky_2k` turned −100° so its sun sits over the harbor; sun light from (0.45, 0.14, −0.88); mist #66768e from 20 to 140 m; exposure 0.5 |

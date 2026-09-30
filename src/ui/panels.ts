@@ -119,7 +119,9 @@ export class Panels {
       el('p', {}, s.opening),
     );
     const row = el('div', { class: 'row' });
-    const begin = el('button', { class: 'btn primary' }, hasSave ? s.continue : s.start);
+    const begin = el('button', { class: 'btn primary', id: 'begin' }, s.loading);
+    begin.disabled = true;
+    begin.dataset.label = hasSave ? s.continue : s.start;
     begin.addEventListener('click', () => this.cb.begin());
     row.append(begin);
     if (hasSave) {
@@ -140,6 +142,15 @@ export class Panels {
     box.append(teach);
     if (storageBlocked) box.append(el('p', { class: 'small' }, s.menu.storageBlocked));
     box.append(el('p', { class: 'small keys' }, s.keys));
+  }
+
+  /** The place's assets are in: Begin (or Continue) can be pressed. */
+  setReady(): void {
+    const begin = this.boxes.get('title')!.querySelector<HTMLButtonElement>('#begin');
+    if (!begin) return;
+    begin.disabled = false;
+    begin.textContent = begin.dataset.label ?? this.world.strings.start;
+    if (this.open === 'title') begin.focus();
   }
 
   renderMenu(state: GameState, sessionLogOn: boolean, perfMode: boolean, storageBlocked: boolean): void {
@@ -203,11 +214,34 @@ export class Panels {
     box.append(el('p', { class: 'small' }, 'Controls: drag or arrow keys to look · tap the ground, or hold W A S D, to walk · pinch, wheel, right button or Z to zoom · tap, click, E or Enter to use what the crosshair shows · hold the lens on a glowing opening to go in · X or Backspace to back out · B sketchbook · H hints · V describe.'));
   }
 
-  renderBook(state: GameState, sketches: Map<string, HTMLCanvasElement>, heldId: string | null, lastPage: HTMLCanvasElement): void {
+  renderBook(state: GameState, sketches: Map<string, HTMLCanvasElement>, heldId: string | null, lastPage: HTMLCanvasElement, current: HTMLCanvasElement | null = null, hintOffer: string | null = null): void {
     const s = this.world.strings;
     const box = this.boxes.get('book')!;
     box.replaceChildren(el('h2', {}, s.verbs.book), el('p', { class: 'small' }, s.opening));
     const pages = el('div', { class: 'pages' });
+    // The current page: a drawing of the next thing needed on the main path. It is found in the world, not named here.
+    if (current) {
+      const page = el('div', { class: 'page current' });
+      const c = el('canvas', { class: 'sketch', role: 'img', 'aria-label': s.book.currentAlt, title: s.book.currentAlt });
+      c.width = current.width;
+      c.height = current.height;
+      c.getContext('2d')!.drawImage(current, 0, 0);
+      page.append(c, el('div', { class: 'small' }, s.book.current));
+      if (hintOffer) {
+        const used = state.hintsUsed[hintOffer] ?? 0;
+        const levels = this.world.hints[hintOffer] ?? [];
+        if (used < levels.length) {
+          const b = el('button', { class: 'btn hint-offer' }, used === 0 ? s.book.hint : `${s.hints.more} (${used + 1} of ${levels.length})`);
+          b.addEventListener('click', () => this.cb.hint(hintOffer, used + 1));
+          page.append(b);
+        }
+        for (let i = 0; i < used && i < levels.length; i++) {
+          const lv = levels[i] as HintLevel;
+          page.append(el('p', { class: 'small' }, typeof lv === 'string' ? `${i + 1}. ${lv}` : `${i + 1}. (an arrow points the way)`));
+        }
+      }
+      pages.append(page);
+    }
     const visited = [...state.stack.map((x) => x.place), state.place].map((p) => this.world.baseOf(p));
     const seen = new Set<string>();
     for (const placeId of visited) {

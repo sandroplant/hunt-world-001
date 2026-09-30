@@ -157,7 +157,7 @@
     ],
     "street.ship_bottle": [
       "A lit window across the street.",
-      "On the sill, first floor. Zoom right in.",
+      "On the outside sill, first floor. Zoom right in.",
       {
         "point": "street.ship_bottle"
       }

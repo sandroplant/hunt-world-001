@@ -13,7 +13,10 @@ export function objectAt(id: string): [number, number, string] {
 declare global {
   interface Window {
     __hunt: {
-      state(): { place: string; pos: [number, number, number]; steps: Record<string, true>; found: Record<string, true>; items: string[]; ended: boolean; stack: unknown[] };
+      state(): { place: string; pos: [number, number, number]; steps: Record<string, true>; found: Record<string, true>; items: string[]; ended: boolean; stack: unknown[]; hintCount: number };
+      stuck(): void;
+      log(): string;
+      startLog(): void;
       view(): { place: string; pos: [number, number, number]; spot: string; yaw: number; pitch: number; zoom: number; walking: boolean };
       setView(yaw: number, pitch: number, zoom: number): void;
       /** Teleport to a named spot: sets a test up; it never proves anything. */
@@ -58,13 +61,16 @@ export function capture(page: Page, origin: string): Capture {
   return c;
 }
 
-export async function boot(page: Page, query = '?debug=1&test=1'): Promise<void> {
+// Tests run the street on the low tier: the container renders in software, where shadows cost a second a frame.
+export async function boot(page: Page, query = '?debug=1&test=1&quality=low'): Promise<void> {
   await page.goto('/' + query);
   await page.waitForFunction(() => document.querySelector('#title.show') !== null, null, { timeout: 30_000 });
 }
 
 export async function begin(page: Page): Promise<void> {
-  await page.getByRole('button', { name: /Begin|Continue/ }).click();
+  const b = page.getByRole('button', { name: /Begin|Continue/ });
+  await b.waitFor({ timeout: 120_000 });
+  await b.click();
   await page.waitForFunction(() => document.querySelector('#title.show') === null);
 }
 

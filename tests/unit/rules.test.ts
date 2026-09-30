@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import { judge } from '../../src/game/judge';
 import { loadWorld } from '../../src/game/world';
-import { act, backOut, clearSave, createInitialState, dive, hintTargets, load, memoryStore, moveTo, progress, recordHiddenFound, recordSketchLocked, save, standAt, useHint, verbFor } from '../../src/game/rules';
+import { act, backOut, clearSave, createInitialState, dive, hintTargets, load, memoryStore, moveTo, nextObjective, progress, recordHiddenFound, recordSketchLocked, save, standAt, useHint, verbFor } from '../../src/game/rules';
 import type { GameState } from '../../src/game/types';
 
 const world = loadWorld();
@@ -203,6 +203,24 @@ describe('hints and progress', () => {
     s = act(world, s, 'shop.blue_drawer').state;
     expect(hintTargets(world, s)[0]).toBe('dive:shop');
   });
+  it('the next objective follows the main path: opening, key, drawer, opening, and nothing at the end', () => {
+    let s = createInitialState(world);
+    expect(nextObjective(world, s)?.id).toBe('street.doorway');
+    s = dive(world, s)!.state;
+    expect(nextObjective(world, s)?.id).toBe('shop.key');
+    s = act(world, s, 'shop.key').state;
+    expect(nextObjective(world, s)?.id).toBe('shop.blue_drawer');
+    s = act(world, s, 'shop.blue_drawer').state;
+    expect(nextObjective(world, s)?.id).toBe('shop.drawer_inside');
+    for (const [obj, spot] of [['drawer.envelope', 'B'], ['drawer.feather', 'B'], ['drawer.cat_nose', 'B']] as const) {
+      s = dive(world, s)?.state ?? s;
+      s = standAt(world, s, spot);
+      if (nextObjective(world, s)?.id === obj) s = act(world, s, obj).state;
+    }
+    const end: GameState = { ...s, place: 'street_night', steps: Object.fromEntries(judge.allRequiredSteps().map((k) => [k, true])) };
+    expect(nextObjective(world, end)).toBeNull();
+  });
+
   it('every required step, dive, sketch and hidden object has three hint levels', () => {
     for (const step of judge.allRequiredSteps()) expect(world.hints[step], step).toHaveLength(3);
     for (const p of judge.order()) if (judge.diveTarget(p)) expect(world.hints[`dive:${p}`], p).toHaveLength(3);

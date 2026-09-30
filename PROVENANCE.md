@@ -40,3 +40,7 @@ All geometry, colours, sketches and sounds are made at runtime from the JSON dat
 ## Model and dates
 
 Built by Claude Fable 5.1 (`claude-fable-5-1`) in Claude Code on the web, 2026-09-29 onward. The founder wrote no code.
+
+## Asset pack (fourth round)
+
+`public/assets/polyhaven/` holds 33 CC0 Poly Haven assets (1 HDRI, 9 texture sets, 23 glTF models) fetched by the build lead and listed with their pages in `public/assets/polyhaven/PROVENANCE.md`. CC0 1.0: no attribution required, credited anyway. Only what a place's `look` data asks for is loaded at runtime, from the site's own files. Loaders: `GLTFLoader` and `RGBELoader` from the `three` package already in the dependencies; no new dependency.

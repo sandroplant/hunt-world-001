@@ -63,13 +63,14 @@ Tab is never a game key. The dive is one continuous move through the opening int
 src/world/    DATA ONLY (JSON): places, objects, props, sketches, hints, strings, answers
 src/game/     rules engine, the judge (reads only answers.json), the walkable floor, state, save, recorders
 src/gen/      the sketch renderer (draws sketches from the world itself)
-src/render/   scene builder, renderer, quality tiers, the dive
+src/render/   scene builder, renderer, quality tiers, the dive, the asset loader and the realistic dressing
+public/assets/polyhaven/   CC0 Poly Haven pack (HDRI, textures, models), see its PROVENANCE.md
 src/player/   walking camera, lens, input
 src/ui/       HUD, panels, styles
 src/audio/    procedural WebAudio
 src/debug/    dev-only debug tools
 tests/unit/   Vitest      tests/e2e/   Playwright (*.playtest.spec.ts = real input on the playtest build, no hooks)
-tools/        screenshots.mjs and seam.mjs (dive hand-over check)
+tools/        screenshots.mjs, seam.mjs (dive hand-over check), style_shots.mjs (style frames, sizes, frame times), puzzle_chart.mjs
 ```
 
 Trust rules (spec §6): every "is this found?" decision goes through `src/game/judge.ts`, which reads only `src/world/answers.json`. That file is marked to move server-side before any prize hunt. The renderer and the UI never decide a find.

@@ -105,14 +105,15 @@ test('walking (dev build, hooks read the position): W walks ahead, a wall stops 
   const at = async () => (await page.evaluate(() => window.__hunt.view())).pos;
   const start = await at();
   await page.keyboard.down('w');
-  await page.waitForTimeout(700);
+  await page.waitForFunction((z0) => z0 - window.__hunt.view().pos[2] > 1, start[2], { timeout: 8000 }); // walks toward -Z (ahead)
   await page.keyboard.up('w');
   const after = await at();
-  expect(start[2] - after[2]).toBeGreaterThan(1); // walked toward -Z (ahead) at about 3 m/s
+  expect(start[2] - after[2]).toBeGreaterThan(1);
   // Face the shop's wall and keep walking: the wall stops the player short of it.
   await page.evaluate(() => window.__hunt.setView(90, 0, 1));
   await page.keyboard.down('w');
-  await page.waitForTimeout(3000);
+  await page.waitForFunction(() => window.__hunt.view().pos[0] < -4.6, null, { timeout: 15_000 });
+  await page.waitForTimeout(600);
   await page.keyboard.up('w');
   const wall = await at();
   expect(wall[0]).toBeGreaterThan(-5.3);
@@ -125,6 +126,37 @@ test('walking (dev build, hooks read the position): W walks ahead, a wall stops 
   await page.waitForFunction(() => !window.__hunt.view().walking, null, { timeout: 8000 });
   const done = await at();
   expect(before[2] - done[2]).toBeGreaterThan(1.5);
+});
+
+test('guidance (dev build, hooks set it up): the book pulses after a minute stuck and offers a hint; a rattle makes the key glint', async ({ page }) => {
+  await boot(page);
+  await begin(page);
+  await page.evaluate(() => window.__hunt.startLog());
+  await page.evaluate(() => window.__hunt.jump('shop'));
+  await page.waitForTimeout(300);
+  // Rattle the locked drawer: the key on the counter glints within 3 s (logged as a glint with why: rattle).
+  await page.evaluate(() => window.__hunt.stand('B'));
+  await page.evaluate(() => window.__hunt.setView(-95, -10, 1));
+  await page.waitForTimeout(150);
+  await expect(page.locator('#verb')).toHaveText('Use');
+  await page.evaluate(() => window.__hunt.act());
+  await expect(page.locator('#caption')).toHaveText(/rattles/);
+  await page.waitForFunction(() => /"why":\s*"rattle"/.test(window.__hunt.log()), null, { timeout: 8000 });
+  // A minute with no progress: the sketchbook button pulses once; opening the book offers a hint.
+  await expect(page.getByRole('button', { name: 'Sketchbook' })).not.toHaveClass(/pulse/);
+  await page.evaluate(() => window.__hunt.stuck());
+  await expect(page.getByRole('button', { name: 'Sketchbook' })).toHaveClass(/pulse/);
+  await page.getByRole('button', { name: 'Sketchbook' }).click();
+  await expect(page.locator('#book .page.current')).toHaveCount(1);
+  await expect(page.locator('#book .hint-offer')).toHaveCount(1);
+  await page.locator('#book .hint-offer').click();
+  await expect(page.locator('#book .page.current')).toContainText('1. ');
+  expect((await page.evaluate(() => window.__hunt.state())).hintCount).toBe(1);
+  // Progress withdraws the offer: after taking the key the book has no hint button.
+  await page.locator('#book').getByRole('button', { name: 'Close' }).click();
+  await page.evaluate(() => window.__hunt.nextStep());
+  await page.getByRole('button', { name: 'Sketchbook' }).click();
+  await expect(page.locator('#book .hint-offer')).toHaveCount(0);
 });
 
 test('the idle glint fires once on the most useful next thing, without text', async ({ page }) => {

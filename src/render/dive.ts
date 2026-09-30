@@ -111,6 +111,8 @@ export class DiveAnimator {
 
   /** True once the hand-over to the destination scene has happened. */
   handedOver = false;
+  /** Where the move is, 0..1. */
+  progress = 0;
 
   /** For the seam check: freeze the move at a fraction 0..1 of its length (null = run normally). */
   freezeAt: number | null = null;
@@ -120,6 +122,7 @@ export class DiveAnimator {
     const p = this.plan;
     if (!p || !this.viewPose || !this.handover) return null;
     const t = this.freezeAt ?? clamp((now - p.startedAt) / DIVE_MS, 0, 1);
+    this.progress = t;
     const done = this.freezeAt === null && t >= 1;
     this.handedOver = t >= 0.5;
     if (p.reducedMotion) {

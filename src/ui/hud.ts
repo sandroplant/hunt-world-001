@@ -170,6 +170,16 @@ export class Hud {
     this.onboard.style.display = done.drag && done.lens && done.walk ? 'none' : '';
   }
 
+  /** One pulse of the sketchbook button (no text): the book has something for a stuck player. */
+  setBookPulse(on: boolean): void {
+    const b = this.buttons.book;
+    b.classList.remove('pulse');
+    if (on) {
+      void b.offsetWidth;
+      b.classList.add('pulse');
+    }
+  }
+
   setLensHeld(held: boolean): void {
     this.buttons.lens.classList.toggle('held', held);
   }

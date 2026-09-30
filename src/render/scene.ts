@@ -4,6 +4,8 @@ import * as THREE from 'three';
 import type { GameState, PropData, Shape, WorldObject } from '../game/types';
 import type { World } from '../game/world';
 import { propCount, propInstances } from '../game/props';
+import { Dressing } from './dressing';
+import type { Assets } from './assets';
 
 export type Quality = 'high' | 'low';
 
@@ -43,27 +45,47 @@ export class PlaceScene {
   /** Solid meshes for line-of-sight checks (everything except portals and glow rims). */
   readonly solids: THREE.Object3D[] = [];
   readonly night: boolean;
+  /** The graybox mesh of each prop, by id (single meshes and instanced groups alike). */
+  private propMeshes = new Map<string, THREE.Object3D>();
+  readonly realistic: boolean;
+  private dressing: Dressing | null = null;
+  /** Resolves when the place's assets (if any) are in. Graybox places resolve at once. */
+  readonly ready: Promise<void>;
 
-  constructor(readonly world: World, readonly placeId: string, readonly quality: Quality) {
+  constructor(readonly world: World, readonly placeId: string, readonly quality: Quality, assets?: Assets) {
     const place = world.places[placeId]!;
     this.night = !!place.night;
+    this.realistic = place.style === 'realistic' && !!assets;
     this.scene.add(this.root);
     this.scene.background = new THREE.Color(place.sky);
     this.scene.fog = new THREE.Fog(place.fog[0], place.fog[1], place.fog[2]);
     const [keyColor, keyIntensity, ambColor, ambIntensity] = place.light;
-    // Graybox lighting: one key, one fill, one back light and a hemisphere, all from the place's two colours.
-    const key = new THREE.DirectionalLight(keyColor, keyIntensity * 1.8);
-    key.position.set(1, 2, 1.2);
-    this.scene.add(key);
-    this.scene.add(new THREE.HemisphereLight(ambColor, place.ground, (ambIntensity + 0.35) * 1.6));
-    const fill = new THREE.DirectionalLight(ambColor, keyIntensity * 0.9);
-    fill.position.set(-1.2, 1.2, -0.8);
-    this.scene.add(fill);
-    const back = new THREE.DirectionalLight(ambColor, keyIntensity * 0.6);
-    back.position.set(0.3, 0.6, 1.5);
-    this.scene.add(back);
+    if (!this.realistic) {
+      // Graybox lighting: one key, one fill, one back light and a hemisphere, all from the place's two colours.
+      const key = new THREE.DirectionalLight(keyColor, keyIntensity * 1.8);
+      key.position.set(1, 2, 1.2);
+      this.scene.add(key);
+      this.scene.add(new THREE.HemisphereLight(ambColor, place.ground, (ambIntensity + 0.35) * 1.6));
+      const fill = new THREE.DirectionalLight(ambColor, keyIntensity * 0.9);
+      fill.position.set(-1.2, 1.2, -0.8);
+      this.scene.add(fill);
+      const back = new THREE.DirectionalLight(ambColor, keyIntensity * 0.6);
+      back.position.set(0.3, 0.6, 1.5);
+      this.scene.add(back);
+    }
     for (const p of world.propsIn(placeId)) this.addProp(p);
     for (const o of world.objectsIn(placeId)) this.addObject(o);
+    if (this.realistic && assets) {
+      this.dressing = new Dressing(assets, place, world.propsIn(placeId), {
+        root: this.root,
+        scene: this.scene,
+        quality,
+        propMesh: (id) => this.propMeshes.get(id),
+      });
+      this.ready = this.dressing.done;
+    } else {
+      this.ready = Promise.resolve();
+    }
   }
 
   private geometry(shape: Shape): THREE.BufferGeometry {
@@ -74,7 +96,12 @@ export class PlaceScene {
 
   private material(color: string, emissive = false): THREE.Material {
     // Emissive things (lamps, the moon, stars) ignore fog so they read from far away.
-    const m = emissive ? new THREE.MeshBasicMaterial({ color, fog: false }) : new THREE.MeshLambertMaterial({ color });
+    // A realistic place uses standard materials so plain shapes take the HDRI light like everything else.
+    const m = emissive
+      ? new THREE.MeshBasicMaterial({ color, fog: false })
+      : this.realistic
+        ? new THREE.MeshStandardMaterial({ color, roughness: 0.85, metalness: 0 })
+        : new THREE.MeshLambertMaterial({ color });
     this.materials.push(m);
     return m;
   }
@@ -83,7 +110,8 @@ export class PlaceScene {
     const [w, h] = [p.size[0], p.size[1]];
     const geometry = new THREE.PlaneGeometry(w, h);
     this.geometries.push(geometry);
-    const material = new THREE.MeshBasicMaterial({ color: '#0A0C14', fog: false });
+    // The live picture is already tone mapped and fogged like the screen (see portal.ts), so it is shown as is.
+    const material = new THREE.MeshBasicMaterial({ color: '#0A0C14', fog: false, toneMapped: false });
     this.materials.push(material);
     const mesh = new THREE.Mesh(geometry, material);
     mesh.name = p.id;
@@ -156,8 +184,13 @@ export class PlaceScene {
       else mesh.scale.set(...p.size);
       if (p.rot) mesh.rotation.set(p.rot[0] * THREE.MathUtils.DEG2RAD, p.rot[1] * THREE.MathUtils.DEG2RAD, p.rot[2] * THREE.MathUtils.DEG2RAD);
       mesh.name = p.id;
+      if (this.realistic) {
+        mesh.castShadow = true;
+        mesh.receiveShadow = true;
+      }
       this.root.add(mesh);
       this.solids.push(mesh);
+      this.propMeshes.set(p.id, mesh);
       if (p.ambient) this.ambient.push({ mesh, kind: p.ambient, base: mesh.position.clone(), phase: 0, scale: p.size[1] });
       if (p.when) this.conditional.push({ mesh, when: p.when });
       return;
@@ -181,8 +214,13 @@ export class PlaceScene {
     }
     inst.instanceMatrix.needsUpdate = true;
     if (inst.instanceColor) inst.instanceColor.needsUpdate = true;
+    if (this.realistic) {
+      inst.castShadow = true;
+      inst.receiveShadow = true;
+    }
     this.root.add(inst);
     this.solids.push(inst);
+    this.propMeshes.set(p.id, inst);
     if (p.ambient) this.ambient.push({ mesh: inst, kind: p.ambient, base: inst.position.clone(), phase: (p.seed ?? 1) % 6, scale: p.size[1] });
   }
 
@@ -193,6 +231,10 @@ export class PlaceScene {
     mesh.scale.set(...o.size);
     if (o.rot) mesh.rotation.set(o.rot[0] * THREE.MathUtils.DEG2RAD, o.rot[1] * THREE.MathUtils.DEG2RAD, o.rot[2] * THREE.MathUtils.DEG2RAD);
     mesh.userData = { base: mesh.position.clone(), baseRot: mesh.rotation.clone(), baseScale: mesh.scale.clone(), baseColor: o.color };
+    if (this.realistic) {
+      mesh.castShadow = true;
+      mesh.receiveShadow = true;
+    }
     this.root.add(mesh);
     this.solids.push(mesh);
     this.objects.set(o.id, mesh);
@@ -310,6 +352,7 @@ export class PlaceScene {
       (p.glow.material as THREE.MeshBasicMaterial).opacity = paused ? 0.4 : 0.28 + 0.2 * (0.5 + 0.5 * Math.sin(now / 700));
     }
     if (paused) return;
+    this.dressing?.update(now);
     const t = now / 1000;
     for (const a of this.ambient) {
       switch (a.kind) {
@@ -333,6 +376,7 @@ export class PlaceScene {
   }
 
   dispose(): void {
+    this.dressing?.dispose();
     for (const g of this.geometries) g.dispose();
     for (const m of this.materials) m.dispose();
     this.geometries = [];

@@ -210,6 +210,15 @@ export function hintTargets(world: World, state: GameState): string[] {
   return out.filter((t) => world.hints[t]);
 }
 
+/** The object the player needs next on the main path: the next required step's object, else the dive opening. Null at the end. */
+export function nextObjective(world: World, state: GameState): WorldObject | null {
+  const place = state.place;
+  const step = judge.requiredSteps(place).find((s) => !state.steps[s]);
+  if (step) return Object.values(world.objects).find((o) => o.transitions.some((t) => (t.effects ?? []).some((e) => e.type === 'step' && e.id === step))) ?? null;
+  const d = judge.canDive(place, state.steps);
+  return d ? (world.objects[d.object] ?? null) : null;
+}
+
 /** Finds = sketches locked + hidden objects found + places dived out of (spec §3: 24 in total). */
 export function progress(world: World, state: GameState): { finds: number; total: number; steps: number; stepsTotal: number } {
   const sketches = world.sketches.length;

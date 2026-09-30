@@ -15,71 +15,207 @@
         0.1,
         40
       ],
-      "color": "#3B4150"
+      "color": "#3B4150",
+      "look": {
+        "tex": "cobblestone_floor_08",
+        "tile": 2.2
+      }
     },
     {
       "place": "street",
-      "id": "house_row",
+      "id": "house_l1",
       "shape": "box",
       "pos": [
         -7,
-        2.5,
-        -8
+        2.7,
+        -19.0
       ],
       "size": [
         3,
-        5,
-        30
+        5.4,
+        8
       ],
-      "color": "#4A4F63"
+      "color": "#4A4F63",
+      "look": {
+        "house": {
+          "plaster": "plastered_wall_02",
+          "floors": 2,
+          "windows": 4,
+          "door": true,
+          "face": "x+",
+          "lit": [
+            3
+          ]
+        }
+      }
     },
     {
       "place": "street",
-      "id": "gable_1",
-      "shape": "cone",
+      "id": "house_l2",
+      "shape": "box",
       "pos": [
         -7,
-        6.5,
-        -1
+        2.2,
+        -12.0
       ],
       "size": [
-        4,
         3,
-        4
+        4.4,
+        6
       ],
-      "color": "#B85C38"
+      "color": "#4A4F63",
+      "look": {
+        "house": {
+          "plaster": "red_plaster_weathered",
+          "floors": 2,
+          "windows": 3,
+          "door": false,
+          "face": "x+",
+          "lit": [
+            1,
+            4
+          ]
+        }
+      }
     },
     {
       "place": "street",
-      "id": "gable_2",
-      "shape": "cone",
+      "id": "house_l3",
+      "shape": "box",
       "pos": [
         -7,
-        6.5,
-        -7
+        2.8,
+        -6.0
       ],
       "size": [
-        4,
         3,
-        4
+        5.6,
+        6
       ],
-      "color": "#A0502E"
+      "color": "#4A4F63",
+      "look": {
+        "house": {
+          "plaster": "plastered_wall_02",
+          "floors": 2,
+          "windows": 3,
+          "door": false,
+          "face": "x+",
+          "lit": [
+            2
+          ]
+        }
+      }
     },
     {
       "place": "street",
-      "id": "gable_3",
-      "shape": "cone",
+      "id": "house_l4",
+      "shape": "box",
       "pos": [
         -7,
-        6.5,
-        -13
+        3.3,
+        2.0
       ],
       "size": [
-        4,
         3,
-        4
+        6.6,
+        10
       ],
-      "color": "#B85C38"
+      "color": "#4A4F63",
+      "look": {
+        "house": {
+          "plaster": "blue_plaster_weathered",
+          "floors": 2,
+          "windows": 4,
+          "door": true,
+          "face": "x+",
+          "lit": [
+            1,
+            5
+          ]
+        }
+      }
+    },
+    {
+      "place": "street",
+      "id": "house_r1",
+      "shape": "box",
+      "pos": [
+        8,
+        2.9,
+        -19.0
+      ],
+      "size": [
+        3,
+        5.8,
+        8
+      ],
+      "color": "#4F4A60",
+      "look": {
+        "house": {
+          "plaster": "red_plaster_weathered",
+          "floors": 2,
+          "windows": 4,
+          "door": true,
+          "face": "x-",
+          "lit": [
+            2
+          ]
+        }
+      }
+    },
+    {
+      "place": "street",
+      "id": "house_r2",
+      "shape": "box",
+      "pos": [
+        8,
+        3.2,
+        -9.0
+      ],
+      "size": [
+        3,
+        6.4,
+        12
+      ],
+      "color": "#4F4A60",
+      "look": {
+        "house": {
+          "plaster": "plastered_wall_02",
+          "floors": 2,
+          "windows": 4,
+          "door": false,
+          "face": "x-",
+          "lit": [
+            4
+          ]
+        }
+      }
+    },
+    {
+      "place": "street",
+      "id": "house_r3",
+      "shape": "box",
+      "pos": [
+        8,
+        2.6,
+        0.0
+      ],
+      "size": [
+        3,
+        5.2,
+        6
+      ],
+      "color": "#4F4A60",
+      "look": {
+        "house": {
+          "plaster": "blue_plaster_weathered",
+          "floors": 2,
+          "windows": 3,
+          "door": true,
+          "face": "x-",
+          "lit": []
+        }
+      }
     },
     {
       "place": "street",
@@ -95,7 +231,11 @@
         0.3,
         0.05
       ],
-      "color": "#C9A24E"
+      "color": "#C9A24E",
+      "look": {
+        "color": "#3a3a3a",
+        "rough": 0.5
+      }
     },
     {
       "place": "street",
@@ -111,24 +251,32 @@
         3.2,
         4.0
       ],
-      "color": "#8A6A48"
+      "color": "#8A6A48",
+      "look": {
+        "tex": "dark_wooden_planks",
+        "tile": 1.6
+      }
     },
     {
       "place": "street",
-      "id": "awning",
+      "id": "shop_sign",
       "shape": "box",
-      "size": [
-        2.4,
-        0.1,
-        1.2
+      "pos": [
+        -5.18,
+        3.05,
+        -6.7
       ],
-      "color": "#7A5A3A",
-      "at": [
-        "A",
-        -40,
-        8,
-        3.4
-      ]
+      "size": [
+        0.08,
+        0.5,
+        2.4
+      ],
+      "color": "#2A1A0C",
+      "look": {
+        "tex": "old_planks_02",
+        "tile": 1.2,
+        "color": "#8a6a3a"
+      }
     },
     {
       "place": "street",
@@ -143,9 +291,13 @@
       "at": [
         "A",
         -72,
-        -20,
+        -22.9,
         3.6
-      ]
+      ],
+      "look": {
+        "model": "wooden_crate_01",
+        "fit": "height"
+      }
     },
     {
       "place": "street",
@@ -162,46 +314,54 @@
         -48,
         -28,
         3.0
-      ]
+      ],
+      "look": {
+        "model": "wooden_bucket_01",
+        "fit": "height"
+      }
     },
     {
       "place": "street",
-      "id": "bike_bell",
+      "id": "lantern",
       "shape": "sphere",
       "size": [
-        0.08,
-        0.06,
-        0.08
+        0.12,
+        0.29,
+        0.1
       ],
       "color": "#C9A24E",
       "at": [
         "A",
-        -88,
-        -12,
+        -92,
+        -27.0,
         3.2
-      ]
+      ],
+      "look": {
+        "model": "Lantern_01",
+        "fit": "height"
+      }
     },
     {
       "place": "street",
-      "id": "bike_wheel",
+      "id": "bench",
       "shape": "cylinder",
       "size": [
-        0.7,
-        0.7,
-        0.05
+        1.16,
+        0.89,
+        0.5
       ],
       "color": "#333333",
       "at": [
         "A",
         -100,
-        -22,
-        3.4
+        -18.7,
+        3.6
       ],
-      "rot": [
-        0,
-        0,
-        90
-      ]
+      "look": {
+        "model": "painted_wooden_bench",
+        "fit": "height",
+        "yaw": 90
+      }
     },
     {
       "place": "street",
@@ -218,24 +378,32 @@
         10,
         -28,
         3.2
-      ]
+      ],
+      "look": {
+        "color": "#a08a5a",
+        "rough": 1
+      }
     },
     {
       "place": "street",
-      "id": "lamp",
+      "id": "lantern_2",
       "shape": "box",
       "size": [
         0.25,
-        0.5,
-        0.25
+        0.55,
+        0.22
       ],
       "color": "#3A3A3A",
       "at": [
-        "A",
-        50,
-        20,
-        3.0
-      ]
+        "B",
+        60,
+        -2,
+        2.0
+      ],
+      "look": {
+        "model": "wooden_lantern_01",
+        "fit": "height"
+      }
     },
     {
       "place": "street",
@@ -250,9 +418,13 @@
       "at": [
         "A",
         60,
-        -30,
+        -35.9,
         2.6
-      ]
+      ],
+      "look": {
+        "tex": "old_stone_wall",
+        "tile": 0.8
+      }
     },
     {
       "place": "street",
@@ -267,9 +439,14 @@
       "at": [
         "A",
         80,
-        -15,
+        -23.6,
         3.0
-      ]
+      ],
+      "look": {
+        "tex": "old_planks_02",
+        "tile": 0.8,
+        "color": "#8a7050"
+      }
     },
     {
       "place": "street",
@@ -281,11 +458,14 @@
         0.25
       ],
       "color": "#B85C38",
-      "at": [
-        "B",
-        109,
-        -7,
-        1.75
+      "look": {
+        "model": "planter_pot_clay",
+        "fit": "height"
+      },
+      "pos": [
+        -4.95,
+        0.125,
+        -5.55
       ]
     },
     {
@@ -303,7 +483,11 @@
         66,
         -10,
         2.0
-      ]
+      ],
+      "look": {
+        "color": "#3a3a3a",
+        "rough": 0.5
+      }
     },
     {
       "place": "street",
@@ -320,24 +504,12 @@
         125,
         14,
         2.6
-      ]
-    },
-    {
-      "place": "street",
-      "id": "drainpipe",
-      "shape": "cylinder",
-      "size": [
-        0.1,
-        2.0,
-        0.1
       ],
-      "color": "#4A4A4A",
-      "at": [
-        "B",
-        38,
-        12,
-        2.4
-      ]
+      "look": {
+        "tex": "old_planks_02",
+        "tile": 0.8,
+        "color": "#2f5f86"
+      }
     },
     {
       "place": "street",
@@ -354,7 +526,12 @@
         132,
         -4,
         2.8
-      ]
+      ],
+      "look": {
+        "tex": "old_planks_02",
+        "tile": 0.8,
+        "color": "#6a5a3a"
+      }
     },
     {
       "place": "street",
@@ -370,7 +547,11 @@
         1.2,
         1.0
       ],
-      "color": "#FFD79A"
+      "color": "#FFD79A",
+      "look": {
+        "glass": true,
+        "emissive": "#ffb85a"
+      }
     },
     {
       "place": "street",
@@ -415,22 +596,6 @@
     },
     {
       "place": "street",
-      "id": "house_row_right",
-      "shape": "box",
-      "pos": [
-        8,
-        3,
-        -10
-      ],
-      "size": [
-        3,
-        6,
-        26
-      ],
-      "color": "#4F4A60"
-    },
-    {
-      "place": "street",
       "id": "lit_window_right",
       "shape": "box",
       "pos": [
@@ -443,7 +608,11 @@
         1.0,
         1.2
       ],
-      "color": "#FFD79A"
+      "color": "#FFD79A",
+      "look": {
+        "glass": true,
+        "emissive": "#ffb85a"
+      }
     },
     {
       "place": "street",
@@ -459,32 +628,172 @@
         1.0,
         2.4
       ],
-      "color": "#7A5A3A"
+      "color": "#7A5A3A",
+      "look": {
+        "model": "WoodenTable_01",
+        "fit": "box",
+        "yaw": 90
+      }
     },
     {
       "place": "street",
-      "id": "stall_roof",
+      "id": "stall_canopy",
       "shape": "box",
       "pos": [
         3.0,
-        2.1,
+        2.12,
         -3.5
       ],
       "size": [
-        2.2,
-        0.1,
-        2.8
+        2.4,
+        0.06,
+        3.0
       ],
-      "color": "#8A3A3A"
+      "color": "#7a2e2a",
+      "look": {
+        "color": "#7a2e2a",
+        "rough": 0.95
+      }
+    },
+    {
+      "place": "street",
+      "id": "stall_post_1",
+      "shape": "cylinder",
+      "pos": [
+        1.9,
+        1.05,
+        -4.9
+      ],
+      "size": [
+        0.08,
+        2.1,
+        0.08
+      ],
+      "color": "#4a3a2a",
+      "look": {
+        "tex": "dark_wooden_planks",
+        "tile": 1
+      }
+    },
+    {
+      "place": "street",
+      "id": "stall_post_2",
+      "shape": "cylinder",
+      "pos": [
+        4.1,
+        1.05,
+        -4.9
+      ],
+      "size": [
+        0.08,
+        2.1,
+        0.08
+      ],
+      "color": "#4a3a2a",
+      "look": {
+        "tex": "dark_wooden_planks",
+        "tile": 1
+      }
+    },
+    {
+      "place": "street",
+      "id": "stall_post_3",
+      "shape": "cylinder",
+      "pos": [
+        1.9,
+        1.05,
+        -2.1
+      ],
+      "size": [
+        0.08,
+        2.1,
+        0.08
+      ],
+      "color": "#4a3a2a",
+      "look": {
+        "tex": "dark_wooden_planks",
+        "tile": 1
+      }
+    },
+    {
+      "place": "street",
+      "id": "stall_post_4",
+      "shape": "cylinder",
+      "pos": [
+        4.1,
+        1.05,
+        -2.1
+      ],
+      "size": [
+        0.08,
+        2.1,
+        0.08
+      ],
+      "color": "#4a3a2a",
+      "look": {
+        "tex": "dark_wooden_planks",
+        "tile": 1
+      }
+    },
+    {
+      "place": "street",
+      "id": "gull_pole",
+      "shape": "cylinder",
+      "pos": [
+        0.98,
+        0.875,
+        -3.657
+      ],
+      "size": [
+        0.07,
+        1.75,
+        0.07
+      ],
+      "color": "#3a3a3a",
+      "look": {
+        "tex": "dark_wooden_planks",
+        "tile": 0.8
+      }
+    },
+    {
+      "place": "street",
+      "id": "lamp_glow",
+      "shape": "sphere",
+      "pos": [
+        -3.2,
+        3.35,
+        -8
+      ],
+      "size": [
+        0.22,
+        0.22,
+        0.22
+      ],
+      "color": "#2a2a2a",
+      "count": 3,
+      "spread": [
+        0,
+        0,
+        6
+      ],
+      "seed": 15,
+      "night": {
+        "color": "#F2B75B",
+        "emissive": true
+      },
+      "look": {
+        "color": "#30343a",
+        "rough": 0.2
+      }
     },
     {
       "place": "street",
       "id": "oars",
       "shape": "cylinder",
       "pos": [
-        2.4,
+        2.2,
         0.9,
-        -4.6
+        -4.9
       ],
       "size": [
         0.06,
@@ -492,13 +801,22 @@
         0.06
       ],
       "color": "#A08A5A",
-      "count": 6,
+      "count": 3,
       "spread": [
-        0.5,
+        0.3,
         0,
-        0.6
+        0.3
       ],
-      "seed": 11
+      "seed": 11,
+      "look": {
+        "tex": "dark_wooden_planks",
+        "tile": 0.6
+      },
+      "rot": [
+        0,
+        0,
+        14
+      ]
     },
     {
       "place": "street",
@@ -521,7 +839,11 @@
         0.4,
         0.8
       ],
-      "seed": 12
+      "seed": 12,
+      "look": {
+        "model": "wooden_crate_01",
+        "fit": "height"
+      }
     },
     {
       "place": "street",
@@ -537,7 +859,11 @@
         0.6,
         6
       ],
-      "color": "#5A5A5A"
+      "color": "#5A5A5A",
+      "look": {
+        "tex": "old_stone_wall",
+        "tile": 1.8
+      }
     },
     {
       "place": "street",
@@ -553,7 +879,11 @@
         0.2,
         80
       ],
-      "color": "#2F7F86"
+      "color": "#2F7F86",
+      "look": {
+        "water": true,
+        "color": "#0c1a28"
+      }
     },
     {
       "place": "street",
@@ -561,7 +891,7 @@
       "shape": "box",
       "pos": [
         -4,
-        -0.4,
+        -0.15,
         -26
       ],
       "size": [
@@ -569,7 +899,12 @@
         1,
         5
       ],
-      "color": "#8A3A3A"
+      "color": "#8A3A3A",
+      "look": {
+        "tex": "old_planks_02",
+        "tile": 1.0,
+        "color": "#7a2e2a"
+      }
     },
     {
       "place": "street",
@@ -577,7 +912,7 @@
       "shape": "box",
       "pos": [
         5,
-        -0.4,
+        -0.15,
         -28
       ],
       "size": [
@@ -585,7 +920,32 @@
         1,
         5
       ],
-      "color": "#2F5F86"
+      "color": "#2F5F86",
+      "look": {
+        "tex": "old_planks_02",
+        "tile": 1.0,
+        "color": "#2f5f86"
+      }
+    },
+    {
+      "place": "street",
+      "id": "lifebuoy",
+      "shape": "box",
+      "pos": [
+        -3.0,
+        0.35,
+        -24.0
+      ],
+      "size": [
+        0.78,
+        0.84,
+        0.16
+      ],
+      "color": "#e8e8e8",
+      "look": {
+        "model": "lifebuoy",
+        "fit": "height"
+      }
     },
     {
       "place": "street",
@@ -608,7 +968,11 @@
         0,
         1
       ],
-      "seed": 13
+      "seed": 13,
+      "look": {
+        "tex": "dark_wooden_planks",
+        "tile": 1
+      }
     },
     {
       "place": "street",
@@ -631,7 +995,93 @@
         0,
         0.2
       ],
-      "seed": 14
+      "seed": 14,
+      "look": {
+        "tex": "dark_wooden_planks",
+        "tile": 0.8
+      }
+    },
+    {
+      "place": "street",
+      "id": "quay_barrels",
+      "shape": "cylinder",
+      "pos": [
+        6.5,
+        0.4,
+        -18.2
+      ],
+      "size": [
+        0.6,
+        0.8,
+        0.6
+      ],
+      "color": "#5A4A3A",
+      "count": 3,
+      "spread": [
+        1.4,
+        0,
+        0.4
+      ],
+      "seed": 25,
+      "look": {
+        "tex": "old_planks_02",
+        "tile": 0.8,
+        "color": "#8a7050"
+      }
+    },
+    {
+      "place": "street",
+      "id": "rope_coils",
+      "shape": "cylinder",
+      "pos": [
+        -3.5,
+        0.07,
+        -17.6
+      ],
+      "size": [
+        0.45,
+        0.14,
+        0.45
+      ],
+      "color": "#a08a5a",
+      "count": 3,
+      "spread": [
+        2.5,
+        0,
+        0.3
+      ],
+      "seed": 26,
+      "look": {
+        "color": "#9a875a",
+        "rough": 1
+      }
+    },
+    {
+      "place": "street",
+      "id": "sill_pots",
+      "shape": "cylinder",
+      "pos": [
+        6.4,
+        0.125,
+        -14.0
+      ],
+      "size": [
+        0.26,
+        0.25,
+        0.26
+      ],
+      "color": "#B85C38",
+      "count": 2,
+      "spread": [
+        0,
+        0,
+        4.5
+      ],
+      "seed": 27,
+      "look": {
+        "model": "planter_pot_clay",
+        "fit": "height"
+      }
     },
     {
       "place": "street",
@@ -647,7 +1097,11 @@
         3,
         14
       ],
-      "color": "#3A4A4A"
+      "color": "#3A4A4A",
+      "look": {
+        "tex": "old_stone_wall",
+        "tile": 3
+      }
     },
     {
       "place": "street",
@@ -663,7 +1117,12 @@
         20,
         3
       ],
-      "color": "#E8E8E8"
+      "color": "#E8E8E8",
+      "look": {
+        "tex": "plastered_wall_02",
+        "tile": 3,
+        "color": "#f0ece4"
+      }
     },
     {
       "place": "street",
@@ -679,7 +1138,11 @@
         1.6,
         3.6
       ],
-      "color": "#B0281E"
+      "color": "#B0281E",
+      "look": {
+        "color": "#7a1e18",
+        "rough": 0.6
+      }
     },
     {
       "place": "street",
@@ -713,11 +1176,12 @@
         10,
         10
       ],
-      "color": "#6E747C",
+      "color": "#b4b9c4",
       "night": {
         "color": "#E8EEF4",
         "emissive": true
-      }
+      },
+      "emissive": true
     },
     {
       "place": "street",
@@ -746,13 +1210,13 @@
       "shape": "cylinder",
       "pos": [
         -3.2,
-        1.8,
+        1.935,
         -8
       ],
       "size": [
-        0.12,
-        3.6,
-        0.12
+        0.7,
+        3.87,
+        0.39
       ],
       "color": "#3A3A3A",
       "count": 3,
@@ -761,80 +1225,65 @@
         0,
         6
       ],
-      "seed": 15
-    },
-    {
-      "place": "street",
-      "id": "lamp_heads",
-      "shape": "box",
-      "pos": [
-        -3.2,
-        3.7,
-        -8
-      ],
-      "size": [
-        0.35,
-        0.4,
-        0.35
-      ],
-      "color": "#4A4A4A",
-      "count": 3,
-      "spread": [
-        0,
-        0,
-        6
-      ],
       "seed": 15,
-      "night": {
-        "color": "#F2B75B",
-        "emissive": true
+      "look": {
+        "model": "street_lamp_01",
+        "fit": "height"
       }
     },
     {
       "place": "street",
-      "id": "cobbles",
-      "shape": "box",
+      "id": "puddles",
+      "shape": "cylinder",
       "pos": [
         0,
-        0.02,
+        0.005,
         -8
       ],
       "size": [
-        0.35,
-        0.04,
-        0.3
+        0.9,
+        0.01,
+        0.7
       ],
-      "color": "#4A4F5A",
-      "count": 260,
+      "color": "#1a2230",
+      "count": 5,
       "spread": [
-        3.2,
+        3.5,
         0,
         12
       ],
-      "seed": 16
+      "seed": 22,
+      "look": {
+        "glass": true,
+        "color": "#07101a"
+      }
     },
     {
       "place": "street",
-      "id": "roof_tiles",
-      "shape": "box",
+      "id": "loose_stones",
+      "shape": "sphere",
       "pos": [
-        -7,
-        7.2,
-        -7
+        -4.6,
+        0.05,
+        -6
       ],
       "size": [
-        0.4,
-        0.05,
-        0.3
+        0.12,
+        0.08,
+        0.1
       ],
-      "color": "#A0502E",
-      "count": 60,
+      "color": "#5a5a5a",
+      "count": 45,
       "spread": [
-        1.5,
-        0.6,
-        9
+        0.5,
+        0,
+        14
       ],
-      "seed": 17
+      "seed": 23,
+      "look": {
+        "tex": "old_stone_wall",
+        "tile": 0.3
+      }
     },
     {
       "place": "street",
@@ -846,42 +1295,22 @@
         -22
       ],
       "size": [
-        0.3,
-        0.2,
-        0.3
+        0.22,
+        0.07,
+        0.4
       ],
       "color": "#E8E8E8",
-      "count": 10,
+      "count": 7,
       "spread": [
         12,
         3,
         8
       ],
       "seed": 18,
-      "ambient": "drift"
-    },
-    {
-      "place": "street",
-      "id": "chimneys",
-      "shape": "box",
-      "pos": [
-        -7,
-        8,
-        -7
-      ],
-      "size": [
-        0.5,
-        1.2,
-        0.5
-      ],
-      "color": "#5A4A3A",
-      "count": 4,
-      "spread": [
-        1,
-        0,
-        8
-      ],
-      "seed": 19
+      "ambient": "drift",
+      "look": {
+        "color": "#e8e8e8"
+      }
     },
     {
       "place": "street",
@@ -904,55 +1333,63 @@
         0,
         0.8
       ],
-      "seed": 20
+      "seed": 20,
+      "look": {
+        "color": "#4a5a4a",
+        "rough": 1
+      }
     },
     {
       "place": "street",
-      "id": "bicycle",
-      "shape": "box",
-      "pos": [
-        3.6,
-        0.5,
-        0.6
-      ],
-      "size": [
-        0.3,
-        0.9,
-        1.7
-      ],
-      "color": "#333333"
-    },
-    {
-      "place": "street",
-      "id": "cart",
+      "id": "crates_2",
       "shape": "box",
       "pos": [
         4.2,
-        0.6,
+        0.35,
         -6.8
       ],
       "size": [
-        1.2,
-        0.8,
-        2.0
+        0.83,
+        0.35,
+        0.41
       ],
-      "color": "#7A5A3A"
+      "color": "#7A5A3A",
+      "count": 3,
+      "spread": [
+        0.3,
+        0.35,
+        0.7
+      ],
+      "seed": 24,
+      "look": {
+        "model": "wooden_crate_01",
+        "fit": "height"
+      }
     },
     {
       "place": "street",
       "id": "ladder",
       "shape": "box",
       "pos": [
-        -5.3,
-        2.5,
+        -5.05,
+        1.6,
         -11.5
       ],
       "size": [
-        0.4,
-        5,
-        0.1
+        0.5,
+        3.2,
+        0.9
       ],
-      "color": "#A08A5A"
+      "color": "#A08A5A",
+      "look": {
+        "model": "wooden_ladder",
+        "fit": "height"
+      },
+      "rot": [
+        0,
+        90,
+        0
+      ]
     },
     {
       "place": "shop",

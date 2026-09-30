@@ -33,9 +33,41 @@ export interface Approach {
   pitch: number; // the portal camera's pitch (degrees, +up)
 }
 
+/** A realistic look for a prop (style frame): a PBR texture set, a glTF model, a built house, water or glass. */
+export interface Look {
+  /** Texture set folder under assets/polyhaven/textures. */
+  tex?: string;
+  /** Metres per texture tile (default 2). */
+  tile?: number;
+  color?: string;
+  rough?: number;
+  /** glTF model folder under assets/polyhaven/models. */
+  model?: string;
+  /** How the model is scaled into the prop's box: to its height (default), to its largest side, or per axis. */
+  fit?: 'height' | 'max' | 'box';
+  /** Extra turn of the model about Y, degrees. */
+  yaw?: number;
+  /** A house built from the prop's box: plaster set, floors, windows per floor, which side faces the street. */
+  house?: { plaster: string; floors: number; windows: number; door?: boolean; face: 'x+' | 'x-'; lit?: number[]; roof?: string };
+  water?: boolean;
+  glass?: boolean;
+  /** Emissive colour (a lit pane). */
+  emissive?: string;
+}
+
 export interface PlaceData {
   id: string;
   label: string;
+  /** 'realistic' places load the asset pack: HDRI light and sky, PBR textures, models, shadows, mist. */
+  style?: 'graybox' | 'realistic';
+  hdri?: string;
+  /** Turn of the HDRI about Y, degrees, so its sun sits where the place wants it. */
+  envRotation?: number;
+  sun?: { dir: Vec3; color: string; intensity: number };
+  envIntensity?: number;
+  skyIntensity?: number;
+  mist?: [string, number, number];
+  exposure?: number;
   unit: string;
   reach: number;
   eye: number;
@@ -136,6 +168,7 @@ export interface PropData {
   platform?: boolean;
   /** false: never blocks walking (thin hairs, whiskers). */
   solid?: boolean;
+  look?: Look;
 }
 
 export interface SketchData {

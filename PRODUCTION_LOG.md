@@ -12,6 +12,8 @@ One row per work session. Never rebuilt from memory afterwards. Times are UTC. "
 
 | 2026-09-29 | 21:25–22:15 | Fable 5.1 (builder) | A (third round) | Founder's second play recorded (D-009). Reproduced the ring-click miss with real mouse events (the hit area was the thin ring line). Built free walking with derived blockers, platforms and path finding; the teaching street (door open, six ordinary things, key puzzle moved to the shop); the three-picture start screen; glowing dive openings; line-of-sight for hidden objects (five buried ones found and moved); position-based sketch locks; a Playwright project on the playtest build with three real-input tests (mouse, touch, keyboard) and no hooks. 150 unit + 11 e2e green; seam unchanged. Download check: all three sites refused. Docs updated. Committed and pushed. | 50 | Session token counter moved from about 14.93M to about 14.59M (about 340k). Counter only, not a cost. | **Dollar cost not visible to the builder.** Founder to paste the credit balance. | Third round complete. Third STOP A. |
 
+| 2026-09-30 | 23:20–01:55 | Fable 5.1 (builder) | B (style frame) | Merged the CC0 Poly Haven pack. Built the asset loader and the dressing layer (textured boxes tiled by metres, glTF placement, built houses, water, glass), HDRI light and sky with the sun aimed over the harbor, sun shadows, filmic tone mapping per place, mist; rewrote the street's props with looks; three screenshot-and-fix passes (floating pieces, dusk, the S1 notch); found and fixed a seam break from tone mapping order; style shots tool with download size and headless frame times; the sketchbook current page, stuck pulse with hint offer, rattle glint; real-click shop test; the puzzle chart. Then a long tail: the software renderer made the real-input tests time out, which led to the resolution-scaled low tier, the Loading… button, frame-based waits and a pitch-sweeping verb scan. Docs. | 155 | Session token counter moved from about 15.00M to about 14.84M (about 160k). Counter only, not a cost. | **Dollar cost not visible to the builder.** Founder to paste the credit balance. | Fourth round complete. |
+
 ## Phase totals
 
 | Phase | Sessions | Minutes | Cash (from the founder) | Note |
@@ -21,6 +23,7 @@ One row per work session. Never rebuilt from memory afterwards. Times are UTC. "
 | A | 1 | 64 | not visible to the builder | Founder rule: stop and report at about $60 even if unfinished. Founder to fill in from the credit balance. |
 | A, redesign once | 1 | 63 | not visible to the builder | Founder rule for this round: stop at $50. Balance placeholder in the founder's message was not filled in. |
 | A, third round | 1 | 50 | not visible to the builder | Founder rule for this round: stop at $35. |
+| B, style frame + guidance | 1 | 155 | not visible to the builder | Founder rule for this round: stop at $50. The round ran long; the builder could not see whether the limit was crossed. |
 
 ## Repeated tasks (task, times, minutes each)
 | Task | Times | Minutes each (approx.) |
@@ -28,5 +31,6 @@ One row per work session. Never rebuilt from memory afterwards. Times are UTC. "
 | Re-shoot the screenshot set after a data change | 5 | 2 |
 | Run the end-to-end suite | 12 | 2.5 |
 | Probe a picking or rendering question with a throwaway Playwright script | 14 | 3 |
-| Run the seam check after moving something in front of an opening | 9 | 2 |
+| Run the seam check after moving something in front of an opening | 14 | 2 |
+| Render the style frames and look at them | 5 | 4 |
 | Run the full `npm test` (both builds, 11 e2e) | 3 | 4 |

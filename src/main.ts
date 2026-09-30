@@ -3,7 +3,7 @@ import * as THREE from 'three';
 import { loadWorld, type World } from './game/world';
 import { judge, type View } from './game/judge';
 import {
-  act as rulesAct, backOut as rulesBackOut, clearSave, createInitialState, defaultSettings, dive as rulesDive, hintTargets, load, memoryStore, moveTo, progress,
+  act as rulesAct, backOut as rulesBackOut, clearSave, createInitialState, defaultSettings, dive as rulesDive, hintTargets, load, memoryStore, moveTo, nextObjective, progress,
   recordHiddenFound, recordSketchLocked, save, standAt as rulesStandAt, useHint, verbFor, type Store,
 } from './game/rules';
 import type { GameEvent, GameState, Vec3, WorldObject } from './game/types';
@@ -12,6 +12,7 @@ import { PlaceScene, type Quality } from './render/scene';
 import { Renderer, detectQuality } from './render/renderer';
 import { DiveAnimator, type CamPose, type PortalGeometry } from './render/dive';
 import { PortalRenderer, approachPose } from './render/portal';
+import { Assets } from './render/assets';
 import { ViewCamera, ZOOM_MAX, ZOOM_MIN } from './player/camera';
 import { Input } from './player/input';
 import { Hud } from './ui/hud';
@@ -24,6 +25,10 @@ export const LOOK_DEG_PER_PX = 0.18;
 const RING_MS = 1000;
 const LENS_ZOOM_FOR_DIVE = 1.5;
 const IDLE_GLINT_MS = 45_000;
+/** With no progress for this long, the sketchbook button pulses once and the book offers the next hint (founder, fourth round). */
+const STUCK_MS = 60_000;
+/** A locked thing that rattles makes the thing it needs glint this soon after. */
+const RATTLE_GLINT_MS = 1500;
 /** A tap this close to the crosshair (as a share of the short screen side) acts on what the crosshair shows; farther taps walk. */
 const TAP_ACT_ZONE = 0.22;
 
@@ -49,6 +54,7 @@ export class App {
   readonly audio = new Audio();
   readonly sketcher: SketchRenderer;
   readonly portalRenderer: PortalRenderer;
+  readonly assets = new Assets();
   readonly diveAnim = new DiveAnimator();
   readonly log = new SessionLog();
   readonly frames = new FrameRecorder();
@@ -75,6 +81,9 @@ export class App {
   private lastInputAt = 0;
   private glinted = false;
   private walkDirty = false;
+  private lastProgressAt = 0;
+  private stuckOffer = false;
+  private pendingGlint: { id: string; at: number } | null = null;
   private frameCount = 0;
   private afterDive: (() => void) | null = null;
   diving = false;
@@ -147,12 +156,17 @@ export class App {
     this.refreshHud();
     this.panels.renderTitle(!!load(this.store, this.world) && this.state.startedAt !== null, this.storageBlocked);
     this.panels.show('title');
+    // Begin waits for the place's assets, so play (and the player's clock) starts on a finished picture.
+    void this.ready.then(() => this.panels.setReady());
     requestAnimationFrame((t) => this.loop(t));
   }
 
   // ---- setup helpers -----------------------------------------------------------------
 
   private quality(): Quality {
+    // ?quality=low|high forces a tier (for measuring); the menu setting and the device pick it otherwise.
+    const forced = new URLSearchParams(location.search).get('quality');
+    if (forced === 'low' || forced === 'high') return forced;
     return this.state.settings.quality === 'auto' ? detectQuality() : this.state.settings.quality;
   }
 
@@ -167,13 +181,17 @@ export class App {
   private scene(placeId: string): PlaceScene {
     let s = this.scenes.get(placeId);
     if (!s) {
-      s = new PlaceScene(this.world, placeId, this.renderer.quality);
+      const scene = new PlaceScene(this.world, placeId, this.renderer.quality, this.assets);
+      s = scene;
       this.scenes.set(placeId, s);
       s.applyState(this.state);
       const sk = this.world.sketchFor(placeId);
       if (sk && !this.sketchImages.has(sk.id)) {
         const pose = judge.sketchPose(sk.id);
-        if (pose && placeId === pose.place) this.sketchImages.set(sk.id, this.sketcher.draw(s, pose));
+        if (pose && placeId === pose.place) {
+          // Draw the sketch once the place looks the way the player will see it.
+          void scene.ready.then(() => this.sketchImages.set(sk.id, this.sketcher.draw(scene, pose)));
+        }
       }
     }
     return s;
@@ -189,10 +207,17 @@ export class App {
     return d ? this.scene(d.to) : null;
   }
 
+  /** Resolves when the current place's assets are in (style-frame places load textures and models). */
+  get ready(): Promise<void> {
+    return this.current.ready;
+  }
+
   private enterPlace(placeId: string, pos: Vec3, yaw = 0, pitch = 0, zoom = 1): void {
     const place = this.world.places[placeId]!;
     this.scene(placeId);
     this.nextOf(placeId);
+    this.renderer.setExposure(place.exposure ?? 1);
+    this.renderer.setToneMapping(this.scene(placeId).realistic);
     this.camera.setPlace(place, this.world.walkMap(placeId), pos, yaw, pitch, zoom);
     this.state.pos = this.camera.eye;
     this.walkDirty = false;
@@ -224,12 +249,23 @@ export class App {
   }
 
   private commit(next: GameState, events: GameEvent[] = []): void {
+    const prev = this.state;
+    const progressed = Object.keys(next.steps).length !== Object.keys(prev.steps).length || Object.keys(next.found).length !== Object.keys(prev.found).length || next.place !== prev.place;
     this.state = next;
     for (const s of this.scenes.values()) s.applyState(next);
     save(this.store, next);
     this.refreshHud();
     const captions = this.world.strings.captions as Record<string, string>;
+    if (progressed) {
+      this.noteProgress();
+      for (const k of [...this.sketchImages.keys()]) if (k.startsWith('next:')) this.sketchImages.delete(k);
+    }
     for (const e of events) {
+      // A locked thing rattled: the thing it needs glints a moment later (founder, fourth round, change 10).
+      if (e.kind === 'sfx' && e.id === 'rattle') {
+        const need = nextObjective(this.world, next);
+        if (need && need.place === this.world.baseOf(next.place)) this.pendingGlint = { id: need.id, at: this.lastNow + RATTLE_GLINT_MS };
+      }
       if (e.kind === 'sfx') {
         this.audio.play(e.id);
         if (captions[e.id]) this.hud.showCaption(captions[e.id]!);
@@ -256,10 +292,37 @@ export class App {
     this.glinted = false;
   }
 
+  /** Something moved the player forward: the stuck clock restarts and any open hint offer is withdrawn. */
+  private noteProgress(): void {
+    this.lastProgressAt = this.lastNow;
+    this.stuckOffer = false;
+  }
+
+  /** A drawing of the next thing the player needs on the main path, made from the world itself. No words. */
+  private currentPage(): HTMLCanvasElement | null {
+    const target = nextObjective(this.world, this.state);
+    if (!target) return null;
+    const key = `next:${target.id}`;
+    const cached = this.sketchImages.get(key);
+    if (cached) return cached;
+    const place = this.world.places[this.state.place]!;
+    const spot = place.viewpoints[target.home ?? place.arrive]!;
+    const d = sub(target.pos, spot.pos);
+    const dist = length(d);
+    const look = anglesFromDir(d, 0);
+    // Zoom so the thing fills about a third of the frame's height, within the lens's range.
+    const angular = (2 * Math.atan(Math.max(...target.size) / 2 / Math.max(dist, 1e-3)) * 180) / Math.PI;
+    const zoom = Math.max(ZOOM_MIN, Math.min(ZOOM_MAX, 60 / (angular / 0.35)));
+    const img = this.sketcher.draw(this.current, { pos: spot.pos, yaw: look.yaw, pitch: look.pitch, zoom });
+    this.sketchImages.set(key, img);
+    return img;
+  }
+
   // ---- flow ------------------------------------------------------------------------------
 
   begin(): void {
     this.started = true;
+    this.lastProgressAt = this.lastNow;
     if (this.state.startedAt === null) this.commit({ ...this.state, startedAt: Date.now() });
     this.panels.hide();
     this.log.record('start', { place: this.state.place });
@@ -279,6 +342,7 @@ export class App {
     this.log.record('restart');
     this.panels.renderTitle(false, this.storageBlocked);
     this.panels.show('title');
+    void this.ready.then(() => this.panels.setReady());
   }
 
   private toggle(name: 'book' | 'hints' | 'menu'): void {
@@ -289,8 +353,10 @@ export class App {
     }
     if (this.panels.open === 'title' || this.panels.open === 'end') return;
     if (name === 'book') {
-      this.panels.renderBook(this.state, this.sketchImages, this.heldSketch, drawLastPage(this.state.ended));
-      this.log.record('sketchbook_open');
+      const offer = this.stuckOffer ? hintTargets(this.world, this.state)[0] ?? null : null;
+      this.panels.renderBook(this.state, this.sketchImages, this.heldSketch, drawLastPage(this.state.ended), this.currentPage(), offer);
+      this.hud.setBookPulse(false);
+      this.log.record('sketchbook_open', { stuck: this.stuckOffer });
     } else if (name === 'hints') this.panels.renderHints(this.state, hintTargets(this.world, this.state));
     else this.panels.renderMenu(this.state, this.log.on, this.perfMode, this.storageBlocked);
     this.panels.show(name);
@@ -354,6 +420,9 @@ export class App {
     if (lv && typeof lv === 'object') {
       this.pointTarget = 'point' in lv ? { kind: 'object', id: lv.point, until: this.lastNow + 12_000 } : { kind: 'pose', id: lv.pose, until: this.lastNow + 12_000 };
       this.closePanel();
+    } else if (this.panels.open === 'book') {
+      const offer = this.stuckOffer ? hintTargets(this.world, this.state)[0] ?? null : null;
+      this.panels.renderBook(this.state, this.sketchImages, this.heldSketch, drawLastPage(this.state.ended), this.currentPage(), offer);
     } else {
       this.panels.renderHints(this.state, hintTargets(this.world, this.state));
     }
@@ -539,6 +608,7 @@ export class App {
     this.audio.play('dive');
     this.hud.showCaption(this.world.strings.captions.dive);
     this.log.record('dive', { from: from.placeId, to: d.to });
+    this.noteProgress();
     this.frames.mark('dive:start');
     this.diveAnim.begin({
       direction: 'in',
@@ -553,6 +623,7 @@ export class App {
       startedAt: this.lastNow,
     });
     this.pendingEnd = firstEnding;
+    this.renderer.warm(to.scene, this.diveAnim.camB, to.realistic);
     this.afterDive = () => this.enterPlace(d.to, d.state.pos, 0, 0, 1);
   }
 
@@ -590,6 +661,7 @@ export class App {
       reducedMotion: this.state.settings.reducedMotion,
       startedAt: this.lastNow,
     });
+    this.renderer.warm(parent.scene, this.diveAnim.camB, parent.realistic);
     this.afterDive = () => this.enterPlace(b.to, back, look.yaw, look.pitch, 1);
   }
 
@@ -711,6 +783,20 @@ export class App {
     this.log.record('find_sketch', { id, place: this.state.place });
   }
 
+  /** No progress for a minute: the sketchbook button pulses once; the book then offers the next hint level. */
+  private updateStuck(now: number): void {
+    if (this.pendingGlint && now >= this.pendingGlint.at) {
+      this.current.glint(this.pendingGlint.id, now);
+      this.log.record('glint', { target: this.pendingGlint.id, why: 'rattle' });
+      this.pendingGlint = null;
+    }
+    if (this.stuckOffer || this.state.ended || now - this.lastProgressAt < STUCK_MS) return;
+    if (!nextObjective(this.world, this.state)) return;
+    this.stuckOffer = true;
+    this.hud.setBookPulse(true);
+    this.log.record('stuck', { place: this.state.place });
+  }
+
   /** After 45 s without input, the most useful next thing glints once (founder change 4). No text. */
   private updateIdleGlint(now: number): void {
     if (this.glinted || now - this.lastInputAt < IDLE_GLINT_MS) return;
@@ -789,6 +875,14 @@ export class App {
       }
       const r = this.diveAnim.step(now);
       if (r) {
+        // Tone mapping switches to the destination's at the hand-over; exposure eases over the second half.
+        if (p) {
+          const from = this.world.places[p.from.placeId]!.exposure ?? 1;
+          const to = this.world.places[p.to.placeId]!.exposure ?? 1;
+          const t = this.diveAnim.progress;
+          this.renderer.setToneMapping(this.diveAnim.handedOver ? p.to.realistic : p.from.realistic);
+          this.renderer.setExposure(t <= 0.5 ? from : from + (to - from) * Math.min(1, (t - 0.5) * 2));
+        }
         this.hud.setFade(r.fade > 0.5, true);
         this.renderer.render(r.scene, r.camera);
         if (r.done) this.finishDive();
@@ -811,6 +905,7 @@ export class App {
         this.updateRing(now);
         this.updateSketch(now);
         this.updateIdleGlint(now);
+        this.updateStuck(now);
       } else {
         this.best = null;
         this.hud.setVerb(null);
@@ -918,6 +1013,13 @@ export class App {
   debugFreezeDive(t: number | null): void {
     if (__PLAYTEST__) return;
     this.diveAnim.freezeAt = t;
+  }
+
+  /** Pretend no progress was made for a minute (for tests). */
+  debugStuck(): void {
+    if (__PLAYTEST__) return;
+    this.lastProgressAt = this.lastNow - STUCK_MS - 1;
+    this.stuckOffer = false;
   }
 
   /** Force the idle glint now (for tests). */

@@ -29,6 +29,9 @@ export class PortalRenderer {
   readonly camera = new THREE.PerspectiveCamera(PORTAL_FOV, 1, 0.05, 4000);
 
   constructor(private gl: THREE.WebGLRenderer, size = 768) {
+    // 8-bit sRGB, never tone mapped (Three.js tone-maps only the screen). Places drawn through an opening keep
+    // NoToneMapping themselves (see Renderer.setToneMapping), so the picture and the place go through the same
+    // steps and the hand-over frame matches. The quad that shows the picture does not tone-map it either.
     this.target = new THREE.WebGLRenderTarget(size, size, { depthBuffer: true });
     this.target.texture.colorSpace = THREE.SRGBColorSpace;
     this.camera.rotation.order = 'YXZ';
