@@ -1,0 +1,3299 @@
+{
+  "_notes": "Data only. Non-usable dressing. Each entry is one mesh, or an instanced scatter when count > 1 (seeded, deterministic). A `portal` entry is a flat opening that shows the named place live; it faces along `normal` when given, else toward the spot named in `face` and has size [width, height]. `when` shows an entry only while an object is in a state. at = [spot, yaw, pitch, distance]; pos = absolute.",
+  "props": [
+    {
+      "place": "street",
+      "id": "street_ground",
+      "shape": "box",
+      "pos": [
+        0,
+        -0.06,
+        -6
+      ],
+      "size": [
+        16,
+        0.1,
+        40
+      ],
+      "color": "#3B4150",
+      "look": {
+        "tex": "cobblestone_floor_08",
+        "tile": 2.2
+      }
+    },
+    {
+      "place": "street",
+      "id": "house_l1",
+      "shape": "box",
+      "pos": [
+        -7,
+        2.7,
+        -19.0
+      ],
+      "size": [
+        3,
+        5.4,
+        8
+      ],
+      "color": "#4A4F63",
+      "look": {
+        "house": {
+          "plaster": "plastered_wall_02",
+          "floors": 2,
+          "windows": 4,
+          "door": true,
+          "face": "x+",
+          "lit": [
+            3
+          ]
+        }
+      }
+    },
+    {
+      "place": "street",
+      "id": "house_l2",
+      "shape": "box",
+      "pos": [
+        -7,
+        2.2,
+        -12.0
+      ],
+      "size": [
+        3,
+        4.4,
+        6
+      ],
+      "color": "#4A4F63",
+      "look": {
+        "house": {
+          "plaster": "red_plaster_weathered",
+          "floors": 2,
+          "windows": 3,
+          "door": false,
+          "face": "x+",
+          "lit": [
+            1,
+            4
+          ]
+        }
+      }
+    },
+    {
+      "place": "street",
+      "id": "house_l3",
+      "shape": "box",
+      "pos": [
+        -7,
+        2.8,
+        -6.0
+      ],
+      "size": [
+        3,
+        5.6,
+        6
+      ],
+      "color": "#4A4F63",
+      "look": {
+        "house": {
+          "plaster": "plastered_wall_02",
+          "floors": 2,
+          "windows": 3,
+          "door": false,
+          "face": "x+",
+          "lit": [
+            2
+          ]
+        }
+      }
+    },
+    {
+      "place": "street",
+      "id": "house_l4",
+      "shape": "box",
+      "pos": [
+        -7,
+        3.3,
+        2.0
+      ],
+      "size": [
+        3,
+        6.6,
+        10
+      ],
+      "color": "#4A4F63",
+      "look": {
+        "house": {
+          "plaster": "blue_plaster_weathered",
+          "floors": 2,
+          "windows": 4,
+          "door": true,
+          "face": "x+",
+          "lit": [
+            1,
+            5
+          ]
+        }
+      }
+    },
+    {
+      "place": "street",
+      "id": "house_r1",
+      "shape": "box",
+      "pos": [
+        8,
+        2.9,
+        -19.0
+      ],
+      "size": [
+        3,
+        5.8,
+        8
+      ],
+      "color": "#4F4A60",
+      "look": {
+        "house": {
+          "plaster": "red_plaster_weathered",
+          "floors": 2,
+          "windows": 4,
+          "door": true,
+          "face": "x-",
+          "lit": [
+            2
+          ]
+        }
+      }
+    },
+    {
+      "place": "street",
+      "id": "house_r2",
+      "shape": "box",
+      "pos": [
+        8,
+        3.2,
+        -9.0
+      ],
+      "size": [
+        3,
+        6.4,
+        12
+      ],
+      "color": "#4F4A60",
+      "look": {
+        "house": {
+          "plaster": "plastered_wall_02",
+          "floors": 2,
+          "windows": 4,
+          "door": false,
+          "face": "x-",
+          "lit": [
+            4
+          ]
+        }
+      }
+    },
+    {
+      "place": "street",
+      "id": "house_r3",
+      "shape": "box",
+      "pos": [
+        8,
+        2.6,
+        0.0
+      ],
+      "size": [
+        3,
+        5.2,
+        6
+      ],
+      "color": "#4F4A60",
+      "look": {
+        "house": {
+          "plaster": "blue_plaster_weathered",
+          "floors": 2,
+          "windows": 3,
+          "door": true,
+          "face": "x-",
+          "lit": []
+        }
+      }
+    },
+    {
+      "place": "street",
+      "id": "weathervane",
+      "shape": "box",
+      "pos": [
+        -7,
+        8.6,
+        -7
+      ],
+      "size": [
+        0.8,
+        0.3,
+        0.05
+      ],
+      "color": "#C9A24E",
+      "look": {
+        "color": "#3a3a3a",
+        "rough": 0.5
+      }
+    },
+    {
+      "place": "street",
+      "id": "shop_front",
+      "shape": "box",
+      "pos": [
+        -5.4,
+        1.6,
+        -6.7
+      ],
+      "size": [
+        0.3,
+        3.2,
+        4.0
+      ],
+      "color": "#8A6A48",
+      "look": {
+        "tex": "dark_wooden_planks",
+        "tile": 1.6
+      }
+    },
+    {
+      "place": "street",
+      "id": "shop_sign",
+      "shape": "box",
+      "pos": [
+        -5.18,
+        3.05,
+        -6.7
+      ],
+      "size": [
+        0.08,
+        0.5,
+        2.4
+      ],
+      "color": "#2A1A0C",
+      "look": {
+        "tex": "old_planks_02",
+        "tile": 1.2,
+        "color": "#8a6a3a"
+      }
+    },
+    {
+      "place": "street",
+      "id": "crate",
+      "shape": "box",
+      "size": [
+        0.6,
+        0.4,
+        0.5
+      ],
+      "color": "#9A7A4A",
+      "at": [
+        "A",
+        -72,
+        -22.9,
+        3.6
+      ],
+      "look": {
+        "model": "wooden_crate_01",
+        "fit": "height"
+      }
+    },
+    {
+      "place": "street",
+      "id": "bucket",
+      "shape": "cylinder",
+      "size": [
+        0.3,
+        0.35,
+        0.3
+      ],
+      "color": "#6E7E8E",
+      "at": [
+        "A",
+        -48,
+        -28,
+        3.0
+      ],
+      "look": {
+        "model": "wooden_bucket_01",
+        "fit": "height"
+      }
+    },
+    {
+      "place": "street",
+      "id": "lantern",
+      "shape": "sphere",
+      "size": [
+        0.12,
+        0.29,
+        0.1
+      ],
+      "color": "#C9A24E",
+      "at": [
+        "A",
+        -92,
+        -27.0,
+        3.2
+      ],
+      "look": {
+        "model": "Lantern_01",
+        "fit": "height"
+      }
+    },
+    {
+      "place": "street",
+      "id": "bench",
+      "shape": "cylinder",
+      "size": [
+        1.16,
+        0.89,
+        0.5
+      ],
+      "color": "#333333",
+      "at": [
+        "A",
+        -100,
+        -18.7,
+        3.6
+      ],
+      "look": {
+        "model": "painted_wooden_bench",
+        "fit": "height",
+        "yaw": 90
+      }
+    },
+    {
+      "place": "street",
+      "id": "rope",
+      "shape": "cylinder",
+      "size": [
+        0.4,
+        0.15,
+        0.4
+      ],
+      "color": "#A08A5A",
+      "at": [
+        "A",
+        10,
+        -28,
+        3.2
+      ],
+      "look": {
+        "color": "#a08a5a",
+        "rough": 1
+      }
+    },
+    {
+      "place": "street",
+      "id": "lantern_2",
+      "shape": "box",
+      "size": [
+        0.25,
+        0.55,
+        0.22
+      ],
+      "color": "#3A3A3A",
+      "at": [
+        "B",
+        60,
+        -2,
+        2.0
+      ],
+      "look": {
+        "model": "wooden_lantern_01",
+        "fit": "height"
+      }
+    },
+    {
+      "place": "street",
+      "id": "curb",
+      "shape": "box",
+      "size": [
+        0.5,
+        0.15,
+        0.3
+      ],
+      "color": "#7A7A7A",
+      "at": [
+        "A",
+        60,
+        -35.9,
+        2.6
+      ],
+      "look": {
+        "tex": "old_stone_wall",
+        "tile": 0.8
+      }
+    },
+    {
+      "place": "street",
+      "id": "barrel",
+      "shape": "cylinder",
+      "size": [
+        0.6,
+        0.8,
+        0.6
+      ],
+      "color": "#5A4A3A",
+      "at": [
+        "A",
+        80,
+        -23.6,
+        3.0
+      ],
+      "look": {
+        "tex": "old_planks_02",
+        "tile": 0.8,
+        "color": "#8a7050"
+      }
+    },
+    {
+      "place": "street",
+      "id": "pot",
+      "shape": "cylinder",
+      "size": [
+        0.25,
+        0.25,
+        0.25
+      ],
+      "color": "#B85C38",
+      "look": {
+        "model": "planter_pot_clay",
+        "fit": "height"
+      },
+      "pos": [
+        -4.95,
+        0.125,
+        -5.55
+      ]
+    },
+    {
+      "place": "street",
+      "id": "letterbox",
+      "shape": "box",
+      "size": [
+        0.25,
+        0.12,
+        0.08
+      ],
+      "color": "#5A5A5A",
+      "at": [
+        "B",
+        66,
+        -10,
+        2.0
+      ],
+      "look": {
+        "color": "#3a3a3a",
+        "rough": 0.5
+      }
+    },
+    {
+      "place": "street",
+      "id": "shutter",
+      "shape": "box",
+      "size": [
+        0.4,
+        1.0,
+        0.05
+      ],
+      "color": "#2F5F86",
+      "at": [
+        "B",
+        125,
+        14,
+        2.6
+      ],
+      "look": {
+        "tex": "old_planks_02",
+        "tile": 0.8,
+        "color": "#2f5f86"
+      }
+    },
+    {
+      "place": "street",
+      "id": "windowbox",
+      "shape": "box",
+      "size": [
+        0.8,
+        0.25,
+        0.3
+      ],
+      "color": "#5A7A3A",
+      "at": [
+        "B",
+        132,
+        -4,
+        2.8
+      ],
+      "look": {
+        "tex": "old_planks_02",
+        "tile": 0.8,
+        "color": "#6a5a3a"
+      }
+    },
+    {
+      "place": "street",
+      "id": "shop_window",
+      "shape": "box",
+      "pos": [
+        -5.2,
+        1.7,
+        -7.95
+      ],
+      "size": [
+        0.1,
+        1.2,
+        1.0
+      ],
+      "color": "#FFD79A",
+      "look": {
+        "glass": true,
+        "emissive": "#ffb85a"
+      }
+    },
+    {
+      "place": "street",
+      "id": "portal_window",
+      "portal": "shop",
+      "pos": [
+        -5.12,
+        1.7,
+        -7.95
+      ],
+      "size": [
+        1.0,
+        1.2
+      ],
+      "face": "B",
+      "normal": [
+        1,
+        0,
+        0
+      ]
+    },
+    {
+      "place": "street",
+      "id": "portal_door",
+      "portal": "shop",
+      "pos": [
+        -5.22,
+        1.66,
+        -6.83
+      ],
+      "size": [
+        0.9,
+        2.0
+      ],
+      "face": "B",
+      "normal": [
+        1,
+        0,
+        0
+      ],
+      "glow": true
+    },
+    {
+      "place": "street",
+      "id": "lit_window_right",
+      "shape": "box",
+      "pos": [
+        6.4,
+        4.2,
+        -8
+      ],
+      "size": [
+        0.1,
+        1.0,
+        1.2
+      ],
+      "color": "#FFD79A",
+      "look": {
+        "glass": true,
+        "emissive": "#ffb85a"
+      }
+    },
+    {
+      "place": "street",
+      "id": "fish_stall",
+      "shape": "box",
+      "pos": [
+        3.0,
+        0.5,
+        -3.5
+      ],
+      "size": [
+        1.8,
+        1.0,
+        2.4
+      ],
+      "color": "#7A5A3A",
+      "look": {
+        "model": "WoodenTable_01",
+        "fit": "box",
+        "yaw": 90
+      }
+    },
+    {
+      "place": "street",
+      "id": "stall_canopy",
+      "shape": "box",
+      "pos": [
+        3.0,
+        2.12,
+        -3.5
+      ],
+      "size": [
+        2.4,
+        0.06,
+        3.0
+      ],
+      "color": "#7a2e2a",
+      "look": {
+        "color": "#7a2e2a",
+        "rough": 0.95
+      }
+    },
+    {
+      "place": "street",
+      "id": "stall_post_1",
+      "shape": "cylinder",
+      "pos": [
+        1.9,
+        1.05,
+        -4.9
+      ],
+      "size": [
+        0.08,
+        2.1,
+        0.08
+      ],
+      "color": "#4a3a2a",
+      "look": {
+        "tex": "dark_wooden_planks",
+        "tile": 1
+      }
+    },
+    {
+      "place": "street",
+      "id": "stall_post_2",
+      "shape": "cylinder",
+      "pos": [
+        4.1,
+        1.05,
+        -4.9
+      ],
+      "size": [
+        0.08,
+        2.1,
+        0.08
+      ],
+      "color": "#4a3a2a",
+      "look": {
+        "tex": "dark_wooden_planks",
+        "tile": 1
+      }
+    },
+    {
+      "place": "street",
+      "id": "stall_post_3",
+      "shape": "cylinder",
+      "pos": [
+        1.9,
+        1.05,
+        -2.1
+      ],
+      "size": [
+        0.08,
+        2.1,
+        0.08
+      ],
+      "color": "#4a3a2a",
+      "look": {
+        "tex": "dark_wooden_planks",
+        "tile": 1
+      }
+    },
+    {
+      "place": "street",
+      "id": "stall_post_4",
+      "shape": "cylinder",
+      "pos": [
+        4.1,
+        1.05,
+        -2.1
+      ],
+      "size": [
+        0.08,
+        2.1,
+        0.08
+      ],
+      "color": "#4a3a2a",
+      "look": {
+        "tex": "dark_wooden_planks",
+        "tile": 1
+      }
+    },
+    {
+      "place": "street",
+      "id": "gull_pole",
+      "shape": "cylinder",
+      "pos": [
+        0.98,
+        0.875,
+        -3.657
+      ],
+      "size": [
+        0.07,
+        1.75,
+        0.07
+      ],
+      "color": "#3a3a3a",
+      "look": {
+        "tex": "dark_wooden_planks",
+        "tile": 0.8
+      }
+    },
+    {
+      "place": "street",
+      "id": "lamp_glow",
+      "shape": "sphere",
+      "pos": [
+        -3.2,
+        3.35,
+        -8
+      ],
+      "size": [
+        0.22,
+        0.22,
+        0.22
+      ],
+      "color": "#2a2a2a",
+      "count": 3,
+      "spread": [
+        0,
+        0,
+        6
+      ],
+      "seed": 15,
+      "night": {
+        "color": "#F2B75B",
+        "emissive": true
+      },
+      "look": {
+        "color": "#30343a",
+        "rough": 0.2
+      }
+    },
+    {
+      "place": "street",
+      "id": "oars",
+      "shape": "cylinder",
+      "pos": [
+        2.2,
+        0.9,
+        -4.9
+      ],
+      "size": [
+        0.06,
+        1.8,
+        0.06
+      ],
+      "color": "#A08A5A",
+      "count": 3,
+      "spread": [
+        0.3,
+        0,
+        0.3
+      ],
+      "seed": 11,
+      "look": {
+        "tex": "dark_wooden_planks",
+        "tile": 0.6
+      },
+      "rot": [
+        0,
+        0,
+        14
+      ]
+    },
+    {
+      "place": "street",
+      "id": "crates_pile",
+      "shape": "box",
+      "pos": [
+        2.8,
+        0.3,
+        -5.2
+      ],
+      "size": [
+        0.5,
+        0.4,
+        0.5
+      ],
+      "color": "#9A7A4A",
+      "count": 7,
+      "spread": [
+        0.8,
+        0.4,
+        0.8
+      ],
+      "seed": 12,
+      "look": {
+        "model": "wooden_crate_01",
+        "fit": "height"
+      }
+    },
+    {
+      "place": "street",
+      "id": "quay",
+      "shape": "box",
+      "pos": [
+        0,
+        -0.3,
+        -20
+      ],
+      "size": [
+        40,
+        0.6,
+        6
+      ],
+      "color": "#5A5A5A",
+      "look": {
+        "tex": "old_stone_wall",
+        "tile": 1.8
+      }
+    },
+    {
+      "place": "street",
+      "id": "water",
+      "shape": "box",
+      "pos": [
+        0,
+        -0.9,
+        -60
+      ],
+      "size": [
+        200,
+        0.2,
+        80
+      ],
+      "color": "#2F7F86",
+      "look": {
+        "water": true,
+        "color": "#0c1a28"
+      }
+    },
+    {
+      "place": "street",
+      "id": "boat_1",
+      "shape": "box",
+      "pos": [
+        -4,
+        -0.15,
+        -26
+      ],
+      "size": [
+        2,
+        1,
+        5
+      ],
+      "color": "#8A3A3A",
+      "look": {
+        "tex": "old_planks_02",
+        "tile": 1.0,
+        "color": "#7a2e2a"
+      }
+    },
+    {
+      "place": "street",
+      "id": "boat_2",
+      "shape": "box",
+      "pos": [
+        5,
+        -0.15,
+        -28
+      ],
+      "size": [
+        2,
+        1,
+        5
+      ],
+      "color": "#2F5F86",
+      "look": {
+        "tex": "old_planks_02",
+        "tile": 1.0,
+        "color": "#2f5f86"
+      }
+    },
+    {
+      "place": "street",
+      "id": "lifebuoy",
+      "shape": "box",
+      "pos": [
+        -3.0,
+        0.35,
+        -24.0
+      ],
+      "size": [
+        0.78,
+        0.84,
+        0.16
+      ],
+      "color": "#e8e8e8",
+      "look": {
+        "model": "lifebuoy",
+        "fit": "height"
+      }
+    },
+    {
+      "place": "street",
+      "id": "masts",
+      "shape": "cylinder",
+      "pos": [
+        0.5,
+        3,
+        -27
+      ],
+      "size": [
+        0.1,
+        6,
+        0.1
+      ],
+      "color": "#A08A5A",
+      "count": 2,
+      "spread": [
+        4.5,
+        0,
+        1
+      ],
+      "seed": 13,
+      "look": {
+        "tex": "dark_wooden_planks",
+        "tile": 1
+      }
+    },
+    {
+      "place": "street",
+      "id": "mooring_posts",
+      "shape": "cylinder",
+      "pos": [
+        0,
+        0.6,
+        -17.5
+      ],
+      "size": [
+        0.25,
+        1.2,
+        0.25
+      ],
+      "color": "#3A3A3A",
+      "count": 8,
+      "spread": [
+        14,
+        0,
+        0.2
+      ],
+      "seed": 14,
+      "look": {
+        "tex": "dark_wooden_planks",
+        "tile": 0.8
+      }
+    },
+    {
+      "place": "street",
+      "id": "quay_barrels",
+      "shape": "cylinder",
+      "pos": [
+        6.5,
+        0.4,
+        -18.2
+      ],
+      "size": [
+        0.6,
+        0.8,
+        0.6
+      ],
+      "color": "#5A4A3A",
+      "count": 3,
+      "spread": [
+        1.4,
+        0,
+        0.4
+      ],
+      "seed": 25,
+      "look": {
+        "tex": "old_planks_02",
+        "tile": 0.8,
+        "color": "#8a7050"
+      }
+    },
+    {
+      "place": "street",
+      "id": "rope_coils",
+      "shape": "cylinder",
+      "pos": [
+        -3.5,
+        0.07,
+        -17.6
+      ],
+      "size": [
+        0.45,
+        0.14,
+        0.45
+      ],
+      "color": "#a08a5a",
+      "count": 3,
+      "spread": [
+        2.5,
+        0,
+        0.3
+      ],
+      "seed": 26,
+      "look": {
+        "color": "#9a875a",
+        "rough": 1
+      }
+    },
+    {
+      "place": "street",
+      "id": "sill_pots",
+      "shape": "cylinder",
+      "pos": [
+        6.4,
+        0.125,
+        -14.0
+      ],
+      "size": [
+        0.26,
+        0.25,
+        0.26
+      ],
+      "color": "#B85C38",
+      "count": 2,
+      "spread": [
+        0,
+        0,
+        4.5
+      ],
+      "seed": 27,
+      "look": {
+        "model": "planter_pot_clay",
+        "fit": "height"
+      }
+    },
+    {
+      "place": "street",
+      "id": "headland",
+      "shape": "box",
+      "pos": [
+        -22,
+        1.5,
+        -40
+      ],
+      "size": [
+        16,
+        3,
+        14
+      ],
+      "color": "#3A4A4A",
+      "look": {
+        "tex": "old_stone_wall",
+        "tile": 3
+      }
+    },
+    {
+      "place": "street",
+      "id": "lighthouse",
+      "shape": "cylinder",
+      "pos": [
+        -22,
+        10,
+        -40
+      ],
+      "size": [
+        3,
+        20,
+        3
+      ],
+      "color": "#E8E8E8",
+      "look": {
+        "tex": "plastered_wall_02",
+        "tile": 3,
+        "color": "#f0ece4"
+      }
+    },
+    {
+      "place": "street",
+      "id": "lighthouse_top",
+      "shape": "cylinder",
+      "pos": [
+        -22,
+        20.8,
+        -40
+      ],
+      "size": [
+        3.6,
+        1.6,
+        3.6
+      ],
+      "color": "#B0281E",
+      "look": {
+        "color": "#7a1e18",
+        "rough": 0.6
+      }
+    },
+    {
+      "place": "street",
+      "id": "lighthouse_lamp",
+      "shape": "sphere",
+      "pos": [
+        -22,
+        22,
+        -40
+      ],
+      "size": [
+        1.4,
+        1.4,
+        1.4
+      ],
+      "color": "#FFE39A",
+      "emissive": true
+    },
+    {
+      "place": "street",
+      "id": "moon",
+      "shape": "sphere",
+      "at": [
+        "A",
+        -15,
+        40,
+        120
+      ],
+      "size": [
+        10,
+        10,
+        10
+      ],
+      "color": "#b4b9c4",
+      "night": {
+        "color": "#E8EEF4",
+        "emissive": true
+      },
+      "emissive": true
+    },
+    {
+      "place": "street",
+      "id": "moon_lamp_mark",
+      "shape": "box",
+      "at": [
+        "A",
+        -15,
+        40,
+        115
+      ],
+      "size": [
+        1.0,
+        1.4,
+        1.0
+      ],
+      "color": "#5A5F66",
+      "night": {
+        "color": "#FFE39A",
+        "emissive": true
+      }
+    },
+    {
+      "place": "street",
+      "id": "street_lamps",
+      "shape": "cylinder",
+      "pos": [
+        -3.2,
+        1.935,
+        -8
+      ],
+      "size": [
+        0.7,
+        3.87,
+        0.39
+      ],
+      "color": "#3A3A3A",
+      "count": 3,
+      "spread": [
+        0,
+        0,
+        6
+      ],
+      "seed": 15,
+      "look": {
+        "model": "street_lamp_01",
+        "fit": "height"
+      }
+    },
+    {
+      "place": "street",
+      "id": "puddles",
+      "shape": "cylinder",
+      "pos": [
+        0,
+        0.005,
+        -8
+      ],
+      "size": [
+        0.9,
+        0.01,
+        0.7
+      ],
+      "color": "#1a2230",
+      "count": 5,
+      "spread": [
+        3.5,
+        0,
+        12
+      ],
+      "seed": 22,
+      "look": {
+        "glass": true,
+        "color": "#07101a"
+      }
+    },
+    {
+      "place": "street",
+      "id": "loose_stones",
+      "shape": "sphere",
+      "pos": [
+        -4.6,
+        0.05,
+        -6
+      ],
+      "size": [
+        0.12,
+        0.08,
+        0.1
+      ],
+      "color": "#5a5a5a",
+      "count": 45,
+      "spread": [
+        0.5,
+        0,
+        14
+      ],
+      "seed": 23,
+      "look": {
+        "tex": "old_stone_wall",
+        "tile": 0.3
+      }
+    },
+    {
+      "place": "street",
+      "id": "gulls",
+      "shape": "sphere",
+      "pos": [
+        0,
+        9,
+        -22
+      ],
+      "size": [
+        0.22,
+        0.07,
+        0.4
+      ],
+      "color": "#E8E8E8",
+      "count": 7,
+      "spread": [
+        12,
+        3,
+        8
+      ],
+      "seed": 18,
+      "ambient": "drift",
+      "look": {
+        "color": "#e8e8e8"
+      }
+    },
+    {
+      "place": "street",
+      "id": "nets",
+      "shape": "box",
+      "pos": [
+        4.6,
+        0.15,
+        -1.0
+      ],
+      "size": [
+        1.2,
+        0.3,
+        1.2
+      ],
+      "color": "#6E7E6E",
+      "count": 3,
+      "spread": [
+        0.6,
+        0,
+        0.8
+      ],
+      "seed": 20,
+      "look": {
+        "color": "#4a5a4a",
+        "rough": 1
+      }
+    },
+    {
+      "place": "street",
+      "id": "crates_2",
+      "shape": "box",
+      "pos": [
+        4.2,
+        0.35,
+        -6.8
+      ],
+      "size": [
+        0.83,
+        0.35,
+        0.41
+      ],
+      "color": "#7A5A3A",
+      "count": 3,
+      "spread": [
+        0.3,
+        0.35,
+        0.7
+      ],
+      "seed": 24,
+      "look": {
+        "model": "wooden_crate_01",
+        "fit": "height"
+      }
+    },
+    {
+      "place": "street",
+      "id": "ladder",
+      "shape": "box",
+      "pos": [
+        -5.05,
+        1.6,
+        -11.5
+      ],
+      "size": [
+        0.5,
+        3.2,
+        0.9
+      ],
+      "color": "#A08A5A",
+      "look": {
+        "model": "wooden_ladder",
+        "fit": "height"
+      },
+      "rot": [
+        0,
+        90,
+        0
+      ]
+    },
+    {
+      "place": "shop",
+      "id": "floor",
+      "shape": "box",
+      "pos": [
+        0,
+        -0.05,
+        -3
+      ],
+      "size": [
+        7,
+        0.1,
+        9
+      ],
+      "color": "#4A3320"
+    },
+    {
+      "place": "shop",
+      "id": "wall_back",
+      "shape": "box",
+      "pos": [
+        0,
+        1.6,
+        -7.5
+      ],
+      "size": [
+        7,
+        3.4,
+        0.2
+      ],
+      "color": "#5A3D1E"
+    },
+    {
+      "place": "shop",
+      "id": "wall_left",
+      "shape": "box",
+      "pos": [
+        -3.5,
+        1.6,
+        -3
+      ],
+      "size": [
+        0.2,
+        3.4,
+        9
+      ],
+      "color": "#5A3D1E"
+    },
+    {
+      "place": "shop",
+      "id": "wall_right",
+      "shape": "box",
+      "pos": [
+        3.5,
+        1.6,
+        -3
+      ],
+      "size": [
+        0.2,
+        3.4,
+        9
+      ],
+      "color": "#5A3D1E"
+    },
+    {
+      "place": "shop",
+      "id": "ceiling",
+      "shape": "box",
+      "pos": [
+        0,
+        3.3,
+        -3
+      ],
+      "size": [
+        7,
+        0.1,
+        9
+      ],
+      "color": "#3A2A18"
+    },
+    {
+      "place": "shop",
+      "id": "counter",
+      "shape": "box",
+      "pos": [
+        -0.8,
+        0.5,
+        -4
+      ],
+      "size": [
+        2.6,
+        1.0,
+        0.8
+      ],
+      "color": "#6B4A2E"
+    },
+    {
+      "place": "shop",
+      "id": "tall_clock",
+      "shape": "box",
+      "pos": [
+        -1,
+        1.2,
+        -6.8
+      ],
+      "size": [
+        0.7,
+        2.4,
+        0.4
+      ],
+      "color": "#3A2A18"
+    },
+    {
+      "place": "shop",
+      "id": "clock_face",
+      "shape": "cylinder",
+      "pos": [
+        -1,
+        2.0,
+        -6.55
+      ],
+      "size": [
+        0.5,
+        0.05,
+        0.5
+      ],
+      "color": "#F1E6CF",
+      "rot": [
+        90,
+        0,
+        0
+      ]
+    },
+    {
+      "place": "shop",
+      "id": "chest",
+      "shape": "box",
+      "pos": [
+        3.62,
+        1.4,
+        -3.0
+      ],
+      "size": [
+        0.35,
+        1.2,
+        1.5
+      ],
+      "color": "#5A3A22"
+    },
+    {
+      "place": "shop",
+      "id": "shelves_left",
+      "shape": "box",
+      "pos": [
+        -3.2,
+        1.7,
+        -3
+      ],
+      "size": [
+        0.4,
+        0.04,
+        8
+      ],
+      "color": "#7A5A3A",
+      "count": 5,
+      "spread": [
+        0,
+        1.2,
+        0
+      ],
+      "seed": 21
+    },
+    {
+      "place": "shop",
+      "id": "shelves_right",
+      "shape": "box",
+      "pos": [
+        3.2,
+        1.7,
+        -5.5
+      ],
+      "size": [
+        0.4,
+        0.04,
+        3.5
+      ],
+      "color": "#7A5A3A",
+      "count": 5,
+      "spread": [
+        0,
+        1.2,
+        0
+      ],
+      "seed": 22
+    },
+    {
+      "place": "shop",
+      "id": "books_left",
+      "shape": "box",
+      "pos": [
+        -3.2,
+        1.7,
+        -3
+      ],
+      "size": [
+        0.3,
+        0.25,
+        0.06
+      ],
+      "color": "#6A3A3A",
+      "count": 90,
+      "spread": [
+        0.05,
+        1.2,
+        3.9
+      ],
+      "seed": 23,
+      "palette": [
+        "#6A3A3A",
+        "#3A5A6A",
+        "#5A6A3A",
+        "#8A6A2A",
+        "#4A4A6A"
+      ]
+    },
+    {
+      "place": "shop",
+      "id": "jars_right",
+      "shape": "cylinder",
+      "pos": [
+        3.2,
+        1.7,
+        -5.5
+      ],
+      "size": [
+        0.14,
+        0.22,
+        0.14
+      ],
+      "color": "#9AB8C8",
+      "count": 40,
+      "spread": [
+        0.05,
+        1.2,
+        1.7
+      ],
+      "seed": 24,
+      "palette": [
+        "#9AB8C8",
+        "#C8B89A",
+        "#B8C89A",
+        "#C89AB8"
+      ]
+    },
+    {
+      "place": "shop",
+      "id": "cups_high",
+      "shape": "cylinder",
+      "pos": [
+        3.1,
+        2.6,
+        -1.5
+      ],
+      "size": [
+        0.07,
+        0.06,
+        0.07
+      ],
+      "color": "#F1E6CF",
+      "count": 11,
+      "spread": [
+        0.05,
+        0,
+        0.6
+      ],
+      "seed": 25
+    },
+    {
+      "place": "shop",
+      "id": "hanging_things",
+      "shape": "box",
+      "pos": [
+        0,
+        2.9,
+        -3
+      ],
+      "size": [
+        0.2,
+        0.3,
+        0.2
+      ],
+      "color": "#C9A24E",
+      "count": 12,
+      "spread": [
+        2.5,
+        0.2,
+        3.5
+      ],
+      "seed": 26
+    },
+    {
+      "place": "shop",
+      "id": "floor_clutter",
+      "shape": "box",
+      "pos": [
+        0,
+        0.15,
+        -3
+      ],
+      "size": [
+        0.3,
+        0.3,
+        0.3
+      ],
+      "color": "#7A5A3A",
+      "count": 18,
+      "spread": [
+        2.6,
+        0,
+        3
+      ],
+      "seed": 27
+    },
+    {
+      "place": "shop",
+      "id": "maps",
+      "shape": "box",
+      "pos": [
+        0,
+        2.2,
+        -7.3
+      ],
+      "size": [
+        0.6,
+        0.45,
+        0.02
+      ],
+      "color": "#F1E6CF",
+      "count": 6,
+      "spread": [
+        2.8,
+        0.4,
+        0
+      ],
+      "seed": 28
+    },
+    {
+      "place": "shop",
+      "id": "mouse_hole",
+      "shape": "box",
+      "pos": [
+        -0.6,
+        0.06,
+        -3.55
+      ],
+      "size": [
+        0.12,
+        0.12,
+        0.05
+      ],
+      "color": "#1B1F2A"
+    },
+    {
+      "place": "shop",
+      "id": "door_post_l",
+      "shape": "box",
+      "pos": [
+        -0.6,
+        1.2,
+        0.1
+      ],
+      "size": [
+        0.12,
+        2.4,
+        0.12
+      ],
+      "color": "#6B4A2E"
+    },
+    {
+      "place": "shop",
+      "id": "door_post_r",
+      "shape": "box",
+      "pos": [
+        0.6,
+        1.2,
+        0.1
+      ],
+      "size": [
+        0.12,
+        2.4,
+        0.12
+      ],
+      "color": "#6B4A2E"
+    },
+    {
+      "place": "shop",
+      "id": "door_lintel",
+      "shape": "box",
+      "pos": [
+        0,
+        2.42,
+        0.1
+      ],
+      "size": [
+        1.32,
+        0.12,
+        0.12
+      ],
+      "color": "#6B4A2E"
+    },
+    {
+      "place": "shop",
+      "id": "window_frame",
+      "shape": "box",
+      "pos": [
+        1.6,
+        1.5,
+        0.1
+      ],
+      "size": [
+        1.3,
+        1.1,
+        0.06
+      ],
+      "color": "#6B4A2E"
+    },
+    {
+      "place": "shop",
+      "id": "window_glass",
+      "shape": "box",
+      "pos": [
+        1.6,
+        1.5,
+        0.12
+      ],
+      "size": [
+        1.1,
+        0.9,
+        0.02
+      ],
+      "color": "#8FB8D0"
+    },
+    {
+      "place": "shop",
+      "id": "window_sill",
+      "shape": "box",
+      "pos": [
+        1.6,
+        0.98,
+        -0.05
+      ],
+      "size": [
+        1.3,
+        0.08,
+        0.4
+      ],
+      "color": "#6B4A2E"
+    },
+    {
+      "place": "shop",
+      "id": "cat_on_sill",
+      "shape": "sphere",
+      "pos": [
+        1.6,
+        1.14,
+        -0.15
+      ],
+      "size": [
+        0.5,
+        0.3,
+        0.32
+      ],
+      "color": "#D98C3F"
+    },
+    {
+      "place": "shop",
+      "id": "cat_head_sill",
+      "shape": "sphere",
+      "pos": [
+        1.38,
+        1.2,
+        -0.15
+      ],
+      "size": [
+        0.2,
+        0.18,
+        0.2
+      ],
+      "color": "#D98C3F"
+    },
+    {
+      "place": "shop",
+      "id": "cat_counter",
+      "shape": "sphere",
+      "pos": [
+        -0.5,
+        1.15,
+        -4.05
+      ],
+      "size": [
+        0.5,
+        0.3,
+        0.32
+      ],
+      "color": "#D98C3F"
+    },
+    {
+      "place": "shop",
+      "id": "cat_counter_head",
+      "shape": "sphere",
+      "pos": [
+        -0.76,
+        1.22,
+        -4.0
+      ],
+      "size": [
+        0.2,
+        0.18,
+        0.2
+      ],
+      "color": "#D98C3F"
+    },
+    {
+      "place": "shop",
+      "id": "portal_drawer",
+      "portal": "drawer",
+      "pos": [
+        3.05,
+        1.4,
+        -2.89
+      ],
+      "size": [
+        0.2,
+        0.28
+      ],
+      "face": "B",
+      "when": {
+        "object": "shop.drawer_inside",
+        "is": "ready"
+      },
+      "glow": true
+    },
+    {
+      "place": "shop",
+      "id": "keyhole",
+      "shape": "cylinder",
+      "pos": [
+        3.36,
+        1.392,
+        -2.888
+      ],
+      "size": [
+        0.05,
+        0.02,
+        0.05
+      ],
+      "rot": [
+        0,
+        0,
+        90
+      ],
+      "color": "#1B1F2A",
+      "when": {
+        "object": "shop.blue_drawer",
+        "is": "locked"
+      }
+    },
+    {
+      "place": "shop",
+      "id": "keyhole_slot",
+      "shape": "box",
+      "pos": [
+        3.355,
+        1.372,
+        -2.888
+      ],
+      "size": [
+        0.012,
+        0.03,
+        0.012
+      ],
+      "color": "#1B1F2A",
+      "when": {
+        "object": "shop.blue_drawer",
+        "is": "locked"
+      }
+    },
+    {
+      "place": "drawer",
+      "id": "drawer_floor",
+      "shape": "box",
+      "pos": [
+        0,
+        -0.5,
+        -20
+      ],
+      "size": [
+        44,
+        1,
+        44
+      ],
+      "color": "#D9CBAA"
+    },
+    {
+      "place": "drawer",
+      "id": "drawer_back",
+      "shape": "box",
+      "pos": [
+        0,
+        5,
+        -41
+      ],
+      "size": [
+        44,
+        12,
+        1
+      ],
+      "color": "#C9BBA0"
+    },
+    {
+      "place": "drawer",
+      "id": "drawer_left",
+      "shape": "box",
+      "pos": [
+        -21,
+        5,
+        -20
+      ],
+      "size": [
+        1,
+        12,
+        44
+      ],
+      "color": "#C9BBA0"
+    },
+    {
+      "place": "drawer",
+      "id": "drawer_right",
+      "shape": "box",
+      "pos": [
+        21,
+        5,
+        -20
+      ],
+      "size": [
+        1,
+        12,
+        44
+      ],
+      "color": "#C9BBA0"
+    },
+    {
+      "place": "drawer",
+      "id": "letter_hill",
+      "shape": "sphere",
+      "pos": [
+        -6,
+        -1,
+        -18
+      ],
+      "size": [
+        14,
+        6,
+        14
+      ],
+      "color": "#EDE2C8",
+      "platform": true
+    },
+    {
+      "place": "drawer",
+      "id": "letter_hill_2",
+      "shape": "sphere",
+      "pos": [
+        -14,
+        -1,
+        -8
+      ],
+      "size": [
+        10,
+        4,
+        10
+      ],
+      "color": "#E8DCC0",
+      "platform": true
+    },
+    {
+      "place": "drawer",
+      "id": "letters",
+      "shape": "box",
+      "pos": [
+        -9,
+        0.5,
+        -7
+      ],
+      "size": [
+        5,
+        0.2,
+        3.5
+      ],
+      "color": "#F1E6CF",
+      "count": 45,
+      "spread": [
+        9,
+        0.5,
+        5
+      ],
+      "seed": 31
+    },
+    {
+      "place": "drawer",
+      "id": "ink_pool",
+      "shape": "cylinder",
+      "pos": [
+        -14,
+        0.05,
+        -30
+      ],
+      "size": [
+        9,
+        0.1,
+        9
+      ],
+      "color": "#1B1F2A"
+    },
+    {
+      "place": "drawer",
+      "id": "key_bridge",
+      "shape": "box",
+      "pos": [
+        -14,
+        1.0,
+        -29
+      ],
+      "size": [
+        11,
+        0.5,
+        2.2
+      ],
+      "color": "#C9A24E"
+    },
+    {
+      "place": "drawer",
+      "id": "bridge_keys",
+      "shape": "box",
+      "pos": [
+        -14,
+        1.4,
+        -29
+      ],
+      "size": [
+        0.4,
+        0.3,
+        2.4
+      ],
+      "color": "#B8923E",
+      "count": 22,
+      "spread": [
+        5,
+        0,
+        0
+      ],
+      "seed": 32
+    },
+    {
+      "place": "drawer",
+      "id": "stamp_tower",
+      "shape": "box",
+      "pos": [
+        -16,
+        4.5,
+        -37
+      ],
+      "size": [
+        2.4,
+        9,
+        3
+      ],
+      "color": "#B8C4E8"
+    },
+    {
+      "place": "drawer",
+      "id": "stamps",
+      "shape": "box",
+      "pos": [
+        -16,
+        4.5,
+        -35.4
+      ],
+      "size": [
+        1.6,
+        2,
+        0.1
+      ],
+      "color": "#9AB8C8",
+      "count": 12,
+      "spread": [
+        0.4,
+        4,
+        0
+      ],
+      "seed": 33,
+      "palette": [
+        "#9AB8C8",
+        "#C89A9A",
+        "#9AC8A0",
+        "#C8C09A"
+      ]
+    },
+    {
+      "place": "drawer",
+      "id": "sock_pillow",
+      "shape": "box",
+      "pos": [
+        6,
+        1,
+        -32
+      ],
+      "size": [
+        16,
+        2,
+        8
+      ],
+      "color": "#8C8A85"
+    },
+    {
+      "place": "drawer",
+      "id": "socks",
+      "shape": "box",
+      "pos": [
+        6,
+        2.2,
+        -32
+      ],
+      "size": [
+        5,
+        1.5,
+        3
+      ],
+      "color": "#7C7A75",
+      "count": 6,
+      "spread": [
+        7,
+        0,
+        3
+      ],
+      "seed": 34,
+      "palette": [
+        "#8C8A85",
+        "#6E7E8E",
+        "#8E7E6E"
+      ]
+    },
+    {
+      "place": "drawer",
+      "id": "cat_body",
+      "shape": "sphere",
+      "pos": [
+        4,
+        6,
+        -31
+      ],
+      "size": [
+        16,
+        8,
+        14
+      ],
+      "color": "#D98C3F"
+    },
+    {
+      "place": "drawer",
+      "id": "cat_head",
+      "shape": "sphere",
+      "pos": [
+        -1,
+        8,
+        -27
+      ],
+      "size": [
+        5,
+        4.5,
+        5
+      ],
+      "color": "#D98C3F"
+    },
+    {
+      "place": "drawer",
+      "id": "cat_ear_l",
+      "shape": "cone",
+      "pos": [
+        -3,
+        11,
+        -28
+      ],
+      "size": [
+        2,
+        3,
+        2
+      ],
+      "color": "#D98C3F"
+    },
+    {
+      "place": "drawer",
+      "id": "cat_ear_r",
+      "shape": "cone",
+      "pos": [
+        1,
+        11,
+        -28
+      ],
+      "size": [
+        2,
+        3,
+        2
+      ],
+      "color": "#D98C3F"
+    },
+    {
+      "place": "drawer",
+      "id": "cat_collar_mini",
+      "shape": "box",
+      "pos": [
+        -1,
+        6.4,
+        -26.4
+      ],
+      "size": [
+        7,
+        0.6,
+        0.6
+      ],
+      "color": "#5A2A2A"
+    },
+    {
+      "place": "drawer",
+      "id": "cat_charms_mini",
+      "shape": "sphere",
+      "pos": [
+        -1,
+        6.0,
+        -26.2
+      ],
+      "size": [
+        0.6,
+        0.6,
+        0.6
+      ],
+      "color": "#F2D66B",
+      "count": 3,
+      "spread": [
+        2.4,
+        0,
+        0
+      ],
+      "seed": 48
+    },
+    {
+      "place": "drawer",
+      "id": "portal_cat",
+      "portal": "cat",
+      "pos": [
+        -2.78,
+        7.07,
+        -24.9
+      ],
+      "size": [
+        5,
+        4
+      ],
+      "face": "B",
+      "when": {
+        "object": "drawer.cat_neck",
+        "is": "ready"
+      },
+      "glow": true
+    },
+    {
+      "place": "drawer",
+      "id": "buttons",
+      "shape": "cylinder",
+      "pos": [
+        12,
+        0.2,
+        -6
+      ],
+      "size": [
+        0.9,
+        0.2,
+        0.9
+      ],
+      "color": "#6E7E8E",
+      "count": 40,
+      "spread": [
+        5,
+        0,
+        4
+      ],
+      "seed": 35,
+      "palette": [
+        "#6E7E8E",
+        "#B0281E",
+        "#C9A24E",
+        "#F1E6CF"
+      ]
+    },
+    {
+      "place": "drawer",
+      "id": "spools",
+      "shape": "cylinder",
+      "pos": [
+        -16,
+        1,
+        -4
+      ],
+      "size": [
+        1.5,
+        2,
+        1.5
+      ],
+      "color": "#B85C38",
+      "count": 5,
+      "spread": [
+        3,
+        0,
+        3
+      ],
+      "seed": 36
+    },
+    {
+      "place": "drawer",
+      "id": "pins",
+      "shape": "cylinder",
+      "pos": [
+        14,
+        1,
+        -12
+      ],
+      "size": [
+        0.15,
+        2,
+        0.15
+      ],
+      "color": "#C9C9C9",
+      "count": 14,
+      "spread": [
+        3,
+        0,
+        3
+      ],
+      "seed": 37
+    },
+    {
+      "place": "drawer",
+      "id": "coins",
+      "shape": "cylinder",
+      "pos": [
+        -4,
+        0.15,
+        -6
+      ],
+      "size": [
+        1.4,
+        0.2,
+        1.4
+      ],
+      "color": "#C9A24E",
+      "count": 8,
+      "spread": [
+        4,
+        0,
+        3
+      ],
+      "seed": 38
+    },
+    {
+      "place": "drawer",
+      "id": "envelopes_far",
+      "shape": "box",
+      "pos": [
+        10,
+        0.3,
+        -36
+      ],
+      "size": [
+        6,
+        0.3,
+        4
+      ],
+      "color": "#EDE2C8",
+      "count": 8,
+      "spread": [
+        8,
+        0,
+        3
+      ],
+      "seed": 39
+    },
+    {
+      "place": "cat",
+      "id": "skin",
+      "shape": "box",
+      "pos": [
+        40,
+        -5,
+        20
+      ],
+      "size": [
+        500,
+        10,
+        500
+      ],
+      "color": "#8A5A2E"
+    },
+    {
+      "place": "cat",
+      "id": "fur",
+      "shape": "cylinder",
+      "pos": [
+        40,
+        15,
+        140
+      ],
+      "size": [
+        1.8,
+        32,
+        1.8
+      ],
+      "color": "#D98C3F",
+      "count": 1000,
+      "spread": [
+        230,
+        6,
+        100
+      ],
+      "seed": 41,
+      "palette": [
+        "#D98C3F",
+        "#E9A45A",
+        "#C87A32",
+        "#B0B0B0"
+      ],
+      "ambient": "sway"
+    },
+    {
+      "place": "cat",
+      "id": "fur_far",
+      "shape": "cylinder",
+      "pos": [
+        40,
+        15,
+        -150
+      ],
+      "size": [
+        1.8,
+        32,
+        1.8
+      ],
+      "color": "#D98C3F",
+      "count": 500,
+      "spread": [
+        230,
+        6,
+        60
+      ],
+      "seed": 46,
+      "palette": [
+        "#D98C3F",
+        "#E9A45A",
+        "#C87A32"
+      ],
+      "ambient": "sway"
+    },
+    {
+      "place": "cat",
+      "id": "flea_hair",
+      "shape": "cylinder",
+      "pos": [
+        27.2,
+        15,
+        -32.4
+      ],
+      "size": [
+        2,
+        34,
+        2
+      ],
+      "color": "#E9A45A"
+    },
+    {
+      "place": "cat",
+      "id": "corridor_hairs",
+      "shape": "cylinder",
+      "pos": [
+        40,
+        12,
+        -55
+      ],
+      "size": [
+        1.4,
+        22,
+        1.4
+      ],
+      "color": "#C87A32",
+      "count": 40,
+      "spread": [
+        200,
+        4,
+        14
+      ],
+      "seed": 47
+    },
+    {
+      "place": "cat",
+      "id": "head_mass",
+      "shape": "sphere",
+      "pos": [
+        0,
+        40,
+        -140
+      ],
+      "size": [
+        260,
+        120,
+        160
+      ],
+      "color": "#7A4A22"
+    },
+    {
+      "place": "cat",
+      "id": "portal_eye",
+      "portal": "eye",
+      "pos": [
+        -2.87,
+        34,
+        -32.8
+      ],
+      "size": [
+        36,
+        24
+      ],
+      "face": "A",
+      "when": {
+        "object": "cat.eye",
+        "is": "ready"
+      },
+      "glow": true
+    },
+    {
+      "place": "cat",
+      "id": "collar",
+      "shape": "box",
+      "pos": [
+        30,
+        6,
+        -76
+      ],
+      "size": [
+        260,
+        12,
+        14
+      ],
+      "color": "#5A2A2A"
+    },
+    {
+      "place": "cat",
+      "id": "collar_stitch",
+      "shape": "box",
+      "pos": [
+        30,
+        12.5,
+        -76
+      ],
+      "size": [
+        2,
+        1,
+        3
+      ],
+      "color": "#F1E6CF",
+      "count": 40,
+      "spread": [
+        125,
+        0,
+        0
+      ],
+      "seed": 42
+    },
+    {
+      "place": "cat",
+      "id": "whiskers",
+      "shape": "cylinder",
+      "pos": [
+        60,
+        60,
+        -60
+      ],
+      "size": [
+        1.2,
+        1.2,
+        220
+      ],
+      "color": "#F1E6CF",
+      "count": 6,
+      "spread": [
+        28,
+        20,
+        0
+      ],
+      "seed": 43,
+      "rot": [
+        90,
+        0,
+        0
+      ],
+      "solid": false
+    },
+    {
+      "place": "cat",
+      "id": "burrs",
+      "shape": "sphere",
+      "pos": [
+        40,
+        6,
+        20
+      ],
+      "size": [
+        4,
+        4,
+        4
+      ],
+      "color": "#6E5A3A",
+      "count": 12,
+      "spread": [
+        200,
+        0,
+        200
+      ],
+      "seed": 44
+    },
+    {
+      "place": "cat",
+      "id": "seeds",
+      "shape": "sphere",
+      "pos": [
+        40,
+        3,
+        20
+      ],
+      "size": [
+        2.5,
+        2.5,
+        2.5
+      ],
+      "color": "#C8B89A",
+      "count": 30,
+      "spread": [
+        200,
+        0,
+        200
+      ],
+      "seed": 45,
+      "solid": false
+    },
+    {
+      "place": "eye",
+      "id": "iris_dish",
+      "shape": "cylinder",
+      "pos": [
+        0,
+        -1,
+        -100
+      ],
+      "size": [
+        240,
+        2,
+        240
+      ],
+      "color": "#132552"
+    },
+    {
+      "place": "eye",
+      "id": "ring_outer",
+      "shape": "cylinder",
+      "pos": [
+        0,
+        0.3,
+        -100
+      ],
+      "size": [
+        170,
+        0.6,
+        170
+      ],
+      "color": "#E3B341",
+      "emissive": true,
+      "ring": 0.97
+    },
+    {
+      "place": "eye",
+      "id": "ring_mid",
+      "shape": "cylinder",
+      "pos": [
+        0,
+        0.3,
+        -100
+      ],
+      "size": [
+        120,
+        0.6,
+        120
+      ],
+      "color": "#E3B341",
+      "emissive": true,
+      "ring": 0.96
+    },
+    {
+      "place": "eye",
+      "id": "ring_inner",
+      "shape": "cylinder",
+      "pos": [
+        0,
+        0.3,
+        -100
+      ],
+      "size": [
+        70,
+        0.6,
+        70
+      ],
+      "color": "#E3B341",
+      "emissive": true,
+      "ring": 0.94
+    },
+    {
+      "place": "eye",
+      "id": "stars",
+      "shape": "sphere",
+      "pos": [
+        0,
+        50,
+        -100
+      ],
+      "size": [
+        0.7,
+        0.7,
+        0.7
+      ],
+      "color": "#FFFFFF",
+      "count": 220,
+      "spread": [
+        110,
+        30,
+        60
+      ],
+      "seed": 51,
+      "emissive": true,
+      "ambient": "twinkle"
+    },
+    {
+      "place": "eye",
+      "id": "star_line",
+      "shape": "sphere",
+      "pos": [
+        -34,
+        34,
+        -46
+      ],
+      "size": [
+        1.8,
+        1.8,
+        1.8
+      ],
+      "color": "#FFFFFF",
+      "count": 3,
+      "spread": [
+        7,
+        5,
+        7
+      ],
+      "seed": 52,
+      "emissive": true
+    },
+    {
+      "place": "eye",
+      "id": "highlight",
+      "shape": "sphere",
+      "pos": [
+        -16,
+        38,
+        -34
+      ],
+      "size": [
+        22,
+        14,
+        8
+      ],
+      "color": "#E8EEF8",
+      "emissive": true
+    },
+    {
+      "place": "eye",
+      "id": "refl_window_frame",
+      "shape": "box",
+      "pos": [
+        -26,
+        46,
+        -30
+      ],
+      "size": [
+        14,
+        10,
+        0.4
+      ],
+      "color": "#C8D0E8"
+    },
+    {
+      "place": "eye",
+      "id": "pupil_dark",
+      "shape": "cylinder",
+      "pos": [
+        0,
+        0.5,
+        -100
+      ],
+      "size": [
+        24,
+        1,
+        24
+      ],
+      "color": "#05060C"
+    },
+    {
+      "place": "eye",
+      "id": "portal_moon",
+      "portal": "moon",
+      "pos": [
+        0,
+        8,
+        -97
+      ],
+      "size": [
+        20,
+        20
+      ],
+      "face": "B",
+      "when": {
+        "object": "eye.pupil",
+        "is": "ready"
+      },
+      "glow": true
+    },
+    {
+      "place": "eye",
+      "id": "flecks",
+      "shape": "box",
+      "pos": [
+        0,
+        1,
+        -50
+      ],
+      "size": [
+        2,
+        0.3,
+        1
+      ],
+      "color": "#E3B341",
+      "count": 60,
+      "spread": [
+        100,
+        0,
+        35
+      ],
+      "seed": 53
+    },
+    {
+      "place": "moon",
+      "id": "moon_ground",
+      "shape": "box",
+      "pos": [
+        0,
+        -0.5,
+        2
+      ],
+      "size": [
+        80,
+        1,
+        44
+      ],
+      "color": "#9DA3AB"
+    },
+    {
+      "place": "moon",
+      "id": "rise",
+      "shape": "cylinder",
+      "pos": [
+        0,
+        0.9,
+        -17
+      ],
+      "size": [
+        8,
+        1.8,
+        8
+      ],
+      "color": "#8A9098",
+      "platform": true
+    },
+    {
+      "place": "moon",
+      "id": "craters",
+      "shape": "cylinder",
+      "pos": [
+        0,
+        0.02,
+        3
+      ],
+      "size": [
+        1.6,
+        0.04,
+        1.6
+      ],
+      "color": "#7A8088",
+      "count": 26,
+      "spread": [
+        30,
+        0,
+        16
+      ],
+      "seed": 61
+    },
+    {
+      "place": "moon",
+      "id": "rocks",
+      "shape": "sphere",
+      "pos": [
+        0,
+        0.2,
+        3
+      ],
+      "size": [
+        0.35,
+        0.3,
+        0.35
+      ],
+      "color": "#7A8088",
+      "count": 80,
+      "spread": [
+        30,
+        0,
+        16
+      ],
+      "seed": 62
+    },
+    {
+      "place": "moon",
+      "id": "pebbles",
+      "shape": "sphere",
+      "pos": [
+        0,
+        0.05,
+        0
+      ],
+      "size": [
+        0.08,
+        0.06,
+        0.08
+      ],
+      "color": "#B0B6BC",
+      "count": 120,
+      "spread": [
+        12,
+        0,
+        12
+      ],
+      "seed": 63
+    },
+    {
+      "place": "moon",
+      "id": "light_crater",
+      "shape": "cylinder",
+      "pos": [
+        -0.5,
+        0.02,
+        -2.6
+      ],
+      "size": [
+        1.2,
+        0.05,
+        1.2
+      ],
+      "color": "#6E747C"
+    },
+    {
+      "place": "moon",
+      "id": "lamp_post",
+      "shape": "cylinder",
+      "pos": [
+        1.5,
+        2.5,
+        -19
+      ],
+      "size": [
+        0.12,
+        1.6,
+        0.12
+      ],
+      "color": "#3A3A3A"
+    },
+    {
+      "place": "moon",
+      "id": "lamp_socket",
+      "shape": "cylinder",
+      "pos": [
+        1.5,
+        2.95,
+        -18.79
+      ],
+      "size": [
+        0.16,
+        0.02,
+        0.16
+      ],
+      "color": "#1B1F2A",
+      "rot": [
+        90,
+        0,
+        0
+      ],
+      "when": {
+        "object": "moon.lamp",
+        "is": "dark"
+      }
+    },
+    {
+      "place": "moon",
+      "id": "portal_home",
+      "portal": "street_night",
+      "pos": [
+        -6,
+        -14,
+        -36
+      ],
+      "size": [
+        14,
+        10
+      ],
+      "face": "B",
+      "when": {
+        "object": "moon.edge",
+        "is": "ready"
+      },
+      "glow": true
+    },
+    {
+      "place": "moon",
+      "id": "harbor_below",
+      "shape": "box",
+      "pos": [
+        -30,
+        -60,
+        -80
+      ],
+      "size": [
+        60,
+        2,
+        40
+      ],
+      "color": "#2B3A67"
+    },
+    {
+      "place": "moon",
+      "id": "harbor_wall",
+      "shape": "box",
+      "pos": [
+        -30,
+        -58.5,
+        -70
+      ],
+      "size": [
+        40,
+        1,
+        3
+      ],
+      "color": "#5A5A5A"
+    },
+    {
+      "place": "moon",
+      "id": "harbor_lighthouse",
+      "shape": "cylinder",
+      "pos": [
+        -48,
+        -55,
+        -76
+      ],
+      "size": [
+        2,
+        8,
+        2
+      ],
+      "color": "#E8E8E8"
+    },
+    {
+      "place": "moon",
+      "id": "harbor_lighthouse_lamp",
+      "shape": "sphere",
+      "pos": [
+        -48,
+        -50.5,
+        -76
+      ],
+      "size": [
+        1.6,
+        1.6,
+        1.6
+      ],
+      "color": "#FFE39A",
+      "emissive": true,
+      "ambient": "blink"
+    },
+    {
+      "place": "moon",
+      "id": "harbor_lights",
+      "shape": "box",
+      "pos": [
+        -30,
+        -58,
+        -80
+      ],
+      "size": [
+        0.8,
+        0.8,
+        0.8
+      ],
+      "color": "#FFD79A",
+      "count": 30,
+      "spread": [
+        25,
+        0,
+        12
+      ],
+      "seed": 64,
+      "emissive": true
+    },
+    {
+      "place": "moon",
+      "id": "sky_stars",
+      "shape": "sphere",
+      "pos": [
+        0,
+        120,
+        -60
+      ],
+      "size": [
+        0.9,
+        0.9,
+        0.9
+      ],
+      "color": "#FFFFFF",
+      "count": 150,
+      "spread": [
+        200,
+        60,
+        200
+      ],
+      "seed": 65,
+      "emissive": true
+    },
+    {
+      "place": "moon",
+      "id": "flag_pole",
+      "shape": "cylinder",
+      "pos": [
+        3.2,
+        2.9,
+        -21
+      ],
+      "size": [
+        0.06,
+        2.2,
+        0.06
+      ],
+      "color": "#8C8A85"
+    },
+    {
+      "place": "moon",
+      "id": "cracks",
+      "shape": "box",
+      "pos": [
+        0,
+        0.01,
+        3
+      ],
+      "size": [
+        0.08,
+        0.02,
+        2.5
+      ],
+      "color": "#2A2E3A",
+      "count": 14,
+      "spread": [
+        25,
+        0,
+        15
+      ],
+      "seed": 66
+    }
+  ]
+}

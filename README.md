@@ -1,9 +1,76 @@
-# hunt-world-001
+# hunt-world-001 — Into the Cat's Eye
 
-This repository holds **World 001, step 1: *Into the Cat's Eye***. It is a standalone browser prototype for The Hunt: six nested places you dive into, with wordless sketch clues.
+**The Hunt, World 001, step 1.** A standalone browser prototype: six small places nested inside each other, searched from a fixed viewpoint with a lens, joined by dives, with wordless sketch clues.
 
-- **The spec:** `SPEC_WORLD_001_STEP_1_INTO_THE_CATS_EYE.md`. It governs the build.
-- **The authorization:** `AUTHORIZATION.md`.
-- **Background:** `context/` holds background files. `context/reference/` holds the research and the earlier (step 2) design.
+**Prototype · non-competitive · no prize.** Local use only. No accounts, no network at runtime, no analytics.
 
-It is a prototype: non-competitive, with no prize. Its code is being built by Claude Fable 5.1 under the founder's direction.
+## AI disclosure
+
+The code, data and generated art in this repository were built by **Claude Fable 5.1** (`claude-fable-5-1`) in Claude Code on the web, under the founder's direction, starting 2026-09-29. The design documents (`DESIGN.md`, `SOLUTIONS.md`, `PLAN.md`) were written by the same model on 2026-09-29 from the founder's spec. The spec itself was written by Claude Opus 5.5 as planner. Every dependency is listed with its license in `PROVENANCE.md`. Nothing was downloaded from asset sites and no code was copied from other repositories.
+
+## Documents
+
+- `SPEC_WORLD_001_STEP_1_INTO_THE_CATS_EYE.md` governs the build. `AUTHORIZATION.md` is the founder's decision.
+- `DESIGN.md` is the world bible without spoilers. `SOLUTIONS.md` has the spoilers.
+- `PLAN.md`, `DECISIONS.md`, `PROGRESS.md`, `PRODUCTION_LOG.md`, `PROVENANCE.md`.
+- `REVIEW/screenshots/` holds screenshots. `context/` is read-only background.
+
+## Run it
+
+Needs Node 22 or later. Everything is pinned in `package.json` and `package-lock.json`.
+
+```
+npm ci
+npm run dev             # development server on http://127.0.0.1:5173
+npm run build           # production build into dist/ (debug tools available with ?debug=1)
+npm run preview         # serve dist/ on http://127.0.0.1:4173
+npm run build:playtest  # playtest build into dist-playtest/ with debug tools removed
+npm run preview:playtest
+npm test                # typecheck, lint, unit tests, build, end-to-end tests
+```
+
+For a phone on the home network: `npm run preview -- --host`. Never deploy publicly.
+
+Query flags:
+
+| Flag | What it does |
+|---|---|
+| `?perf=1` | Records frame times (real frame deltas, not JavaScript timing). Menu → "Download frame times". In every build. |
+| `?test=1` | Fixes the clock and pauses ambient motion so screenshots are stable. |
+| `?debug=1` | Dev builds only: jump to any place, do the next step, state inspector, FPS, `window.__hunt` hooks (including a dive freeze for the seam check). Not in the playtest build. |
+
+The session log for observers is off by default. Turn it on in the menu at the start; "Copy log" puts the JSON on the clipboard. Nothing is sent anywhere.
+
+## Controls
+
+| Action | Phone | Laptop mouse | Keyboard only |
+|---|---|---|---|
+| Look around (full turn) | drag | drag | arrow keys |
+| Walk | tap the ground | click the ground | hold W A S D |
+| Zoom (lens) | pinch, or hold the lens button | scroll wheel, or hold the right button | hold Z |
+| Open or use | tap near the crosshair when the verb shows | click near the crosshair | E or Enter |
+| Dive | hold the lens on the opening, or tap it | same | hold Z on it, or Enter |
+| Back out | Back button | Back button or Esc | X or Backspace |
+| Sketchbook | book button | book button | B |
+| Hints | ? button | ? button | H |
+| Describe surroundings | menu | menu | V |
+
+Tab is never a game key. The dive is one continuous move through the opening into the next place and takes the same time on every device. Reduced motion (in the menu) replaces it with a cross-fade of the same total length. The session log and frame times are copied to the clipboard from the menu ("Copy log", "Copy frame times").
+
+## Layout
+
+```
+src/world/    DATA ONLY (JSON): places, objects, props, sketches, hints, strings, answers
+src/game/     rules engine, the judge (reads only answers.json), the walkable floor, state, save, recorders
+src/gen/      the sketch renderer (draws sketches from the world itself)
+src/render/   scene builder, renderer, quality tiers, the dive, the asset loader and the realistic dressing
+public/assets/polyhaven/   CC0 Poly Haven pack (HDRI, textures, models), see its PROVENANCE.md
+src/player/   walking camera, lens, input
+src/ui/       HUD, panels, styles
+src/audio/    procedural WebAudio
+src/debug/    dev-only debug tools
+tests/unit/   Vitest      tests/e2e/   Playwright (*.playtest.spec.ts = real input on the playtest build, no hooks)
+tools/        screenshots.mjs, seam.mjs (dive hand-over check), style_shots.mjs (style frames, sizes, frame times), puzzle_chart.mjs
+```
+
+Trust rules (spec §6): every "is this found?" decision goes through `src/game/judge.ts`, which reads only `src/world/answers.json`. That file is marked to move server-side before any prize hunt. The renderer and the UI never decide a find.
