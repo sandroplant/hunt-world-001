@@ -51,6 +51,7 @@ declare global {
       gc(): void;
       disposeAll(): void;
       sceneCount(): number;
+      ready(): Promise<void>;
     };
   }
 }

@@ -19,6 +19,7 @@ test('the playtest-style query flags do not expose debug tools', async ({ page }
 });
 
 test('the same first screenshot every time with ?test=1', async ({ page }) => {
+  test.setTimeout(240_000); // two boots, each waiting for the street's (and the shop's) assets on a software renderer
   await boot(page, '?test=1&quality=low');
   await begin(page);
   await page.waitForTimeout(600);

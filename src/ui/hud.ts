@@ -75,7 +75,8 @@ export class Hud {
     right.append(book, hints, menu);
     bottom.append(lens);
     this.buttons = { back, book, hints, menu, lens };
-    this.goal = el('button', { id: 'goal', 'aria-label': s.goalLabel, title: `${s.goalLabel} (B)` });
+    // Accessible names stay distinct from the Sketchbook button's, though both open the book.
+    this.goal = el('button', { id: 'goal', 'aria-label': s.goalLabel, title: `${s.goalLabel}: ${s.verbs.book} (B)` });
     this.goal.append(this.goalCanvas, el('span', { class: 'tag', 'aria-hidden': 'true' }, s.goalTag));
     this.counter = el('button', { id: 'counter', class: 'btn', 'data-ui': '', title: `${s.verbs.book} (B)` });
     this.corner.append(this.pocket, this.goal);
@@ -154,7 +155,7 @@ export class Hud {
   setCounter(found: number, total: number, show: boolean): void {
     const text = `${found} of ${total} found`;
     if (this.counter.textContent !== text) this.counter.textContent = text;
-    this.counter.setAttribute('aria-label', `${text}. Open the sketchbook`);
+    this.counter.setAttribute('aria-label', text);
     this.counter.classList.toggle('show', show && total > 0);
   }
 

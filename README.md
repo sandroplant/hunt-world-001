@@ -6,7 +6,7 @@
 
 ## AI disclosure
 
-The code, data and generated art in this repository were built by **Claude Fable 5.1** (`claude-fable-5-1`) in Claude Code on the web, under the founder's direction, starting 2026-09-29. The design documents (`DESIGN.md`, `SOLUTIONS.md`, `PLAN.md`) were written by the same model on 2026-09-29 from the founder's spec. The spec itself was written by Claude Opus 5.5 as planner. Every dependency is listed with its license in `PROVENANCE.md`. Nothing was downloaded from asset sites and no code was copied from other repositories.
+The code, data and generated art in this repository were built by **Claude Fable 5.1** (`claude-fable-5-1`) in Claude Code on the web, under the founder's direction, starting 2026-09-29. The design documents (`DESIGN.md`, `SOLUTIONS.md`, `PLAN.md`) were written by the same model on 2026-09-29 from the founder's spec. The spec itself was written by Claude Opus 5.5 as planner. The fifth round (2026-10-06, `DECISIONS.md` D-011) was built by Claude in Claude Code on the web, with helper agents for the code-made objects and the 512 px textures. Every dependency is listed with its license in `PROVENANCE.md`. Nothing was downloaded from asset sites and no code was copied from other repositories.
 
 ## Documents
 
@@ -24,8 +24,8 @@ npm ci
 npm run dev             # development server on http://127.0.0.1:5173
 npm run build           # production build into dist/ (debug tools available with ?debug=1)
 npm run preview         # serve dist/ on http://127.0.0.1:4173
-npm run build:playtest  # playtest build into dist-playtest/ with debug tools removed
-npm run preview:playtest
+npm run build:playtest  # playtest build into dist-playtest/ with debug tools removed: the street and the
+npm run preview:playtest #   shop only; the open blue drawer ends it with "To be continued" (D-011)
 npm test                # typecheck, lint, unit tests, build, end-to-end tests
 ```
 
@@ -37,6 +37,9 @@ Query flags:
 |---|---|
 | `?perf=1` | Records frame times (real frame deltas, not JavaScript timing). Menu → "Download frame times". In every build. |
 | `?test=1` | Fixes the clock and pauses ambient motion so screenshots are stable. |
+| `?scope=playtest` | Dev builds only: play the playtest's two places and ending (the playtest build always does). |
+| `?res=1k` | Dev builds only: load the original 1k textures and models instead of the 512 px ones, for comparison. |
+| `?quality=low\|high` | Force a quality tier (for measuring). |
 | `?debug=1` | Dev builds only: jump to any place, do the next step, state inspector, FPS, `window.__hunt` hooks (including a dive freeze for the seam check). Not in the playtest build. |
 
 The session log for observers is off by default. Turn it on in the menu at the start; "Copy log" puts the JSON on the clipboard. Nothing is sent anywhere.

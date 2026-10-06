@@ -129,11 +129,13 @@ test('guidance (dev build, hooks set it up): the book pulses after a minute stuc
   await begin(page);
   await page.evaluate(() => window.__hunt.startLog());
   await page.evaluate(() => window.__hunt.jump('shop'));
+  await page.evaluate(() => window.__hunt.ready());
   await page.waitForTimeout(300);
   // Rattle the locked drawer: the key on the counter glints within 3 s (logged as a glint with why: rattle).
-  await page.evaluate(() => window.__hunt.stand('B'));
-  await page.evaluate(() => window.__hunt.setView(-95, -10, 1));
-  await page.waitForTimeout(150);
+  const [yaw, pitch, spot] = aimAt('shop.blue_drawer');
+  await page.evaluate((v) => window.__hunt.stand(v), spot);
+  await page.evaluate(([y, p]) => window.__hunt.setView(y!, p!, 1), [yaw, pitch]);
+  await page.waitForTimeout(600);
   await expect(page.locator('#verb')).toHaveText('Use');
   await page.evaluate(() => window.__hunt.act());
   await expect(page.locator('#caption')).toHaveText(/rattles/);

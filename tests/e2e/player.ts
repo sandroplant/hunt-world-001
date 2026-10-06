@@ -93,17 +93,22 @@ export async function tap(page: Page, hand: Hand, x: number, y: number): Promise
 }
 
 /** Look left and right in small steps until the crosshair shows the verb. Leaves the view there. */
-export async function scanForVerb(page: Page, hand: Hand, verb: string, stepDeg = 5, rangeDeg = 25): Promise<boolean> {
-  return (await scanOffset(page, hand, verb, stepDeg, rangeDeg)) !== null;
+export async function scanForVerb(page: Page, hand: Hand, verb: string, stepDeg = 5, rangeDeg = 25, diveOnly = false): Promise<boolean> {
+  return (await scanOffset(page, hand, verb, stepDeg, rangeDeg, [0], diveOnly)) !== null;
 }
 
 /**
  * Like scanForVerb, but sweeps yaw at each of the given pitch offsets and returns where the verb was found
  * (yaw and pitch offsets in degrees), or null with the view put back.
  */
-export async function scanOffset(page: Page, hand: Hand, verb: string | string[], stepDeg = 5, rangeDeg = 25, pitches: number[] = [0]): Promise<{ yaw: number; pitch: number } | null> {
+export async function scanOffset(page: Page, hand: Hand, verb: string | string[], stepDeg = 5, rangeDeg = 25, pitches: number[] = [0], diveOnly = false): Promise<{ yaw: number; pitch: number } | null> {
   const verbs = Array.isArray(verb) ? verb : [verb];
   const verbEl = page.locator('#verb');
+  // "Look closer" shows on dive openings and on hidden finds alike; an opening also turns the crosshair amber and
+  // dashed (what the player sees), so a dive scan asks for that too (round 5: a starfish lies on the way to the door).
+  const hit = async () => verbs.includes((await verbEl.textContent()) ?? '') && (!diveOnly || (await page.locator('#crosshair.dive').count()) > 0);
+  // The verb changes on the next frame after a turn; on a slow software renderer that is longer than a fixed pause.
+  const settle = Math.max(90, (await frameMs(page)) * 1.6);
   const offsets: number[] = [0];
   for (let k = stepDeg; k <= rangeDeg; k += stepDeg) offsets.push(k, -k);
   let at = 0;
@@ -114,8 +119,8 @@ export async function scanOffset(page: Page, hand: Hand, verb: string | string[]
     for (const o of offsets) {
       await turn(page, hand, o - at);
       at = o;
-      await page.waitForTimeout(90);
-      if (verbs.includes((await verbEl.textContent()) ?? '')) return { yaw: at, pitch: pitchAt };
+      await page.waitForTimeout(settle);
+      if (await hit()) return { yaw: at, pitch: pitchAt };
     }
   }
   await turn(page, hand, -at, -pitchAt);
@@ -162,9 +167,10 @@ export async function playPlaceOne(page: Page, hand: Hand): Promise<number> {
   for (let attempt = 0; attempt < 6; attempt++) {
     await tap(page, hand, size.width / 2, groundRow(size, 4));
     await waitForWalk(page, 4);
-    if (await scanForVerb(page, hand, 'Look closer')) break;
+    if (await scanForVerb(page, hand, 'Look closer', 5, 25, true)) break;
   }
   await expect(page.locator('#verb')).toHaveText('Look closer');
+  await expect(page.locator('#crosshair')).toHaveClass(/dive/);
   await holdLensUntil(page, hand, 'Shop');
   return (Date.now() - t0) / 1000;
 }
@@ -195,8 +201,8 @@ export async function playShopToEnd(page: Page, hand: Hand): Promise<void> {
     yaw = y;
     pitch = p;
   };
-  const found = async (verb: string | string[], step: number, range: number, pitches: number[]) => {
-    const off = await scanOffset(page, hand, verb, step, range, pitches);
+  const found = async (verb: string | string[], step: number, range: number, pitches: number[], diveOnly = false) => {
+    const off = await scanOffset(page, hand, verb, step, range, pitches, diveOnly);
     if (off) {
       yaw += off.yaw;
       pitch += off.pitch;
@@ -239,7 +245,7 @@ export async function playShopToEnd(page: Page, hand: Hand): Promise<void> {
 
   // The open drawer glows: hold the lens on it. The playtest build ends here.
   await lookTo(yaw, -44);
-  expect(await found('Look closer', 3, 18, [0, -4, 4]), 'the open drawer offers "Look closer"').not.toBeNull();
+  expect(await found('Look closer', 3, 18, [0, -4, 4], true), 'the open drawer offers "Look closer"').not.toBeNull();
   const box = (await page.locator('#lens').boundingBox())!;
   const lx = box.x + box.width / 2;
   const ly = box.y + box.height / 2;

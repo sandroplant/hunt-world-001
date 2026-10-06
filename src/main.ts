@@ -109,7 +109,7 @@ export class App {
     this.applyTextSize();
     this.renderer = new Renderer(canvas, this.quality());
     this.sketcher = new SketchRenderer(this.renderer.gl);
-    this.portalRenderer = new PortalRenderer(this.renderer.gl, this.renderer.quality === 'high' ? 1024 : 640);
+    this.portalRenderer = new PortalRenderer(this.renderer.gl, this.renderer.quality === 'high' ? 1024 : 448);
     this.hud = new Hud(ui, this.world);
     this.panels = new Panels(ui, this.world, {
       begin: () => this.begin(),

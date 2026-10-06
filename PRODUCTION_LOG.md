@@ -14,6 +14,8 @@ One row per work session. Never rebuilt from memory afterwards. Times are UTC. "
 
 | 2026-09-30 | 23:20–01:55 | Fable 5.1 (builder) | B (style frame) | Merged the CC0 Poly Haven pack. Built the asset loader and the dressing layer (textured boxes tiled by metres, glTF placement, built houses, water, glass), HDRI light and sky with the sun aimed over the harbor, sun shadows, filmic tone mapping per place, mist; rewrote the street's props with looks; three screenshot-and-fix passes (floating pieces, dusk, the S1 notch); found and fixed a seam break from tone mapping order; style shots tool with download size and headless frame times; the sketchbook current page, stuck pulse with hint offer, rattle glint; real-click shop test; the puzzle chart. Then a long tail: the software renderer made the real-input tests time out, which led to the resolution-scaled low tier, the Loading… button, frame-based waits and a pitch-sweeping verb scan. Docs. | 155 | Session token counter moved from about 15.00M to about 14.84M (about 160k). Counter only, not a cost. | **Dollar cost not visible to the builder.** Founder to paste the credit balance. | Fourth round complete. |
 
+| 2026-10-06 | 02:51–END_TIME | Claude (builder, with three helper agents) | B (fifth round) | Founder's round-5 brief recorded (D-011). Scope cut: the playtest build is the street and the shop, ending at the open blue drawer with "To be continued" (time, finds, hints); places 3–6 stay in the code. Always-visible goal card; find counter; twelve optional finds with a fly-to-sketchbook reward; the shop rebuilt with the eight Poly Haven models, lamp light and dusk; 37 code-made textured objects (two helper agents) so no flat placeholder remains in the street or the shop; tone-mapped live pictures of realistic places; 512 px textures and a 1k HDRI (helper agent): 12.5 MB for both places. Seam street→shop 0.85, shop→drawer 0.71. New real-input acceptance tests for mouse, touch and keyboard; full suite run once at the end. Docs. | MINUTES | Not shown to the builder in this session. | **Dollar cost not visible to the builder.** Founder to paste the credit balance. | E2E_RESULT |
+
 ## Phase totals
 
 | Phase | Sessions | Minutes | Cash (from the founder) | Note |
@@ -24,6 +26,7 @@ One row per work session. Never rebuilt from memory afterwards. Times are UTC. "
 | A, redesign once | 1 | 63 | not visible to the builder | Founder rule for this round: stop at $50. Balance placeholder in the founder's message was not filled in. |
 | A, third round | 1 | 50 | not visible to the builder | Founder rule for this round: stop at $35. |
 | B, style frame + guidance | 1 | 155 | not visible to the builder | Founder rule for this round: stop at $50. The round ran long; the builder could not see whether the limit was crossed. |
+| B, fifth round (street and shop) | 1 | MINUTES | not visible to the builder | Founder rules for this round: unit tests freely, the full end-to-end suite once at the end, stop after 30 minutes blocked, no scheduled check-ins. |
 
 ## Repeated tasks (task, times, minutes each)
 | Task | Times | Minutes each (approx.) |
@@ -34,3 +37,5 @@ One row per work session. Never rebuilt from memory afterwards. Times are UTC. "
 | Run the seam check after moving something in front of an opening | 14 | 2 |
 | Render the style frames and look at them | 5 | 4 |
 | Run the full `npm test` (both builds, 11 e2e) | 3 | 4 |
+| Render round-5 look-check screenshots (street or shop, 2–5 shots) | 5 | 2.5 |
+| Run the seam check on the two playtest dives | 3 | 3 |
