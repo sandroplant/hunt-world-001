@@ -1,12 +1,14 @@
 // Style-frame screenshots of the street (founder direction A, realistic). Also reports the bytes the street
 // downloads, headless frame times (indicative only), and where the HDRI's sun sits.
-// Usage: node tools/style_shots.mjs [outDir] [--phone]   (starts its own preview on port 4180)
+// Usage: node tools/style_shots.mjs [outDir] [--phone] [--res1k]   (starts its own preview on port 4180)
+// --res1k loads the original 1k textures/models and 2k HDRI (dev builds only) to compare with the 512 default.
 import { chromium } from '@playwright/test';
 import { spawn } from 'node:child_process';
 import { mkdirSync } from 'node:fs';
 
 const phone = process.argv.includes('--phone');
 const low = process.argv.includes('--low');
+const res1k = process.argv.includes('--res1k');
 const out = process.argv.find((a) => !a.startsWith('--') && a !== process.argv[0] && a !== process.argv[1]) ?? 'REVIEW/screenshots/style';
 mkdirSync(out, { recursive: true });
 const server = spawn('npx', ['vite', 'preview', '--port', '4180', '--strictPort'], { stdio: 'ignore' });
@@ -26,7 +28,7 @@ const errors = [];
 page.on('console', (m) => { if (m.type() === 'error') errors.push(m.text()); });
 page.on('pageerror', (e) => errors.push(e.message));
 const t0 = Date.now();
-await page.goto(`http://127.0.0.1:4180/?debug=1&test=1&perf=1${low ? '&quality=low' : '&quality=high'}`);
+await page.goto(`http://127.0.0.1:4180/?debug=1&test=1&perf=1${low ? '&quality=low' : '&quality=high'}${res1k ? '&res=1k' : ''}`);
 await page.waitForTimeout(800);
 await page.evaluate(() => window.__hunt.ready());
 const loadMs = Date.now() - t0;

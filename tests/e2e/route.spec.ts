@@ -1,5 +1,5 @@
 import { expect, test } from '@playwright/test';
-import { boot, begin, capture, objectAt, waitForDive, world } from './helpers';
+import { aimAt, boot, begin, capture, objectAt, waitForDive, world } from './helpers';
 import { readFileSync } from 'node:fs';
 
 interface Answers {
@@ -9,7 +9,6 @@ interface Answers {
   diveTargets: Record<string, { object: string }>;
 }
 const answers = JSON.parse(readFileSync(new URL('../../src/world/answers.json', import.meta.url), 'utf8')) as Answers;
-const objects = JSON.parse(readFileSync(new URL('../../src/world/objects.json', import.meta.url), 'utf8')) as { objects: Array<{ id: string; at?: [string, number, number, number] }> };
 
 /**
  * The scripted route on the dev build: every required step is done through the rules engine (debug "next step"),
@@ -55,10 +54,7 @@ test('a scripted route completes the whole chain', async ({ page, baseURL }) => 
     for (const s of steps) expect((await page.evaluate(() => window.__hunt.state())).steps[s]).toBe(true);
     // Now dive the real way: stand where the target is reachable, center it, hold the lens, wait for the ring.
     const target = (answers.diveTargets as Record<string, { object: string }>)[place]!;
-    const obj = objects.objects.find((o) => o.id === target.object)!;
-    const vp = obj.at![0]!;
-    const yaw = obj.at![1]!;
-    const pitch = obj.at![2]!;
+    const [yaw, pitch, vp] = aimAt(target.object);
     await page.evaluate((v) => window.__hunt.stand(v), vp);
     await page.waitForTimeout(200);
     const pose: [number, number] = [yaw, pitch];

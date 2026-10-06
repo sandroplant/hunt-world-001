@@ -97,6 +97,7 @@ function normalizeObject(raw: RawObject, places: Record<string, PlaceData>): Wor
   if (typeof raw.home === 'string') obj.home = raw.home;
   if (raw.rot) obj.rot = raw.rot as Vec3;
   if (raw.visual) obj.visual = raw.visual as WorldObject['visual'];
+  if (raw.look) obj.look = raw.look as WorldObject['look'];
   if (raw.verb) obj.verb = raw.verb as string;
   if (raw.to) obj.to = raw.to as string;
   if (raw.night === false) obj.night = false;

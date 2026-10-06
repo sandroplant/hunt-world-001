@@ -1,7 +1,10 @@
 import { describe, expect, it } from 'vitest';
 import { judge } from '../../src/game/judge';
 import { loadWorld } from '../../src/game/world';
-import { act, backOut, clearSave, createInitialState, dive, hintTargets, load, memoryStore, moveTo, nextObjective, progress, recordHiddenFound, recordSketchLocked, save, standAt, useHint, verbFor } from '../../src/game/rules';
+import {
+  act, backOut, clearSave, createInitialState, dive, endDive, fullScope, hintTargets, inScope, load, memoryStore, moveTo, nextObjective, PLAYTEST_SCOPE, progress, recordHiddenFound,
+  recordSketchLocked, save, standAt, useHint, verbFor,
+} from '../../src/game/rules';
 import type { GameState } from '../../src/game/types';
 
 const world = loadWorld();
@@ -195,7 +198,7 @@ describe('save, load and restart', () => {
 describe('hints and progress', () => {
   it('offers the next required step, then the dive, plus the place sketch and its hidden objects', () => {
     let s = createInitialState(world);
-    expect(hintTargets(world, s)).toEqual(['dive:street', 'S1', 'street.umbrella', 'street.ship_bottle']);
+    expect(hintTargets(world, s)).toEqual(['dive:street', 'S1', 'street.starfish', 'street.sailboat', 'street.hat', 'street.umbrella', 'street.glass_float', 'street.ship_bottle']);
     s = dive(world, s)!.state;
     expect(hintTargets(world, s)[0]).toBe('take_key');
     s = act(world, s, 'shop.key').state;
@@ -232,12 +235,32 @@ describe('hints and progress', () => {
       expect(typeof levels[2], k).toBe('object');
     }
   });
-  it('counts 24 finds in total: 6 sketches, 12 hidden things, 6 dives', () => {
+  // D-011: the counter counts the optional finds (hidden things) of the places a build plays.
+  it('counts the optional finds of the scope: 20 in the whole chain, 12 in the playtest (street and shop)', () => {
     const s = createInitialState(world);
-    const p = progress(world, s);
-    expect(p.total).toBe(24);
+    expect(progress(world, s).total).toBe(20);
+    const p = progress(world, s, PLAYTEST_SCOPE);
+    expect(p.total).toBe(12);
     expect(p.finds).toBe(0);
+    expect(p.stepsTotal).toBe(2);
     expect(judge.allRequiredSteps().length).toBe(9);
-    expect(progress(world, dive(world, s)!.state).finds).toBe(1);
+    expect(progress(world, recordHiddenFound(s, 'street.starfish'), PLAYTEST_SCOPE).finds).toBe(1);
+    // A dive is not a find.
+    expect(progress(world, dive(world, s)!.state, PLAYTEST_SCOPE).finds).toBe(0);
+  });
+  it('the playtest ends at the dive into the open blue drawer, and only there (D-011)', () => {
+    let s = createInitialState(world);
+    expect(endDive(world, s, PLAYTEST_SCOPE)).toBeNull();
+    s = dive(world, s)!.state;
+    expect(endDive(world, s, PLAYTEST_SCOPE)).toBeNull();
+    s = act(world, s, 'shop.key').state;
+    s = act(world, s, 'shop.blue_drawer').state;
+    expect(endDive(world, s, fullScope())).toBeNull();
+    const end = endDive(world, s, PLAYTEST_SCOPE)!;
+    expect(end.ended).toBe(true);
+    expect(end.place).toBe('shop');
+    expect(end.dived.shop).toBe(true);
+    expect(inScope(world, PLAYTEST_SCOPE, 'drawer')).toBe(false);
+    expect(inScope(world, fullScope(), 'drawer')).toBe(true);
   });
 });

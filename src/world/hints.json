@@ -9,14 +9,14 @@
       }
     ],
     "take_key": [
-      "Something small lies on the counter.",
+      "Something small shines on the counter, near the lamp.",
       "Walk up to the counter and take the key.",
       {
         "point": "shop.key"
       }
     ],
     "unlock_blue_drawer": [
-      "One drawer is not the same colour as the others, and it is locked.",
+      "One drawer in the low chest is blue, and it is locked.",
       "Use the key on the blue drawer.",
       {
         "point": "shop.blue_drawer"
@@ -115,7 +115,7 @@
     ],
     "S2": [
       "It was drawn from the doorway.",
-      "The counter and the tall clock. Zoom a little.",
+      "The counter and the tall clock behind it. Zoom a little.",
       {
         "pose": "S2"
       }
@@ -163,15 +163,15 @@
       }
     ],
     "shop.teacup_star": [
-      "The high cups, behind you when you face the chest of drawers.",
-      "Twelve cups. One has a star.",
+      "Turn round and look back at the window.",
+      "On the inside sill. Zoom right in.",
       {
         "point": "shop.teacup_star"
       }
     ],
     "shop.marble": [
-      "Low, by the counter.",
-      "At the counter's foot, near the mouse hole.",
+      "Low, on the floor near the chest of drawers.",
+      "On the floorboards, between the chest and the counter. Zoom.",
       {
         "point": "shop.marble"
       }
@@ -230,6 +230,62 @@
       "Half-buried, to the right.",
       {
         "point": "moon.glove"
+      }
+    ],
+    "street.starfish": [
+      "Low, on the cobbles near where you started.",
+      "Left of the coil of rope. Look down.",
+      {
+        "point": "street.starfish"
+      }
+    ],
+    "street.sailboat": [
+      "Something small sails where the rain collected.",
+      "In the puddle by the bucket. Look down.",
+      {
+        "point": "street.sailboat"
+      }
+    ],
+    "street.hat": [
+      "Someone left their hat behind.",
+      "On the crate by the nets. Zoom.",
+      {
+        "point": "street.hat"
+      }
+    ],
+    "street.glass_float": [
+      "Down on the quay, among the ropes.",
+      "Between the rope coils by the water. Zoom.",
+      {
+        "point": "street.glass_float"
+      }
+    ],
+    "shop.spectacles": [
+      "Someone put their spectacles down.",
+      "On the counter, by the scales.",
+      {
+        "point": "shop.spectacles"
+      }
+    ],
+    "shop.snow_globe": [
+      "Something round and glassy on the tea table.",
+      "At the near end of the tea table.",
+      {
+        "point": "shop.snow_globe"
+      }
+    ],
+    "shop.compass": [
+      "On the table at the back, with the globe.",
+      "In front of the globe. Zoom.",
+      {
+        "point": "shop.compass"
+      }
+    ],
+    "shop.toy_mouse": [
+      "Look low, at the foot of the counter.",
+      "By the mouse hole. Zoom.",
+      {
+        "point": "shop.toy_mouse"
       }
     ]
   }

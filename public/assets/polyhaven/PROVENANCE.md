@@ -41,3 +41,12 @@ Resolution: textures 1k JPG (diffuse, normal GL, ARM), models glTF 1k, HDRI 2k.
 | model | wooden_bookshelf_worn | https://polyhaven.com/a/wooden_bookshelf_worn |
 
 Not included: `decorative_book_set_01` (no glTF on Poly Haven). No realistic CC0 cat model was found on Poly Haven; the cat is still an open art question.
+
+## Derived files (2026-10-06)
+
+`*_512.jpg`, `*_512.gltf` and `hdri/belfast_sunset_puresky_1k.hdr` are derived from the CC0 originals above, which are kept unchanged:
+- `*_512.jpg`: each `*_1k.jpg` resized to 512×512 (canvas, high-quality smoothing, JPEG quality 0.88; normal/ARM/roughness maps without colour conversion) by `tools/resize_assets.mjs`.
+- `<name>_512.gltf`: a copy of `<name>_1k.gltf` whose image URIs point at the `*_512.jpg` files (same `.bin`), by `tools/resize_assets.mjs`.
+- `belfast_sunset_puresky_1k.hdr`: the 2k HDRI box-filtered 2× down to 1024×512 (RGBE, RLE) by `tools/hdr_downsample.mjs`.
+
+The game loads the 512 files and the 1k HDRI by default (`src/render/assets.ts`, `FULL_RES` lists any exceptions); `?res=1k` in a dev build loads the originals.

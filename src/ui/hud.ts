@@ -46,6 +46,13 @@ export class Hud {
   readonly onboard = el('div', { id: 'onboard', 'aria-hidden': 'true' });
   readonly arrow = el('div', { id: 'arrow', 'aria-hidden': 'true' });
   readonly arrowTip = el('div', { class: 'tip' }, '➜');
+  /** Bottom-right corner: the pocket above the always-visible next-goal card (D-011). */
+  readonly corner = el('div', { id: 'corner', 'data-ui': '' });
+  /** The next main-path goal as a small drawing; tapping it opens the sketchbook. */
+  readonly goal: HTMLButtonElement;
+  private goalCanvas = el('canvas');
+  /** "3 of 12 found": the optional finds of this build. Opens the sketchbook too. */
+  readonly counter: HTMLButtonElement;
   readonly buttons: HudButtons;
   private captionTimer = 0;
   private toastTimer = 0;
@@ -68,13 +75,17 @@ export class Hud {
     right.append(book, hints, menu);
     bottom.append(lens);
     this.buttons = { back, book, hints, menu, lens };
+    this.goal = el('button', { id: 'goal', 'aria-label': s.goalLabel, title: `${s.goalLabel} (B)` });
+    this.goal.append(this.goalCanvas, el('span', { class: 'tag', 'aria-hidden': 'true' }, s.goalTag));
+    this.counter = el('button', { id: 'counter', class: 'btn', 'data-ui': '', title: `${s.verbs.book} (B)` });
+    this.corner.append(this.pocket, this.goal);
     this.card.append(this.cardStored, this.cardLive, el('div', { class: 'tag' }, 'held up'));
     this.onboardDrag.append(pictogram('look'), el('div', {}, s.onboarding.drag));
     this.onboardWalk.append(pictogram('walk'), el('div', {}, s.onboarding.walk));
     this.onboardLens.append(pictogram('dive'), el('div', {}, s.onboarding.lens));
     this.onboard.append(this.onboardDrag, this.onboardWalk, this.onboardLens);
     this.arrow.append(this.arrowTip);
-    root.append(this.fade, this.lockfx, this.ribbon, left, right, bottom, this.pocket, this.card, this.crosshair, this.ring, this.verb, this.caption, this.toast, this.onboard, this.arrow);
+    root.append(this.fade, this.lockfx, this.ribbon, left, right, bottom, this.corner, this.counter, this.card, this.crosshair, this.ring, this.verb, this.caption, this.toast, this.onboard, this.arrow);
   }
 
   /** The trail: places already reached by name, later ones as dots. It is not a control (founder change 7). */
@@ -127,6 +138,60 @@ export class Hud {
     this.toast.classList.add('show');
     clearTimeout(this.toastTimer);
     this.toastTimer = window.setTimeout(() => this.toast.classList.remove('show'), ms);
+  }
+
+  /** Show the next goal's drawing, or hide the card (no goal: before Begin, during a dive, after the end). */
+  setGoal(img: HTMLCanvasElement | null): void {
+    this.goal.classList.toggle('show', !!img);
+    if (!img) return;
+    if (this.goal.dataset.src === img.dataset.key && img.dataset.key) return;
+    this.goal.dataset.src = img.dataset.key ?? '';
+    this.goalCanvas.width = img.width;
+    this.goalCanvas.height = img.height;
+    this.goalCanvas.getContext('2d')!.drawImage(img, 0, 0);
+  }
+
+  setCounter(found: number, total: number, show: boolean): void {
+    const text = `${found} of ${total} found`;
+    if (this.counter.textContent !== text) this.counter.textContent = text;
+    this.counter.setAttribute('aria-label', `${text}. Open the sketchbook`);
+    this.counter.classList.toggle('show', show && total > 0);
+  }
+
+  /**
+   * The reward for a find (D-011): the find's outline flies from where it was on screen into the sketchbook
+   * button, which then pulses; the counter ticks up when it lands.
+   */
+  flyFind(svgInner: string, fromX: number, fromY: number, onLand: () => void, reducedMotion: boolean): void {
+    const target = this.buttons.book.getBoundingClientRect();
+    const tx = target.left + target.width / 2;
+    const ty = target.top + target.height / 2;
+    const fly = el('div', { class: 'fly', 'aria-hidden': 'true' });
+    fly.innerHTML = `<svg viewBox="0 0 100 100">${svgInner}</svg>`;
+    fly.style.left = `${fromX}px`;
+    fly.style.top = `${fromY}px`;
+    this.root.append(fly);
+    const done = () => {
+      fly.remove();
+      this.setBookPulse(true);
+      onLand();
+    };
+    if (reducedMotion || typeof fly.animate !== 'function') {
+      window.setTimeout(done, 300);
+      return;
+    }
+    const dx = tx - fromX;
+    const dy = ty - fromY;
+    const a = fly.animate(
+      [
+        { transform: 'translate(-50%, -50%) scale(0.6)', opacity: 0.4 },
+        { transform: 'translate(-50%, -50%) scale(1.5)', opacity: 1, offset: 0.25 },
+        { transform: `translate(calc(-50% + ${dx * 0.45}px), calc(-50% + ${dy * 0.45 - 60}px)) scale(1.1)`, opacity: 1, offset: 0.6 },
+        { transform: `translate(calc(-50% + ${dx}px), calc(-50% + ${dy}px)) scale(0.35)`, opacity: 0.6 },
+      ],
+      { duration: 1100, easing: 'ease-in-out', fill: 'forwards' },
+    );
+    a.onfinish = done;
   }
 
   setPocket(text: string | null): void {

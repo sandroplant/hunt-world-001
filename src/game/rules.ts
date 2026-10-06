@@ -219,16 +219,51 @@ export function nextObjective(world: World, state: GameState): WorldObject | nul
   return d ? (world.objects[d.object] ?? null) : null;
 }
 
-/** Finds = sketches locked + hidden objects found + places dived out of (spec §3: 24 in total). */
-export function progress(world: World, state: GameState): { finds: number; total: number; steps: number; stepsTotal: number } {
-  const sketches = world.sketches.length;
-  const hidden = world.sketches.reduce((n, s) => n + s.hidden.length, 0);
-  const divePlaces = judge.order().filter((p) => judge.diveTarget(p) !== null);
-  const dived = divePlaces.filter((p) => state.dived[p]).length;
-  const stepsTotal = judge.allRequiredSteps().length;
-  const steps = Object.keys(state.steps).length;
-  const found = Object.keys(state.found).length;
-  return { finds: found + dived, total: sketches + hidden + divePlaces.length, steps, stepsTotal };
+/**
+ * What a build plays (D-011). The playtest build plays the street and the shop; diving into the open blue drawer
+ * ends the game ("To be continued"). The dev build plays the whole chain. Places outside the scope stay in the data.
+ */
+export interface Scope {
+  places: string[];
+  /** Diving out of this place ends the game instead of entering the next place. Null: the chain's own ending. */
+  endsAfter: string | null;
+}
+
+export function fullScope(): Scope {
+  return { places: judge.order(), endsAfter: null };
+}
+
+export const PLAYTEST_SCOPE: Scope = { places: ['street', 'shop'], endsAfter: 'shop' };
+
+/** True when the place is played in this scope (the night street counts with the street it repeats). */
+export function inScope(world: World, scope: Scope, placeId: string): boolean {
+  return scope.places.includes(placeId) || scope.places.includes(world.baseOf(placeId));
+}
+
+/** The optional finds a scope counts: its hidden objects (D-011; the counter shows "3 of 12 found"). */
+export function findIds(world: World, scope: Scope): string[] {
+  return Object.values(world.objects).filter((o) => o.kind === 'hidden' && scope.places.includes(o.place)).map((o) => o.id);
+}
+
+/** Finds = optional hidden things found in the scope (D-011 replaces the spec's 24-find count for the counter). */
+export function progress(world: World, state: GameState, scope: Scope = fullScope()): { finds: number; total: number; steps: number; stepsTotal: number } {
+  const ids = findIds(world, scope);
+  const stepIds = scope.places.flatMap((p) => judge.requiredSteps(p));
+  return { finds: ids.filter((id) => state.found[id]).length, total: ids.length, steps: stepIds.filter((s) => state.steps[s]).length, stepsTotal: stepIds.length };
+}
+
+/** The dive that ends a scoped build: allowed where a normal dive is, marks the place dived and the game ended. */
+export function endDive(world: World, state: GameState, scope: Scope): GameState | null {
+  if (scope.endsAfter !== state.place) return null;
+  const d = judge.canDive(state.place, state.steps);
+  if (!d) return null;
+  const next = cloneState(state);
+  next.dived[state.place] = true;
+  if (!next.ended) {
+    next.ended = true;
+    next.endedAt = Date.now();
+  }
+  return next;
 }
 
 // ---- Save and load -------------------------------------------------------------

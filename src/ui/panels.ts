@@ -16,6 +16,14 @@ const OUTLINES: Record<string, string> = {
   'street.ship_bottle': '<rect x="15" y="35" width="70" height="35" rx="16" fill="none" stroke="currentColor" stroke-width="4"/><path d="M85 52 h10" stroke="currentColor" stroke-width="6"/><path d="M35 62 h28 l-6 -8 h-16 z M49 44 v10" fill="none" stroke="currentColor" stroke-width="3"/>',
   'shop.teacup_star': '<path d="M20 40 h50 v25 q0 15 -25 15 q-25 0 -25 -15 z M70 45 q15 0 15 10 q0 10 -15 10" fill="none" stroke="currentColor" stroke-width="4"/><path d="M45 48 l3 7 h7 l-6 4 2 7 -6 -4 -6 4 2 -7 -6 -4 h7 z" fill="currentColor"/>',
   'shop.marble': '<circle cx="50" cy="50" r="25" fill="none" stroke="currentColor" stroke-width="4"/><path d="M38 40 q12 -8 24 0" fill="none" stroke="currentColor" stroke-width="3"/>',
+  'street.starfish': '<path d="M50 12 L60 40 L90 42 L66 60 L76 90 L50 72 L24 90 L34 60 L10 42 L40 40 Z" fill="none" stroke="currentColor" stroke-width="4" stroke-linejoin="round"/>',
+  'street.sailboat': '<path d="M18 68 h64 l-10 14 h-44 z" fill="none" stroke="currentColor" stroke-width="4"/><path d="M50 66 V14 L76 60 H50" fill="none" stroke="currentColor" stroke-width="4" stroke-linejoin="round"/><path d="M10 90 q10 -5 20 0 q10 5 20 0 q10 -5 20 0 q10 5 20 0" fill="none" stroke="currentColor" stroke-width="3"/>',
+  'street.hat': '<path d="M14 66 q36 14 72 0" fill="none" stroke="currentColor" stroke-width="4"/><path d="M26 64 q-2 -30 24 -32 q26 2 24 32" fill="none" stroke="currentColor" stroke-width="4"/><path d="M28 54 q22 6 44 0" fill="none" stroke="currentColor" stroke-width="3"/>',
+  'street.glass_float': '<circle cx="50" cy="54" r="28" fill="none" stroke="currentColor" stroke-width="4"/><path d="M22 54 h56 M50 26 v56 M30 34 q20 20 40 0 M30 74 q20 -20 40 0" fill="none" stroke="currentColor" stroke-width="2"/><path d="M44 26 q6 -12 12 0" fill="none" stroke="currentColor" stroke-width="3"/>',
+  'shop.spectacles': '<circle cx="30" cy="55" r="16" fill="none" stroke="currentColor" stroke-width="4"/><circle cx="70" cy="55" r="16" fill="none" stroke="currentColor" stroke-width="4"/><path d="M46 52 q4 -6 8 0 M14 52 l-8 -10 M86 52 l8 -10" fill="none" stroke="currentColor" stroke-width="3"/>',
+  'shop.snow_globe': '<circle cx="50" cy="44" r="28" fill="none" stroke="currentColor" stroke-width="4"/><path d="M26 72 h48 l6 16 h-60 z" fill="none" stroke="currentColor" stroke-width="4"/><path d="M44 62 v-20 h12 v20 M42 42 l8 -8 8 8" fill="none" stroke="currentColor" stroke-width="3"/><circle cx="36" cy="32" r="2" fill="currentColor"/><circle cx="62" cy="28" r="2" fill="currentColor"/><circle cx="66" cy="46" r="2" fill="currentColor"/>',
+  'shop.compass': '<circle cx="50" cy="54" r="30" fill="none" stroke="currentColor" stroke-width="4"/><path d="M50 30 L58 54 L50 78 L42 54 Z" fill="none" stroke="currentColor" stroke-width="3"/><path d="M50 30 L58 54 H42 Z" fill="currentColor"/><path d="M44 20 h12 v6 h-12 z" fill="none" stroke="currentColor" stroke-width="3"/>',
+  'shop.toy_mouse': '<path d="M14 66 q4 -26 34 -26 q24 0 30 18 l12 6 q-4 6 -14 4 h-58 z" fill="none" stroke="currentColor" stroke-width="4" stroke-linejoin="round"/><circle cx="60" cy="40" r="8" fill="none" stroke="currentColor" stroke-width="3"/><path d="M14 66 q-12 4 -6 16" fill="none" stroke="currentColor" stroke-width="3"/><path d="M38 40 v-10 M32 26 h12" stroke="currentColor" stroke-width="3"/>',
   'drawer.paper_boat': '<path d="M15 60 h70 l-12 18 h-46 z M50 60 v-30 l25 30 M50 30 l-25 30" fill="none" stroke="currentColor" stroke-width="4"/>',
   'drawer.stamp_moon': '<rect x="20" y="15" width="60" height="70" fill="none" stroke="currentColor" stroke-width="4" stroke-dasharray="6 4"/><circle cx="50" cy="42" r="10" fill="none" stroke="currentColor" stroke-width="3" stroke-dasharray="3 3"/><path d="M28 75 l12 -10 l10 6 l12 -12 l10 16" fill="none" stroke="currentColor" stroke-width="3"/>',
   'cat.flea': '<ellipse cx="50" cy="60" rx="18" ry="12" fill="none" stroke="currentColor" stroke-width="4"/><path d="M38 40 h24 v-10 h-14 v-8 h-10 z" fill="currentColor"/><path d="M32 70 l-8 10 M68 70 l8 10 M50 72 v10" stroke="currentColor" stroke-width="3"/>',
@@ -25,6 +33,11 @@ const OUTLINES: Record<string, string> = {
   'moon.footprint': '<ellipse cx="50" cy="60" rx="14" ry="24" fill="none" stroke="currentColor" stroke-width="4"/><circle cx="38" cy="28" r="5" fill="currentColor"/><circle cx="50" cy="24" r="5" fill="currentColor"/><circle cx="62" cy="28" r="5" fill="currentColor"/>',
   'moon.glove': '<path d="M30 85 v-35 q0 -10 10 -10 v-15 q0 -6 6 -6 q6 0 6 6 v13 q0 -6 6 -6 q6 0 6 6 v15 q6 -4 10 2 v30 q0 10 -10 10 h-18 q-10 0 -10 -10 z" fill="none" stroke="currentColor" stroke-width="4"/>',
 };
+
+/** The inner SVG of a hidden object's outline (viewBox 0 0 100 100). */
+export function outlineInner(id: string): string {
+  return OUTLINES[id] ?? '<circle cx="50" cy="50" r="30" fill="none" stroke="currentColor" stroke-width="4"/>';
+}
 
 export function outlineSvg(id: string, alt: string): HTMLElement {
   const wrap = el('div', { class: 'outline', role: 'img', 'aria-label': alt, title: alt });
@@ -344,10 +357,11 @@ export class Panels {
     box.append(row);
   }
 
-  renderEnd(stats: { time: string; finds: string; hints: string }, lastPage: HTMLCanvasElement): void {
+  /** The end screen. `continued`: the playtest build's short ending, "To be continued" (D-011). */
+  renderEnd(stats: { time: string; finds: string; hints: string }, lastPage: HTMLCanvasElement, continued = false): void {
     const s = this.world.strings;
     const box = this.boxes.get('end')!;
-    box.replaceChildren(el('div', { class: 'label' }, s.label), el('h1', {}, s.title), el('p', {}, s.ending));
+    box.replaceChildren(el('div', { class: 'label' }, s.label), el('h1', {}, continued ? s.toBeContinued : s.title), el('p', {}, continued ? s.endingContinued : s.ending));
     const lc = el('canvas', { role: 'img', 'aria-label': this.world.lastPage.altEnd });
     lc.width = lastPage.width;
     lc.height = lastPage.height;

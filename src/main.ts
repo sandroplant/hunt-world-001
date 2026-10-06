@@ -3,8 +3,8 @@ import * as THREE from 'three';
 import { loadWorld, type World } from './game/world';
 import { judge, type View } from './game/judge';
 import {
-  act as rulesAct, backOut as rulesBackOut, clearSave, createInitialState, defaultSettings, dive as rulesDive, hintTargets, load, memoryStore, moveTo, nextObjective, progress,
-  recordHiddenFound, recordSketchLocked, save, standAt as rulesStandAt, useHint, verbFor, type Store,
+  act as rulesAct, backOut as rulesBackOut, clearSave, createInitialState, defaultSettings, dive as rulesDive, endDive, fullScope, hintTargets, inScope, load, memoryStore, moveTo,
+  nextObjective, PLAYTEST_SCOPE, progress, recordHiddenFound, recordSketchLocked, save, standAt as rulesStandAt, useHint, verbFor, type Scope, type Store,
 } from './game/rules';
 import type { GameEvent, GameState, Vec3, WorldObject } from './game/types';
 import { angleBetween, anglesFromDir, dirFromAngles, length, sub, wrapDeg } from './game/geom';
@@ -16,7 +16,7 @@ import { Assets } from './render/assets';
 import { ViewCamera, ZOOM_MAX, ZOOM_MIN } from './player/camera';
 import { Input } from './player/input';
 import { Hud } from './ui/hud';
-import { Panels, drawLastPage } from './ui/panels';
+import { Panels, drawLastPage, outlineInner } from './ui/panels';
 import { Audio } from './audio/audio';
 import { SketchRenderer } from './gen/sketch';
 import { FrameRecorder, SessionLog } from './game/log';
@@ -62,6 +62,10 @@ export class App {
   readonly onFrame: Array<(now: number) => void> = [];
   readonly testMode: boolean;
   readonly perfMode: boolean;
+  /** What this build plays (D-011): the street and the shop on the playtest build (or ?scope=playtest), else all. */
+  readonly scope: Scope;
+  /** The picture an opening shows when the place behind it is not played in this build: a warm light. */
+  private endGlow: THREE.Texture | null = null;
   readonly debugMode: boolean;
   private readonly store: Store;
   private readonly storageBlocked: boolean;
@@ -86,6 +90,8 @@ export class App {
   private pendingGlint: { id: string; at: number } | null = null;
   private frameCount = 0;
   private afterDive: (() => void) | null = null;
+  /** Finds still flying into the sketchbook; the counter ticks up as each lands. */
+  private flying = 0;
   diving = false;
 
   constructor(canvas: HTMLCanvasElement, ui: HTMLElement) {
@@ -93,6 +99,7 @@ export class App {
     this.testMode = q.get('test') === '1';
     this.perfMode = q.get('perf') === '1';
     this.debugMode = !__PLAYTEST__ && q.get('debug') === '1';
+    this.scope = __PLAYTEST__ || q.get('scope') === 'playtest' ? PLAYTEST_SCOPE : fullScope();
     this.ui = ui;
     this.world = loadWorld();
     const ls = localStore();
@@ -149,6 +156,8 @@ export class App {
     this.hud.buttons.book.addEventListener('click', () => this.toggle('book'));
     this.hud.buttons.hints.addEventListener('click', () => this.toggle('hints'));
     this.hud.buttons.menu.addEventListener('click', () => this.toggle('menu'));
+    this.hud.goal.addEventListener('click', () => this.toggle('book'));
+    this.hud.counter.addEventListener('click', () => this.toggle('book'));
     window.addEventListener('resize', () => this.renderer.resize());
     window.addEventListener('beforeunload', () => this.log.record('quit', { place: this.state.place }));
 
@@ -204,7 +213,35 @@ export class App {
   /** The place a dive from `placeId` leads to, with its scene built so its portal can show it. */
   private nextOf(placeId: string): PlaceScene | null {
     const d = judge.diveTarget(placeId);
-    return d ? this.scene(d.to) : null;
+    return d && inScope(this.world, this.scope, d.to) ? this.scene(d.to) : null;
+  }
+
+  /** A soft warm light for openings onto places this build does not play (the drawer, on the playtest build). */
+  private glowTexture(): THREE.Texture {
+    if (this.endGlow) return this.endGlow;
+    const c = document.createElement('canvas');
+    c.width = c.height = 256;
+    const ctx = c.getContext('2d')!;
+    const g = ctx.createRadialGradient(128, 128, 4, 128, 128, 150);
+    g.addColorStop(0, '#FFF3CF');
+    g.addColorStop(0.3, '#F6C46A');
+    g.addColorStop(0.65, '#9A5A22');
+    g.addColorStop(1, '#1A1320');
+    ctx.fillStyle = g;
+    ctx.fillRect(0, 0, 256, 256);
+    // A few faint motes, like dust in lamp light.
+    ctx.fillStyle = 'rgba(255,240,200,0.5)';
+    for (let i = 0; i < 40; i++) {
+      const a = i * 2.39996;
+      const r = 20 + ((i * 37) % 100);
+      ctx.beginPath();
+      ctx.arc(128 + Math.cos(a) * r, 128 + Math.sin(a) * r, 1 + (i % 3) * 0.6, 0, Math.PI * 2);
+      ctx.fill();
+    }
+    const t = new THREE.CanvasTexture(c);
+    t.colorSpace = THREE.SRGBColorSpace;
+    this.endGlow = t;
+    return t;
   }
 
   /** Resolves when the current place's assets are in (style-frame places load textures and models). */
@@ -284,6 +321,15 @@ export class App {
     const canBack = this.state.stack.length > 0;
     this.hud.buttons.back.disabled = !canBack;
     this.hud.buttons.back.style.visibility = canBack ? 'visible' : 'hidden';
+    const p = progress(this.world, this.state, this.scope);
+    this.hud.setCounter(p.finds - this.flying, p.total, this.started);
+    this.updateGoal();
+  }
+
+  /** The always-visible next-goal card (D-011). Drawn only once the place has finished loading. */
+  private updateGoal(): void {
+    const show = this.started && !this.diving && !this.state.ended && this.current.loaded && (!this.panels.open || this.panels.open === 'describe');
+    this.hud.setGoal(show ? this.currentPage() : null);
   }
 
   private noteInput(): void {
@@ -314,6 +360,7 @@ export class App {
     const angular = (2 * Math.atan(Math.max(...target.size) / 2 / Math.max(dist, 1e-3)) * 180) / Math.PI;
     const zoom = Math.max(ZOOM_MIN, Math.min(ZOOM_MAX, 60 / (angular / 0.35)));
     const img = this.sketcher.draw(this.current, { pos: spot.pos, yaw: look.yaw, pitch: look.pitch, zoom });
+    img.dataset.key = key;
     this.sketchImages.set(key, img);
     return img;
   }
@@ -327,6 +374,7 @@ export class App {
     this.panels.hide();
     this.log.record('start', { place: this.state.place });
     this.noteInput();
+    this.refreshHud();
   }
 
   restart(): void {
@@ -544,9 +592,18 @@ export class App {
         return;
       case 'hidden': {
         if (!judge.judgeHidden(obj.id, this.view())) return;
+        const at = this.screenPoint(obj.id);
+        this.flying++;
         this.commit(recordHiddenFound(this.state, obj.id), [{ kind: 'sfx', id: 'found' }]);
         const outlines = this.world.strings.outlines as Record<string, string>;
         this.hud.showToast(`Found: ${outlines[obj.id] ?? obj.label}`);
+        this.hud.flyFind(outlineInner(obj.id), at.x, at.y, () => {
+          this.flying = Math.max(0, this.flying - 1);
+          this.refreshHud();
+          this.hud.counter.classList.remove('bump');
+          void this.hud.counter.offsetWidth;
+          this.hud.counter.classList.add('bump');
+        }, this.state.settings.reducedMotion);
         this.log.record('find_hidden', { id: obj.id, place: this.state.place });
         return;
       }
@@ -563,6 +620,16 @@ export class App {
     if (this.busy) return;
     if (this.best?.kind === 'dive') this.startDive();
     else this.act();
+  }
+
+  /** Where an object is on screen, in CSS pixels (the screen centre when it is behind the camera). */
+  private screenPoint(objectId: string): { x: number; y: number } {
+    const rect = this.renderer.gl.domElement.getBoundingClientRect();
+    const p = this.current.worldPosition(objectId);
+    if (!p) return { x: rect.left + rect.width / 2, y: rect.top + rect.height / 2 };
+    p.project(this.camera.camera);
+    if (p.z > 1) return { x: rect.left + rect.width / 2, y: rect.top + rect.height / 2 };
+    return { x: rect.left + ((p.x + 1) / 2) * rect.width, y: rect.top + ((1 - p.y) / 2) * rect.height };
   }
 
   // ---- dives -----------------------------------------------------------------------------------
@@ -585,6 +652,11 @@ export class App {
 
   private startDive(): void {
     if (this.diving) return;
+    const ending = endDive(this.world, this.state, this.scope);
+    if (ending) {
+      this.startEndDive(ending);
+      return;
+    }
     const d = rulesDive(this.world, this.state);
     if (!d) return;
     const from = this.current;
@@ -600,6 +672,7 @@ export class App {
     from.setPortalTexture(d.to, this.portalRenderer.texture);
     this.commit(d.state);
     this.diving = true;
+    this.hud.setGoal(null);
     this.hud.setVerb(null);
     this.hud.setRing(0);
     this.ringStart = null;
@@ -627,6 +700,45 @@ export class App {
     this.afterDive = () => this.enterPlace(d.to, d.state.pos, 0, 0, 1);
   }
 
+  /** The scoped build's last dive: into the opening until it fills the screen, then the ending (D-011). */
+  private startEndDive(next: GameState): void {
+    const from = this.current;
+    const target = judge.diveTarget(this.state.place);
+    if (!target) return;
+    const portal = this.portalGeometry(from, target.to, target.object);
+    if (!portal) return;
+    const look = anglesFromDir([-portal.normal.x, -portal.normal.y, -portal.normal.z], 0);
+    const approach = { pos: portal.center.clone().addScaledVector(portal.normal, 1), yaw: look.yaw, pitch: look.pitch, fov: 50, aspect: portal.width / portal.height };
+    this.commit(next);
+    this.diving = true;
+    this.hud.setGoal(null);
+    this.hud.setVerb(null);
+    this.hud.setRing(0);
+    this.ringStart = null;
+    this.heldSketch = null;
+    this.hud.showCard(null);
+    this.hud.setGoal(null);
+    this.audio.play('dive');
+    this.log.record('dive', { from: from.placeId, to: 'ending' });
+    this.noteProgress();
+    this.frames.mark('dive:start');
+    this.diveAnim.begin({
+      direction: 'in',
+      from,
+      to: from,
+      portal,
+      approach,
+      start: this.currentPose(),
+      end: this.currentPose(),
+      screenAspect: this.renderer.width / this.renderer.height,
+      reducedMotion: this.state.settings.reducedMotion,
+      startedAt: this.lastNow,
+      endAtHandover: true,
+    });
+    this.pendingEnd = true;
+    this.afterDive = null;
+  }
+
   backOut(): void {
     if (this.busy) return;
     const b = rulesBackOut(this.state);
@@ -641,6 +753,7 @@ export class App {
     const approach = approachPose(from, portal.width / portal.height);
     this.commit(b.state);
     this.diving = true;
+    this.hud.setGoal(null);
     this.hud.setVerb(null);
     this.hud.setRing(0);
     this.heldSketch = null;
@@ -672,6 +785,7 @@ export class App {
     this.frames.mark('dive:end');
     this.hud.setFade(false, true);
     this.current.applyState(this.state);
+    this.updateGoal();
     if (this.pendingEnd) {
       this.pendingEnd = false;
       this.showEnding();
@@ -682,9 +796,10 @@ export class App {
     const ms = (this.state.endedAt ?? Date.now()) - (this.state.startedAt ?? Date.now());
     const min = Math.floor(ms / 60000);
     const sec = Math.floor((ms % 60000) / 1000);
-    const p = progress(this.world, this.state);
+    const p = progress(this.world, this.state, this.scope);
     this.log.record('finish', { ms, finds: p.finds, hints: this.state.hintCount });
-    this.panels.renderEnd({ time: `${min} min ${sec} s`, finds: `${p.finds} of ${p.total}`, hints: String(this.state.hintCount) }, drawLastPage(true));
+    const continued = this.scope.endsAfter !== null;
+    this.panels.renderEnd({ time: `${min} min ${sec} s`, finds: `${p.finds} of ${p.total}`, hints: String(this.state.hintCount) }, drawLastPage(true), continued);
     this.panels.show('end');
   }
 
@@ -697,6 +812,10 @@ export class App {
     if (this.renderer.quality === 'low' && this.frameCount % 2 === 1) return;
     const groups = new Set(scene.portals.filter((p) => p.mesh.visible).map((p) => p.to));
     for (const to of groups) {
+      if (!inScope(this.world, this.scope, to)) {
+        scene.setPortalTexture(to, this.glowTexture());
+        continue;
+      }
       const next = this.scene(to);
       const first = scene.portals.find((p) => p.to === to)!;
       this.portalRenderer.render(next, approachPose(next, first.width / first.height));
@@ -867,7 +986,7 @@ export class App {
     if (this.diving) {
       const p = this.diveAnim.plan;
       // Keep the opening's picture fresh until the hand-over, so the two frames match.
-      if (p && !this.diveAnim.handedOver) {
+      if (p && !this.diveAnim.handedOver && !p.endAtHandover) {
         const nested = p.direction === 'in' ? p.to : p.from;
         const outer = p.direction === 'in' ? p.from : p.to;
         this.portalRenderer.render(nested, p.approach);
@@ -914,6 +1033,7 @@ export class App {
       }
       this.updatePointer(now);
       this.updatePortals();
+      if (this.frameCount % 10 === 0) this.updateGoal();
       this.renderer.render(this.current.scene, this.camera.camera);
     }
     for (const f of this.onFrame) f(now);

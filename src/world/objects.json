@@ -23,7 +23,10 @@
       "states": [
         "ready"
       ],
-      "initial": "ready"
+      "initial": "ready",
+      "look": {
+        "none": true
+      }
     },
     {
       "id": "street.umbrella",
@@ -48,7 +51,10 @@
         12,
         0,
         -14
-      ]
+      ],
+      "look": {
+        "kit": "umbrella"
+      }
     },
     {
       "id": "street.ship_bottle",
@@ -68,7 +74,10 @@
       ],
       "shape": "box",
       "color": "#7fb8c8",
-      "verb": "Look"
+      "verb": "Look",
+      "look": {
+        "kit": "ship_bottle"
+      }
     },
     {
       "id": "street.chalkboard",
@@ -95,7 +104,10 @@
         0,
         0,
         8
-      ]
+      ],
+      "look": {
+        "kit": "chalkboard"
+      }
     },
     {
       "id": "street.scale",
@@ -117,6 +129,10 @@
       "color": "#5a4a28",
       "act": {
         "simple": "Swing"
+      },
+      "look": {
+        "kit": "fish_scale",
+        "yaw": -60
       }
     },
     {
@@ -139,6 +155,9 @@
       "color": "#e4e4e0",
       "act": {
         "simple": "Shoo"
+      },
+      "look": {
+        "kit": "gull"
       }
     },
     {
@@ -166,7 +185,10 @@
         0,
         90,
         0
-      ]
+      ],
+      "look": {
+        "kit": "hanging_sign"
+      }
     },
     {
       "id": "street.notice",
@@ -188,6 +210,10 @@
       "color": "#e8e0c8",
       "act": {
         "simple": "Flatten"
+      },
+      "look": {
+        "kit": "notice",
+        "yaw": 90
       }
     },
     {
@@ -202,14 +228,18 @@
         2.06
       ],
       "size": [
+        0.04,
         0.08,
-        0.08,
-        0.04
+        0.08
       ],
       "shape": "box",
       "color": "#C9A24E",
       "act": {
         "simple": "Ring"
+      },
+      "look": {
+        "kit": "doorbell",
+        "yaw": 90
       }
     },
     {
@@ -238,17 +268,11 @@
       "id": "shop.blue_drawer",
       "place": "shop",
       "kind": "usable",
-      "label": "a small drawer painted blue, with a keyhole",
-      "at": [
-        "B",
-        -95,
-        -10,
-        1.3
-      ],
+      "label": "a drawer painted blue, with a keyhole, in the chest on the right wall",
       "size": [
-        0.22,
-        0.12,
-        0.3
+        0.622,
+        0.3,
+        0.356
       ],
       "shape": "box",
       "color": "#3F6FBF",
@@ -311,28 +335,35 @@
       "visual": {
         "open": {
           "offset": [
-            -0.3,
+            -0.4,
             0,
             0
           ]
         }
+      },
+      "pos": [
+        3.068,
+        0.543,
+        -3.0
+      ],
+      "home": "B",
+      "look": {
+        "model": "vintage_wooden_drawer_01",
+        "node": "vintage_wooden_drawer_01_drawer02",
+        "fit": "box",
+        "yaw": -90,
+        "tint": "#2f5fb8"
       }
     },
     {
       "id": "shop.key",
       "place": "shop",
       "kind": "usable",
-      "label": "a tiny brass key on the counter",
-      "at": [
-        "A",
-        -1,
-        -9,
-        3.9
-      ],
+      "label": "a small brass key on the counter, by the oil lamp",
       "size": [
-        0.08,
-        0.02,
-        0.04
+        0.12,
+        0.025,
+        0.055
       ],
       "shape": "box",
       "color": "#C9A24E",
@@ -366,6 +397,15 @@
         "taken": {
           "hidden": true
         }
+      },
+      "pos": [
+        0.02,
+        1.012,
+        -3.82
+      ],
+      "home": "A",
+      "look": {
+        "kit": "key"
       }
     },
     {
@@ -374,14 +414,8 @@
       "kind": "dive",
       "to": "drawer",
       "label": "the inside of the blue drawer",
-      "at": [
-        "B",
-        -95,
-        -12,
-        1.32
-      ],
       "size": [
-        0.2,
+        0.34,
         0.04,
         0.28
       ],
@@ -395,47 +429,51 @@
       "visual": {
         "shut": {
           "hidden": true
-        },
-        "ready": {
-          "offset": [
-            -0.34,
-            0,
-            0
-          ]
         }
+      },
+      "pos": [
+        2.59,
+        0.62,
+        -3.0
+      ],
+      "home": "B",
+      "look": {
+        "none": true
       }
     },
     {
       "id": "shop.teacup_star",
       "place": "shop",
       "kind": "hidden",
-      "label": "a teacup with a star on its side",
-      "at": [
-        "B",
-        -143,
-        34,
-        1.8
-      ],
+      "label": "a teacup with a gold star, on the window sill",
       "size": [
+        0.12,
         0.07,
-        0.06,
-        0.07
+        0.12
       ],
       "shape": "cylinder",
       "color": "#F1E6CF",
-      "verb": "Look"
+      "verb": "Look",
+      "pos": [
+        2.0,
+        1.055,
+        -0.1
+      ],
+      "home": "B",
+      "look": {
+        "kit": "teacup_star"
+      },
+      "rot": [
+        0,
+        180,
+        0
+      ]
     },
     {
       "id": "shop.marble",
       "place": "shop",
       "kind": "hidden",
-      "label": "a glass marble",
-      "at": [
-        "A",
-        -20.4,
-        -23,
-        4.06
-      ],
+      "label": "a glass marble on the floor",
       "size": [
         0.03,
         0.03,
@@ -443,23 +481,26 @@
       ],
       "shape": "sphere",
       "color": "#2F7F86",
-      "verb": "Take"
+      "verb": "Take",
+      "pos": [
+        2.25,
+        0.015,
+        -4.35
+      ],
+      "home": "B",
+      "look": {
+        "kit": "marble"
+      }
     },
     {
       "id": "shop.drawer_1",
       "place": "shop",
       "kind": "usable",
-      "label": "a small brown drawer",
-      "at": [
-        "B",
-        -102,
-        -4,
-        1.3
-      ],
+      "label": "a drawer of the chest",
       "size": [
-        0.22,
-        0.12,
-        0.3
+        0.622,
+        0.3,
+        0.356
       ],
       "shape": "box",
       "color": "#6B4A2E",
@@ -468,23 +509,38 @@
           "Open",
           "Close"
         ]
+      },
+      "pos": [
+        3.07,
+        0.543,
+        -3.388
+      ],
+      "home": "B",
+      "look": {
+        "model": "vintage_wooden_drawer_01",
+        "node": "vintage_wooden_drawer_01_drawer01",
+        "fit": "box",
+        "yaw": -90
+      },
+      "visual": {
+        "second": {
+          "offset": [
+            -0.25,
+            0,
+            0
+          ]
+        }
       }
     },
     {
       "id": "shop.drawer_2",
       "place": "shop",
       "kind": "usable",
-      "label": "a small brown drawer",
-      "at": [
-        "B",
-        -88,
-        -4,
-        1.3
-      ],
+      "label": "a drawer of the chest",
       "size": [
-        0.22,
-        0.12,
-        0.3
+        0.622,
+        0.3,
+        0.356
       ],
       "shape": "box",
       "color": "#6B4A2E",
@@ -493,23 +549,38 @@
           "Open",
           "Close"
         ]
+      },
+      "pos": [
+        3.07,
+        0.542,
+        -2.614
+      ],
+      "home": "B",
+      "look": {
+        "model": "vintage_wooden_drawer_01",
+        "node": "vintage_wooden_drawer_01_drawer03",
+        "fit": "box",
+        "yaw": -90
+      },
+      "visual": {
+        "second": {
+          "offset": [
+            -0.25,
+            0,
+            0
+          ]
+        }
       }
     },
     {
       "id": "shop.drawer_3",
       "place": "shop",
       "kind": "usable",
-      "label": "a small brown drawer",
-      "at": [
-        "B",
-        -81,
-        -4,
-        1.3
-      ],
+      "label": "a drawer of the chest",
       "size": [
-        0.22,
-        0.12,
-        0.3
+        0.622,
+        0.3,
+        0.356
       ],
       "shape": "box",
       "color": "#6B4A2E",
@@ -518,23 +589,38 @@
           "Open",
           "Close"
         ]
+      },
+      "pos": [
+        3.069,
+        0.242,
+        -3.388
+      ],
+      "home": "B",
+      "look": {
+        "model": "vintage_wooden_drawer_01",
+        "node": "vintage_wooden_drawer_01_drawer04",
+        "fit": "box",
+        "yaw": -90
+      },
+      "visual": {
+        "second": {
+          "offset": [
+            -0.25,
+            0,
+            0
+          ]
+        }
       }
     },
     {
       "id": "shop.drawer_4",
       "place": "shop",
       "kind": "usable",
-      "label": "a small brown drawer",
-      "at": [
-        "B",
-        -102,
-        -16,
-        1.3
-      ],
+      "label": "a drawer of the chest",
       "size": [
-        0.22,
-        0.12,
-        0.3
+        0.622,
+        0.3,
+        0.356
       ],
       "shape": "box",
       "color": "#6B4A2E",
@@ -543,175 +629,67 @@
           "Open",
           "Close"
         ]
+      },
+      "pos": [
+        3.072,
+        0.242,
+        -3.0
+      ],
+      "home": "B",
+      "look": {
+        "model": "vintage_wooden_drawer_01",
+        "node": "vintage_wooden_drawer_01_drawer05",
+        "fit": "box",
+        "yaw": -90
+      },
+      "visual": {
+        "second": {
+          "offset": [
+            -0.25,
+            0,
+            0
+          ]
+        }
       }
     },
     {
       "id": "shop.drawer_5",
       "place": "shop",
       "kind": "usable",
-      "label": "a small brown drawer",
-      "at": [
-        "B",
-        -88,
-        -16,
-        1.3
-      ],
+      "label": "a drawer of the chest",
       "size": [
-        0.22,
-        0.12,
-        0.3
-      ],
-      "shape": "box",
-      "color": "#6B4A2E",
-      "act": {
-        "toggle": [
-          "Open",
-          "Close"
-        ]
-      }
-    },
-    {
-      "id": "shop.drawer_6",
-      "place": "shop",
-      "kind": "usable",
-      "label": "a small brown drawer",
-      "at": [
-        "B",
-        -81,
-        -16,
-        1.3
-      ],
-      "size": [
-        0.22,
-        0.12,
-        0.3
-      ],
-      "shape": "box",
-      "color": "#6B4A2E",
-      "act": {
-        "toggle": [
-          "Open",
-          "Close"
-        ]
-      }
-    },
-    {
-      "id": "shop.drawer_7",
-      "place": "shop",
-      "kind": "usable",
-      "label": "a small brown drawer",
-      "at": [
-        "B",
-        -102,
-        4,
-        1.3
-      ],
-      "size": [
-        0.22,
-        0.12,
-        0.3
-      ],
-      "shape": "box",
-      "color": "#6B4A2E",
-      "act": {
-        "toggle": [
-          "Open",
-          "Close"
-        ]
-      }
-    },
-    {
-      "id": "shop.drawer_8",
-      "place": "shop",
-      "kind": "usable",
-      "label": "a small brown drawer",
-      "at": [
-        "B",
-        -88,
-        4,
-        1.3
-      ],
-      "size": [
-        0.22,
-        0.12,
-        0.3
-      ],
-      "shape": "box",
-      "color": "#6B4A2E",
-      "act": {
-        "toggle": [
-          "Open",
-          "Close"
-        ]
-      }
-    },
-    {
-      "id": "shop.cuckoo",
-      "place": "shop",
-      "kind": "usable",
-      "label": "a cuckoo clock",
-      "at": [
-        "B",
-        -50,
-        25,
-        2.2
-      ],
-      "size": [
+        0.622,
         0.3,
-        0.4,
-        0.2
+        0.356
       ],
       "shape": "box",
-      "color": "#6B3F22",
-      "act": {
-        "simple": "Tap"
-      }
-    },
-    {
-      "id": "shop.jar_buttons",
-      "place": "shop",
-      "kind": "usable",
-      "label": "a jar of buttons",
-      "at": [
-        "B",
-        -70,
-        18,
-        2.0
-      ],
-      "size": [
-        0.15,
-        0.2,
-        0.15
-      ],
-      "shape": "cylinder",
-      "color": "#9AB8C8",
+      "color": "#6B4A2E",
       "act": {
         "toggle": [
           "Open",
           "Close"
         ]
-      }
-    },
-    {
-      "id": "shop.stuffed_fish",
-      "place": "shop",
-      "kind": "usable",
-      "label": "a stuffed fish on the wall",
-      "at": [
-        "B",
-        -130,
-        20,
-        2.4
+      },
+      "pos": [
+        3.068,
+        0.242,
+        -2.614
       ],
-      "size": [
-        0.7,
-        0.25,
-        0.15
-      ],
-      "shape": "box",
-      "color": "#6E8E9E",
-      "act": {
-        "simple": "Poke"
+      "home": "B",
+      "look": {
+        "model": "vintage_wooden_drawer_01",
+        "node": "vintage_wooden_drawer_01_drawer06",
+        "fit": "box",
+        "yaw": -90
+      },
+      "visual": {
+        "second": {
+          "offset": [
+            -0.25,
+            0,
+            0
+          ]
+        }
       }
     },
     {
@@ -719,12 +697,6 @@
       "place": "shop",
       "kind": "usable",
       "label": "a globe",
-      "at": [
-        "B",
-        -150,
-        -10,
-        2.3
-      ],
       "size": [
         0.35,
         0.35,
@@ -734,6 +706,15 @@
       "color": "#2F7F86",
       "act": {
         "simple": "Spin"
+      },
+      "pos": [
+        0.3,
+        0.725,
+        -6.2
+      ],
+      "home": "C",
+      "look": {
+        "kit": "globe"
       }
     },
     {
@@ -741,12 +722,6 @@
       "place": "shop",
       "kind": "usable",
       "label": "a music box",
-      "at": [
-        "B",
-        -120,
-        -25,
-        2.0
-      ],
       "size": [
         0.25,
         0.15,
@@ -756,46 +731,49 @@
       "color": "#8A3A3A",
       "act": {
         "simple": "Wind"
+      },
+      "pos": [
+        1.0,
+        0.625,
+        -6.15
+      ],
+      "home": "C",
+      "look": {
+        "kit": "music_box"
       }
     },
     {
       "id": "shop.wall_clock",
       "place": "shop",
       "kind": "usable",
-      "label": "a wall clock",
-      "at": [
-        "A",
-        30,
-        25,
-        2.5
-      ],
+      "label": "a small clock on the chest of drawers",
       "size": [
-        0.35,
-        0.35,
-        0.1
+        0.13,
+        0.16,
+        0.34
       ],
       "shape": "cylinder",
       "color": "#C9A24E",
       "act": {
-        "simple": "Tap"
+        "simple": "Wind"
       },
-      "rot": [
-        90,
-        0,
-        0
-      ]
+      "pos": [
+        3.12,
+        0.843,
+        -2.62
+      ],
+      "home": "B",
+      "look": {
+        "model": "mantel_clock_01",
+        "fit": "height",
+        "yaw": -90
+      }
     },
     {
       "id": "shop.counter_bell",
       "place": "shop",
       "kind": "usable",
       "label": "the counter bell",
-      "at": [
-        "A",
-        -20,
-        -14,
-        2.5
-      ],
       "size": [
         0.12,
         0.1,
@@ -805,6 +783,15 @@
       "color": "#C9A24E",
       "act": {
         "simple": "Ding"
+      },
+      "pos": [
+        -0.5,
+        1.05,
+        -3.9
+      ],
+      "home": "A",
+      "look": {
+        "kit": "counter_bell"
       }
     },
     {
@@ -812,12 +799,6 @@
       "place": "shop",
       "kind": "usable",
       "label": "the brass scales on the counter",
-      "at": [
-        "A",
-        -4,
-        -12,
-        2.5
-      ],
       "size": [
         0.4,
         0.4,
@@ -827,46 +808,22 @@
       "color": "#C9A24E",
       "act": {
         "simple": "Swing"
-      }
-    },
-    {
-      "id": "shop.map",
-      "place": "shop",
-      "kind": "usable",
-      "label": "a rolled map",
-      "at": [
-        "A",
-        50,
-        -10,
-        2.3
-      ],
-      "size": [
-        0.5,
-        0.08,
-        0.08
-      ],
-      "shape": "cylinder",
-      "color": "#F1E6CF",
-      "act": {
-        "simple": "Unroll"
       },
-      "rot": [
-        0,
-        0,
-        90
-      ]
+      "pos": [
+        -1.75,
+        1.2,
+        -4.15
+      ],
+      "home": "D",
+      "look": {
+        "kit": "brass_scales"
+      }
     },
     {
       "id": "shop.big_book",
       "place": "shop",
       "kind": "usable",
       "label": "a big book",
-      "at": [
-        "A",
-        -50,
-        -20,
-        2.2
-      ],
       "size": [
         0.4,
         0.1,
@@ -879,72 +836,26 @@
           "Open",
           "Close"
         ]
-      }
-    },
-    {
-      "id": "shop.birdcage",
-      "place": "shop",
-      "kind": "usable",
-      "label": "an empty birdcage",
-      "at": [
-        "A",
-        20,
-        35,
-        2.4
-      ],
-      "size": [
-        0.3,
-        0.4,
-        0.3
-      ],
-      "shape": "cylinder",
-      "color": "#C9A24E",
-      "act": {
-        "simple": "Swing"
-      }
-    },
-    {
-      "id": "shop.telescope",
-      "place": "shop",
-      "kind": "usable",
-      "label": "a brass telescope",
-      "at": [
-        "A",
-        70,
-        10,
-        2.3
-      ],
-      "size": [
-        0.6,
-        0.1,
-        0.1
-      ],
-      "shape": "cylinder",
-      "color": "#C9A24E",
-      "act": {
-        "simple": "Turn"
       },
-      "rot": [
-        0,
-        0,
-        90
-      ]
+      "pos": [
+        -1.55,
+        0.6,
+        -1.3
+      ],
+      "home": "D",
+      "look": {
+        "kit": "big_book"
+      }
     },
     {
       "id": "shop.oil_lamp",
       "place": "shop",
       "kind": "usable",
-      "label": "an oil lamp",
-      "at": [
-        "A",
-        -70,
-        10,
-        2.2
-      ],
+      "label": "an oil lamp on the counter",
       "size": [
-        0.15,
-        0.3,
-        0.15
+        0.11,
+        0.4,
+        0.11
       ],
       "shape": "cylinder",
       "color": "#F2B75B",
@@ -953,19 +864,29 @@
           "Dim",
           "Brighten"
         ]
+      },
+      "pos": [
+        0.32,
+        1.2,
+        -4.2
+      ],
+      "home": "C",
+      "look": {
+        "model": "vintage_oil_lamp",
+        "fit": "height",
+        "light": {
+          "color": "#ffad55",
+          "intensity": 4.5,
+          "distance": 7,
+          "y": 0.05
+        }
       }
     },
     {
       "id": "shop.cash_drawer",
       "place": "shop",
       "kind": "usable",
-      "label": "the cash drawer",
-      "at": [
-        "A",
-        -28,
-        -22,
-        2.5
-      ],
+      "label": "a small cash box",
       "size": [
         0.4,
         0.12,
@@ -978,50 +899,15 @@
           "Open",
           "Close"
         ]
-      }
-    },
-    {
-      "id": "shop.mirror",
-      "place": "shop",
-      "kind": "usable",
-      "label": "a hand mirror",
-      "at": [
-        "A",
-        -80,
-        5,
-        2.1
+      },
+      "pos": [
+        1.55,
+        0.61,
+        -6.2
       ],
-      "size": [
-        0.2,
-        0.3,
-        0.03
-      ],
-      "shape": "box",
-      "color": "#B0C4D8",
-      "act": {
-        "simple": "Look"
-      }
-    },
-    {
-      "id": "shop.door_sign",
-      "place": "shop",
-      "kind": "usable",
-      "label": "the door sign: a drawn sun on one side, a moon on the other",
-      "at": [
-        "A",
-        100,
-        15,
-        1.4
-      ],
-      "size": [
-        0.3,
-        0.2,
-        0.02
-      ],
-      "shape": "box",
-      "color": "#F1E6CF",
-      "act": {
-        "simple": "Flip"
+      "home": "C",
+      "look": {
+        "kit": "cash_box"
       }
     },
     {
@@ -3624,6 +3510,211 @@
       "act": {
         "simple": "Peer over"
       }
+    },
+    {
+      "id": "street.starfish",
+      "kind": "hidden",
+      "label": "an orange starfish on the cobbles",
+      "pos": [
+        -1.3,
+        0.01,
+        -3.6
+      ],
+      "home": "A",
+      "size": [
+        0.22,
+        0.04,
+        0.22
+      ],
+      "shape": "box",
+      "color": "#D96A3A",
+      "verb": "Take",
+      "look": {
+        "kit": "starfish"
+      },
+      "rot": [
+        0,
+        25,
+        0
+      ],
+      "place": "street"
+    },
+    {
+      "id": "street.sailboat",
+      "kind": "hidden",
+      "label": "a toy sailboat in a puddle",
+      "pos": [
+        1.9,
+        0.155,
+        -1.45
+      ],
+      "home": "A",
+      "size": [
+        0.25,
+        0.3,
+        0.1
+      ],
+      "shape": "box",
+      "color": "#B0281E",
+      "verb": "Take",
+      "look": {
+        "kit": "toy_sailboat"
+      },
+      "rot": [
+        0,
+        -30,
+        0
+      ],
+      "place": "street"
+    },
+    {
+      "id": "street.hat",
+      "kind": "hidden",
+      "label": "a fisherman's hat left on a crate",
+      "pos": [
+        3.15,
+        0.46,
+        -1.02
+      ],
+      "home": "A",
+      "size": [
+        0.3,
+        0.12,
+        0.3
+      ],
+      "shape": "box",
+      "color": "#2F4A5E",
+      "verb": "Take",
+      "look": {
+        "model": "fishermans_hat",
+        "fit": "max"
+      },
+      "place": "street"
+    },
+    {
+      "id": "street.glass_float",
+      "kind": "hidden",
+      "label": "a green glass fishing float among the rope coils",
+      "pos": [
+        -1.4,
+        0.08,
+        -17.05
+      ],
+      "home": "C",
+      "size": [
+        0.16,
+        0.16,
+        0.16
+      ],
+      "shape": "sphere",
+      "color": "#3E8A5A",
+      "verb": "Take",
+      "look": {
+        "kit": "glass_float"
+      },
+      "place": "street"
+    },
+    {
+      "id": "shop.spectacles",
+      "kind": "hidden",
+      "label": "a pair of round spectacles on the counter",
+      "pos": [
+        -1.4,
+        1.02,
+        -3.78
+      ],
+      "home": "A",
+      "size": [
+        0.12,
+        0.04,
+        0.06
+      ],
+      "shape": "box",
+      "color": "#C9A24E",
+      "verb": "Take",
+      "look": {
+        "kit": "spectacles"
+      },
+      "rot": [
+        0,
+        15,
+        0
+      ],
+      "place": "shop"
+    },
+    {
+      "id": "shop.snow_globe",
+      "kind": "hidden",
+      "label": "a snow globe on the tea table",
+      "pos": [
+        -1.3,
+        0.61,
+        -1.12
+      ],
+      "home": "A",
+      "size": [
+        0.1,
+        0.12,
+        0.1
+      ],
+      "shape": "sphere",
+      "color": "#cfe3ea",
+      "verb": "Look",
+      "look": {
+        "kit": "snow_globe"
+      },
+      "place": "shop"
+    },
+    {
+      "id": "shop.compass",
+      "kind": "hidden",
+      "label": "a brass compass on the back table",
+      "pos": [
+        0.62,
+        0.57,
+        -5.98
+      ],
+      "home": "C",
+      "size": [
+        0.09,
+        0.04,
+        0.09
+      ],
+      "shape": "cylinder",
+      "color": "#C9A24E",
+      "verb": "Take",
+      "look": {
+        "kit": "compass"
+      },
+      "place": "shop"
+    },
+    {
+      "id": "shop.toy_mouse",
+      "kind": "hidden",
+      "label": "a clockwork toy mouse by the mouse hole",
+      "pos": [
+        -0.3,
+        0.025,
+        -3.45
+      ],
+      "home": "A",
+      "size": [
+        0.06,
+        0.05,
+        0.12
+      ],
+      "shape": "box",
+      "color": "#7a7a7a",
+      "verb": "Take",
+      "look": {
+        "kit": "toy_mouse"
+      },
+      "rot": [
+        0,
+        -60,
+        0
+      ],
+      "place": "shop"
     }
   ]
 }

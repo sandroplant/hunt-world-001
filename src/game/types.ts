@@ -53,6 +53,18 @@ export interface Look {
   glass?: boolean;
   /** Emissive colour (a lit pane). */
   emissive?: string;
+  /** A code-made object from the kit (src/render/kit), fitted into the box (round 5). */
+  kit?: string;
+  /** Keep only these named nodes of the model (a chest's body without its drawers). */
+  only?: string[];
+  /** Use this one named node of the model (one drawer of a chest), fitted into the box. */
+  node?: string;
+  /** Paint the model one colour, keeping its grain in the normal and roughness maps (the blue drawer). */
+  tint?: string;
+  /** Draw nothing: the thing is shown by something else (a model, an opening). Picking and sight still use the box. */
+  none?: boolean;
+  /** A warm point light at this thing (shop lamps); y is metres above the box's centre. */
+  light?: { color: string; intensity: number; distance: number; y?: number; shadow?: boolean };
 }
 
 export interface PlaceData {
@@ -67,6 +79,8 @@ export interface PlaceData {
   envIntensity?: number;
   skyIntensity?: number;
   mist?: [string, number, number];
+  /** Indoors at dusk (round 5, the shop): a cool light through the front and a plain background colour. */
+  dusk?: { dir: Vec3; color: string; intensity: number; background?: string };
   exposure?: number;
   unit: string;
   reach: number;
@@ -134,6 +148,8 @@ export interface WorldObject {
   initial: string;
   transitions: Transition[];
   visual?: Record<string, VisualState>;
+  /** How the thing looks in a realistic place (visual only; the box above stays its size for picking and sight). */
+  look?: Look;
   verb?: string; // hidden objects
   to?: string; // dive targets
   night?: boolean; // false = absent at night
@@ -168,6 +184,11 @@ export interface PropData {
   platform?: boolean;
   /** false: never blocks walking (thin hairs, whiskers). */
   solid?: boolean;
+  /**
+   * Instances stand in rows instead of a random scatter (books on shelves, round 5). Each row is a shelf height
+   * (the instances' bottoms, relative to pos); they run along x or z over `length`, centred on pos, packed by width.
+   */
+  rows?: { y: number[]; along: 'x' | 'z'; length: number; gap?: number };
   look?: Look;
 }
 

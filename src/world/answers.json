@@ -91,8 +91,8 @@
     "S2": {
       "place": "shop",
       "viewpoint": "A",
-      "yaw": -12,
-      "pitch": -3,
+      "yaw": 6,
+      "pitch": -6,
       "zoom": 1.3,
       "pos": [
         0,
@@ -159,6 +159,39 @@
     "note": "A hidden object is judged from the player's current spot: centered within hitDeg (never under 44 CSS px) and zoomed to at least minZoom scaled by distance / refDist."
   },
   "hidden": {
+    "street.starfish": {
+      "place": "street",
+      "pos": [
+        -1.3,
+        0.01,
+        -3.6
+      ],
+      "refDist": 4.1446,
+      "minZoom": 2,
+      "hitDeg": 6
+    },
+    "street.sailboat": {
+      "place": "street",
+      "pos": [
+        1.9,
+        0.155,
+        -1.45
+      ],
+      "refDist": 2.7929,
+      "minZoom": 2,
+      "hitDeg": 6
+    },
+    "street.hat": {
+      "place": "street",
+      "pos": [
+        3.15,
+        0.46,
+        -1.02
+      ],
+      "refDist": 3.5018,
+      "minZoom": 2,
+      "hitDeg": 6
+    },
     "street.umbrella": {
       "place": "street",
       "pos": [
@@ -170,6 +203,17 @@
       "minZoom": 2.5,
       "hitDeg": 6
     },
+    "street.glass_float": {
+      "place": "street",
+      "pos": [
+        -1.4,
+        0.08,
+        -17.05
+      ],
+      "refDist": 6.2748,
+      "minZoom": 2.5,
+      "hitDeg": 4
+    },
     "street.ship_bottle": {
       "place": "street",
       "pos": [
@@ -180,25 +224,71 @@
       "refDist": 10.4,
       "minZoom": 3.0
     },
-    "shop.teacup_star": {
+    "shop.spectacles": {
       "place": "shop",
       "pos": [
-        3.0981,
-        2.6065,
-        -1.8082
+        -1.4,
+        1.02,
+        -3.78
       ],
-      "refDist": 1.8,
-      "minZoom": 3.0
+      "refDist": 4.0724,
+      "minZoom": 2,
+      "hitDeg": 6
+    },
+    "shop.snow_globe": {
+      "place": "shop",
+      "pos": [
+        -1.3,
+        0.61,
+        -1.12
+      ],
+      "refDist": 1.981,
+      "minZoom": 2,
+      "hitDeg": 6
+    },
+    "shop.compass": {
+      "place": "shop",
+      "pos": [
+        0.62,
+        0.57,
+        -5.98
+      ],
+      "refDist": 1.54,
+      "minZoom": 2,
+      "hitDeg": 6
     },
     "shop.marble": {
       "place": "shop",
       "pos": [
-        1.3027,
-        0.0136,
-        -3.5029
+        2.25,
+        0.015,
+        -4.35
       ],
-      "refDist": 4.06,
-      "minZoom": 3.0
+      "refDist": 2.1811,
+      "minZoom": 2.5,
+      "hitDeg": 4
+    },
+    "shop.toy_mouse": {
+      "place": "shop",
+      "pos": [
+        -0.3,
+        0.025,
+        -3.45
+      ],
+      "refDist": 3.8044,
+      "minZoom": 2.5,
+      "hitDeg": 4
+    },
+    "shop.teacup_star": {
+      "place": "shop",
+      "pos": [
+        2.0,
+        1.055,
+        -0.1
+      ],
+      "refDist": 2.9778,
+      "minZoom": 3,
+      "hitDeg": 3
     },
     "drawer.paper_boat": {
       "place": "drawer",

@@ -8,6 +8,10 @@
   "restartConfirm": "Start again from the beginning? Everything found will be lost.",
   "keepLooking": "Keep looking",
   "ending": "The street is quiet. The lamps are lit. The moon has its light back.",
+  "toBeContinued": "To be continued",
+  "goalLabel": "Next: open the sketchbook",
+  "goalTag": "next",
+  "endingContinued": "The blue drawer opens onto somewhere else. The hunt goes on from there, in the next chapter.",
   "endStats": {
     "time": "Time",
     "finds": "Finds",
@@ -75,7 +79,15 @@
     "eye.comet": "a comet with a tail",
     "eye.lighthouse_reflection": "a tiny lighthouse",
     "moon.footprint": "a footprint",
-    "moon.glove": "a glove"
+    "moon.glove": "a glove",
+    "street.starfish": "a starfish",
+    "street.sailboat": "a toy sailboat",
+    "street.hat": "a fisherman's hat",
+    "street.glass_float": "a glass fishing float",
+    "shop.spectacles": "a pair of round spectacles",
+    "shop.snow_globe": "a snow globe",
+    "shop.compass": "a pocket compass",
+    "shop.toy_mouse": "a clockwork mouse"
   },
   "items": {
     "key": "a tiny brass key",
