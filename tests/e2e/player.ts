@@ -167,7 +167,7 @@ export async function playPlaceOne(page: Page, hand: Hand): Promise<number> {
   for (let attempt = 0; attempt < 6; attempt++) {
     await tap(page, hand, size.width / 2, groundRow(size, 4));
     await waitForWalk(page, 4);
-    if (await scanForVerb(page, hand, 'Look closer', 5, 25, true)) break;
+    if (await scanForVerb(page, hand, 'Look closer', 6, 18, true)) break;
   }
   await expect(page.locator('#verb')).toHaveText('Look closer');
   await expect(page.locator('#crosshair')).toHaveClass(/dive/);

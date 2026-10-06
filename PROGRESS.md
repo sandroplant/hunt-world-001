@@ -10,7 +10,7 @@
 - **One look.** The shop is dressed with the eight Poly Haven models (low chest of drawers holding the blue drawer, grandfather clock, display shelves, two worn bookshelves with books on their shelves, two wooden tables, the tea set, the mantel clock, the oil lamp), warm lamp light and a dusk window. Everything the pack has no model for is a code-made, textured object (`src/render/kit/`, 37 builders). No flat placeholder shape is left in the street or the shop; the key is polished brass beside the lamp.
 - **Download:** 12.5 MB for both places (512 px textures and models, 1k HDRI; `tools/download_size.mjs`).
 - **Seam:** street→shop 0.85, shop→drawer 0.71 (`node tools/seam.mjs --only=street,shop`; the dev build keeps the real drawer place behind the opening).
-- Tests: E2E_SUMMARY
+- Tests: 192 unit tests pass. End-to-end on the final build: the mouse run (960×600) and the touch run (390×844) go from Begin to "To be continued" with real input on the playtest build, through the goal card, the key, one find (counter 0 → 1 of 12) and the blue drawer; the panels test and all 8 dev-build tests pass. **Failing: both keyboard tests** (the new keyboard run to the ending never got past the key; the place-1 keyboard run passed once this round and timed out on the last run). See D-011 "Testing" and "Not proven".
 - Screenshots in `REVIEW/screenshots/round5/`: street arrival, the shop from the door (high tier, and the low tier from the mouse test), the blue drawer shut and open, the ending screen, phone frames (390×844).
 - Everything from the earlier rounds: the six-place chain on the dev build, free walking, the dive and its seam check, sketches, hints, save and restart, touch, mouse and keyboard, quality tiers, recorders, dev-only debug tools.
 

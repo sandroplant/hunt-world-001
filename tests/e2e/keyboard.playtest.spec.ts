@@ -1,8 +1,8 @@
 import { expect, test } from '@playwright/test';
 
-// The realistic street and shop render in software here; a smaller window and the low tier keep frames coming
-// (round 5: 960x600 became too slow once the street also draws the dressed shop in its door).
-test.use({ viewport: { width: 800, height: 500 } });
+// The realistic street renders in software here; a smaller window and the low tier keep frames coming. (Not
+// smaller than this: at 500 px high a tap 4 m ahead lands on the lens button.)
+test.use({ viewport: { width: 960, height: 600 } });
 import { capture } from './helpers';
 import { expectEnding, frameMs } from './player';
 
@@ -102,18 +102,45 @@ test('keyboard: the shop to "To be continued", with the goal card and the find c
     }
     return false;
   };
-  /** Walk ahead in short steps, looking for the verb after each, the way a player edges closer. */
+  /** Look around a small patch (yaw and pitch) for the verb; leaves the view on it, or puts the view back. */
+  const patch = async (v: string | string[], stepDeg: number, yawRange: number, pitchRange: number): Promise<boolean> => {
+    let py = 0;
+    for (const p of [0, -stepDeg, stepDeg, -2 * stepDeg, 2 * stepDeg].filter((x) => Math.abs(x) <= pitchRange)) {
+      const d = p - py;
+      if (d) await hold(d > 0 ? 'ArrowUp' : 'ArrowDown', Math.abs(d) / 70);
+      py = p;
+      if (await scan(v, stepDeg, yawRange)) return true;
+    }
+    if (py) await hold(py > 0 ? 'ArrowDown' : 'ArrowUp', Math.abs(py) / 70);
+    return false;
+  };
+  /** Walk ahead in short steps, looking around after each, the way a player edges closer. */
   const approach = async (v: string | string[], stepS: number, tries: number, stepDeg: number, rangeDeg: number): Promise<boolean> => {
     for (let i = 0; i < tries; i++) {
-      if (await scan(v, stepDeg, rangeDeg)) return true;
+      if (await patch(v, stepDeg, rangeDeg, 2 * stepDeg)) return true;
       await hold('w', stepS);
     }
-    return scan(v, stepDeg, rangeDeg);
+    return patch(v, stepDeg, rangeDeg, 2 * stepDeg);
   };
-  // Place 1: left toward the glowing door, walk until the crosshair reacts, Enter.
-  await hold('ArrowLeft', 37 / 70);
-  for (let attempt = 0; attempt < 8 && !(await scan('Look closer', 8, 40)); attempt++) await hold('w', 1.2);
+  const shot = (name: string) => page.screenshot({ path: `test-results/keyboard-shop-${name}.png` });
+  // Place 1, the same moves as the place-1 keyboard test: left toward the glowing door, then walk ahead in
+  // strides, sweeping left and right after each until the crosshair shows the opening; Enter.
+  await hold('ArrowLeft', 0.53);
+  const sweep = async (): Promise<boolean> => {
+    const offsets = [0, 60, -60, 120, -120, 180, -180, 240, -240, 300, -300, 380, -380, 470, -470];
+    let at = 0;
+    for (const o of offsets) {
+      const d = o - at;
+      if (d) await hold(d > 0 ? 'ArrowLeft' : 'ArrowRight', Math.abs(d) / 1000);
+      at = o;
+      if (await is('Look closer')) return true;
+    }
+    if (at) await hold(at > 0 ? 'ArrowRight' : 'ArrowLeft', Math.abs(at) / 1000);
+    return false;
+  };
+  for (let attempt = 0; attempt < 8 && !(await sweep()); attempt++) await hold('w', 0.9);
   await expect(verb).toHaveText('Look closer');
+  await expect(page.locator('#crosshair')).toHaveClass(/dive/);
   await page.keyboard.press('Enter');
   await expect(page.locator('#ribbon .chip.here')).toHaveText('Shop', { timeout: 8000 });
   // The goal card: Tab reaches it, Enter opens the sketchbook; Escape closes it.
@@ -129,13 +156,18 @@ test('keyboard: the shop to "To be continued", with the goal card and the find c
   await page.locator('#goal').evaluate((e) => (e as HTMLElement).blur());
   // Look down a little and edge toward the counter until the key answers.
   await hold('ArrowDown', 30 / 70);
-  expect(await approach('Take', 0.3, 10, 4, 12), 'the key shows "Take"').toBe(true);
+  await shot('1-arrived');
+  const key = await approach('Take', 0.25, 12, 4, 8);
+  await shot('2-key');
+  expect(key, 'the key shows "Take"').toBe(true);
   await page.keyboard.press('e');
   await expect(page.locator('#pocket')).toContainText('key');
   // The spectacles on the counter to the left: a find, no lens needed this close.
   await hold('ArrowLeft', 55 / 70);
   await hold('ArrowUp', 10 / 70);
-  expect(await scan('Take', 4, 24, 'ArrowDown'), 'the spectacles show "Take"').toBe(true);
+  const spectacles = await patch('Take', 4, 24, 8);
+  await shot('3-spectacles');
+  expect(spectacles, 'the spectacles show "Take"').toBe(true);
   await page.keyboard.press('e');
   await expect(page.locator('#counter')).toHaveText('1 of 12 found', { timeout: 15_000 });
   // Turn right toward the low chest and edge toward it until the blue drawer answers.
@@ -147,6 +179,7 @@ test('keyboard: the shop to "To be continued", with the goal card and the find c
     ok = await scan(['Unlock', 'Use'], 5, 20, 'ArrowDown');
     if (!ok) await hold('ArrowUp', 25 / 70);
   }
+  await shot('4-drawer');
   expect(ok, 'the blue drawer shows a verb').toBe(true);
   await expect(verb).toHaveText('Unlock');
   await page.keyboard.press('e');
@@ -158,6 +191,7 @@ test('keyboard: the shop to "To be continued", with the goal card and the find c
     await hold('s', 0.2);
     inside = await scan('Look closer', 4, 16, 'ArrowDown');
   }
+  await shot('5-inside');
   expect(inside, 'the open drawer offers "Look closer"').toBe(true);
   await page.keyboard.press('Enter');
   await expect(page.locator('#end')).toHaveClass(/show/, { timeout: 60_000 });

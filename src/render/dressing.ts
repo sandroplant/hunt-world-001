@@ -410,7 +410,10 @@ function hideGray(gray: THREE.Object3D | undefined): void {
   const m = (gray as THREE.Mesh | undefined)?.material;
   if (!m) return;
   for (const x of Array.isArray(m) ? m : [m]) x.visible = false;
-  if (gray) gray.castShadow = false;
+  if (gray) {
+    gray.castShadow = false;
+    gray.userData.sightOnly = true;
+  }
 }
 
 /** A triangular prism along z: group 0 = the two slopes, group 1 = the two gable triangles. */

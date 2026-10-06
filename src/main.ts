@@ -533,7 +533,8 @@ export class App {
     const ray = new THREE.Raycaster();
     ray.setFromCamera(ndc, this.camera.camera);
     ray.far = this.world.places[this.state.place]!.far;
-    const hit = ray.intersectObjects(this.current.solids, false).find((h) => h.object.visible);
+    // The plain boxes kept behind dressed props only for sight lines are not ground a player can tap (round 5).
+    const hit = ray.intersectObjects(this.current.solids, false).find((h) => h.object.visible && !h.object.userData.sightOnly);
     if (hit) return [hit.point.x, hit.point.z];
     const floor = new THREE.Plane(new THREE.Vector3(0, 1, 0), -this.world.walkMap(this.state.place).base);
     const pt = ray.ray.intersectPlane(floor, new THREE.Vector3());
@@ -805,17 +806,22 @@ export class App {
 
   // ---- per-frame ------------------------------------------------------------------------------
 
-  /** Keep the openings showing the next place live. Cheap: one small render, skipped on alternate frames on Low. */
+  /**
+   * Keep the openings showing the next place live. One small render a frame on High. On Low it is redrawn only every
+   * 20th frame: the picture is taken from a fixed pose, so it barely changes, and the dressed shop is the heaviest
+   * thing in the street's frame (round 5).
+   */
   private updatePortals(): void {
     const scene = this.current;
     if (!scene.portals.some((p) => p.mesh.visible)) return;
-    if (this.renderer.quality === 'low' && this.frameCount % 2 === 1) return;
     const groups = new Set(scene.portals.filter((p) => p.mesh.visible).map((p) => p.to));
+    const redraw = this.renderer.quality === 'high' || this.frameCount % 20 === 1;
     for (const to of groups) {
       if (!inScope(this.world, this.scope, to)) {
         scene.setPortalTexture(to, this.glowTexture());
         continue;
       }
+      if (!redraw) continue;
       const next = this.scene(to);
       const first = scene.portals.find((p) => p.to === to)!;
       this.portalRenderer.render(next, approachPose(next, first.width / first.height));
