@@ -2,9 +2,28 @@
 // network at runtime beyond the static site itself. Only what a place asks for is loaded, and each file once.
 import * as THREE from 'three';
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
-import { RGBELoader } from 'three/examples/jsm/loaders/RGBELoader.js';
+import { HDRLoader } from 'three/examples/jsm/loaders/HDRLoader.js';
 
 const BASE = './assets/polyhaven/';
+
+/**
+ * Texture sets and models load at 512 px (*_512.jpg, *_512.gltf, made by tools/resize_assets.mjs) unless named
+ * here; these stay at the original 1k. Add a name only when a side-by-side shows 512 is visibly worse.
+ */
+export const FULL_RES: ReadonlySet<string> = new Set<string>([]);
+
+/** HDRIs served from a smaller derived file (tools/hdr_downsample.mjs). Callers keep using the original name. */
+const HDRI_FILES: Readonly<Record<string, string>> = { belfast_sunset_puresky_2k: 'belfast_sunset_puresky_1k' };
+
+/** Dev-only `?res=1k`: load the original 1k textures/models and the original HDRI everywhere, for comparison. */
+function forceOriginals(): boolean {
+  return !__PLAYTEST__ && typeof location !== 'undefined' && new URLSearchParams(location.search).get('res') === '1k';
+}
+
+/** File suffix for a texture set or model. */
+function res(name: string): '1k' | '512' {
+  return FULL_RES.has(name) || forceOriginals() ? '1k' : '512';
+}
 
 export interface TextureSet {
   map: THREE.Texture;
@@ -19,7 +38,7 @@ export class Assets {
   private hdris = new Map<string, Promise<THREE.DataTexture>>();
   private textureLoader = new THREE.TextureLoader();
   private gltfLoader = new GLTFLoader();
-  private rgbeLoader = new RGBELoader();
+  private hdrLoader = new HDRLoader();
   /** Every file requested, for the size report. */
   readonly requested = new Set<string>();
 
@@ -44,7 +63,8 @@ export class Assets {
     let p = this.textureSets.get(name);
     if (!p) {
       const dir = `${BASE}textures/${name}/${name}`;
-      p = Promise.all([this.texture(`${dir}_diff_1k.jpg`, true), this.texture(`${dir}_nor_gl_1k.jpg`, false), this.texture(`${dir}_arm_1k.jpg`, false)]).then(([map, normalMap, arm]) => ({ map, normalMap, arm }));
+      const r = res(name);
+      p = Promise.all([this.texture(`${dir}_diff_${r}.jpg`, true), this.texture(`${dir}_nor_gl_${r}.jpg`, false), this.texture(`${dir}_arm_${r}.jpg`, false)]).then(([map, normalMap, arm]) => ({ map, normalMap, arm }));
       this.textureSets.set(name, p);
     }
     return p;
@@ -54,7 +74,7 @@ export class Assets {
   model(name: string): Promise<THREE.Group> {
     let p = this.models.get(name);
     if (!p) {
-      const url = `${BASE}models/${name}/${name}_1k.gltf`;
+      const url = `${BASE}models/${name}/${name}_${res(name)}.gltf`;
       this.requested.add(url);
       p = new Promise((resolve, reject) => {
         this.gltfLoader.load(
@@ -80,10 +100,11 @@ export class Assets {
   hdri(name: string): Promise<THREE.DataTexture> {
     let p = this.hdris.get(name);
     if (!p) {
-      const url = `${BASE}hdri/${name}.hdr`;
+      const file = forceOriginals() ? name : (HDRI_FILES[name] ?? name);
+      const url = `${BASE}hdri/${file}.hdr`;
       this.requested.add(url);
       p = new Promise((resolve, reject) => {
-        this.rgbeLoader.load(
+        this.hdrLoader.load(
           url,
           (t) => {
             t.mapping = THREE.EquirectangularReflectionMapping;

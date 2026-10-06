@@ -5,6 +5,7 @@ import * as THREE from 'three';
 import type { PlaceData, PropData, Vec3 } from '../game/types';
 import { propInstances } from '../game/props';
 import { Assets, boxMaterials, texturedMaterial, type TextureSet } from './assets';
+import { kit } from './kit';
 
 const DEG = Math.PI / 180;
 
@@ -48,7 +49,18 @@ export class Dressing {
       scene.environmentIntensity = this.place.envIntensity ?? 1;
       scene.backgroundIntensity = this.place.skyIntensity ?? 1;
     }
-    if (this.place.mist) scene.fog = new THREE.Fog(this.place.mist[0], this.place.mist[1], this.place.mist[2]);
+    // A realistic place without mist has no fog at all: fog is mixed after tone mapping on screen but before it
+    // in an opening's picture, so an indoor place with fog could not match at the hand-over (round 5).
+    scene.fog = this.place.mist ? new THREE.Fog(this.place.mist[0], this.place.mist[1], this.place.mist[2]) : null;
+    if (this.place.dusk) {
+      // Indoors at dusk: a cool light falling in through the front, the sky only faintly in reflections.
+      const d = this.place.dusk;
+      const light = new THREE.DirectionalLight(d.color, d.intensity);
+      light.position.set(d.dir[0] * 20, d.dir[1] * 20, d.dir[2] * 20);
+      light.target.position.set(0, 0, -4);
+      scene.add(light, light.target);
+      if (d.background) scene.background = new THREE.Color(d.background);
+    }
     if (this.place.sun) {
       const s = this.place.sun;
       const light = new THREE.DirectionalLight(s.color, s.intensity);
@@ -74,11 +86,27 @@ export class Dressing {
   private async dress(p: PropData): Promise<void> {
     const look = p.look!;
     const gray = this.target.propMesh(p.id);
+    if (look.light) this.light(p);
+    if (look.kit) return this.kitProp(p, gray);
     if (look.house) return this.house(p, gray);
     if (look.water) return this.water(p, gray);
     if (look.model) return this.model(p, gray);
     if (look.glass) {
       const m = new THREE.MeshPhysicalMaterial({ color: look.color ?? '#0b1420', roughness: 0.05, metalness: 0, transparent: true, opacity: 0.9, emissive: look.emissive ? new THREE.Color(look.emissive) : new THREE.Color('#000000'), emissiveIntensity: look.emissive ? 2.5 : 0 });
+      // A lit pane shows its glazing bars and curtains, so it reads as a window and not a flat card (round 5).
+      if (look.emissive) m.emissiveMap = this.litPane();
+      // A puddle: thin, see-through, a mirror for the sky with a little ripple (round 5).
+      if (p.size[1] < 0.03) {
+        m.opacity = 0.62;
+        m.roughness = 0.02;
+        m.envMapIntensity = 1.6;
+        const set = await this.assets.textureSet('cobblestone_floor_08');
+        const n = set.normalMap.clone();
+        n.repeat.set(3, 3);
+        n.needsUpdate = true;
+        m.normalMap = n;
+        m.normalScale.set(0.06, 0.06);
+      }
       this.disposables.push(m);
       this.swapMaterial(gray, m);
       return;
@@ -98,6 +126,42 @@ export class Dressing {
     }
   }
 
+  private pane: THREE.CanvasTexture | null = null;
+
+  private litPane(): THREE.CanvasTexture {
+    if (this.pane) return this.pane;
+    const c = document.createElement('canvas');
+    c.width = 128;
+    c.height = 128;
+    const g = c.getContext('2d')!;
+    const glow = g.createRadialGradient(64, 70, 6, 64, 70, 90);
+    glow.addColorStop(0, '#ffffff');
+    glow.addColorStop(1, '#6a5a48');
+    g.fillStyle = glow;
+    g.fillRect(0, 0, 128, 128);
+    // Curtains drawn to the sides, with soft folds.
+    for (const side of [0, 1]) {
+      for (let i = 0; i < 6; i++) {
+        g.fillStyle = i % 2 ? 'rgba(70,40,30,0.75)' : 'rgba(110,60,40,0.7)';
+        const x = side ? 128 - 30 + i * 5 : i * 5;
+        g.fillRect(x, 0, 5, 128);
+      }
+    }
+    // Glazing bars and the frame.
+    g.fillStyle = '#120d0a';
+    g.fillRect(0, 0, 128, 7);
+    g.fillRect(0, 121, 128, 7);
+    g.fillRect(0, 0, 7, 128);
+    g.fillRect(121, 0, 7, 128);
+    g.fillRect(61, 0, 6, 128);
+    g.fillRect(0, 58, 128, 6);
+    const t = new THREE.CanvasTexture(c);
+    t.colorSpace = THREE.SRGBColorSpace;
+    this.pane = t;
+    this.disposables.push(t);
+    return t;
+  }
+
   private swapMaterial(obj: THREE.Object3D | undefined, m: THREE.Material | THREE.Material[]): void {
     if (!obj) return;
     const mesh = obj as THREE.Mesh;
@@ -109,6 +173,70 @@ export class Dressing {
     mesh.receiveShadow = true;
   }
 
+  /** A warm point light at a prop (shop lamps). */
+  private light(p: PropData): void {
+    const l = p.look!.light!;
+    const light = new THREE.PointLight(l.color, l.intensity, l.distance, 2);
+    light.position.set(p.pos[0], p.pos[1] + (l.y ?? 0), p.pos[2]);
+    if (l.shadow && this.target.quality === 'high') {
+      light.castShadow = true;
+      light.shadow.mapSize.set(1024, 1024);
+      light.shadow.bias = -0.002;
+    }
+    this.target.root.add(light);
+    this.disposables.push(light);
+  }
+
+  /** A kit object per instance; a single-mesh kit object is drawn as one instanced mesh (books, jars). */
+  private async kitProp(p: PropData, gray: THREE.Object3D | undefined): Promise<void> {
+    const look = p.look!;
+    const builder = kit[look.kit!];
+    if (!builder) throw new Error(`no kit builder "${look.kit}"`);
+    const quarter = Math.abs(((((look.yaw ?? 0) % 180) + 180) % 180) - 90) < 1;
+    const size: [number, number, number] = quarter ? [p.size[2], p.size[1], p.size[0]] : [p.size[0], p.size[1], p.size[2]];
+    const instances = propInstances(p, this.target.quality);
+    const first = await builder(size, { quality: this.target.quality, seed: p.seed ?? 1, assets: this.assets });
+    this.disposables.push({ dispose: () => first.dispose() });
+    const yaw = (look.yaw ?? 0) * DEG;
+    const single = (first.object as THREE.Mesh).isMesh ? (first.object as THREE.Mesh) : null;
+    if (instances.length > 1 && single) {
+      const inst = new THREE.InstancedMesh(single.geometry, single.material, instances.length);
+      const m = new THREE.Matrix4();
+      const q = new THREE.Quaternion();
+      const c = new THREE.Color();
+      for (const [i, it] of instances.entries()) {
+        q.setFromEuler(new THREE.Euler(it.rot[0] * DEG, it.rot[1] * DEG + yaw, it.rot[2] * DEG));
+        // The scale is per world axis; inside the turned mesh a quarter turn swaps x and z.
+        const sx = it.size[0] / p.size[0], sy = it.size[1] / p.size[1], sz = it.size[2] / p.size[2];
+        m.compose(new THREE.Vector3(...it.pos), q, quarter ? new THREE.Vector3(sz, sy, sx) : new THREE.Vector3(sx, sy, sz));
+        inst.setMatrixAt(i, m);
+        if (p.palette) inst.setColorAt(i, c.set(p.palette[it.paletteIndex]!));
+      }
+      inst.castShadow = true;
+      inst.receiveShadow = true;
+      this.target.root.add(inst);
+    } else {
+      for (const [i, it] of instances.entries()) {
+        const item = i === 0 ? first : await builder(size, { quality: this.target.quality, seed: (p.seed ?? 1) * 31 + i, assets: this.assets });
+        if (i > 0) this.disposables.push({ dispose: () => item.dispose() });
+        const holder = new THREE.Group();
+        item.object.rotation.y += yaw;
+        holder.add(item.object);
+        holder.position.set(...it.pos);
+        holder.rotation.set(it.rot[0] * DEG, it.rot[1] * DEG, it.rot[2] * DEG);
+        holder.scale.set(it.size[0] / p.size[0], it.size[1] / p.size[1], it.size[2] / p.size[2]);
+        holder.traverse((o) => {
+          if ((o as THREE.Mesh).isMesh) {
+            o.castShadow = true;
+            o.receiveShadow = true;
+          }
+        });
+        this.target.root.add(holder);
+      }
+    }
+    hideGray(gray);
+  }
+
   private async model(p: PropData, gray: THREE.Object3D | undefined): Promise<void> {
     const look = p.look!;
     const src = await this.assets.model(look.model!);
@@ -117,6 +245,12 @@ export class Dressing {
     const fit = look.fit ?? 'height';
     for (const inst of propInstances(p, this.target.quality)) {
       const g = src.clone();
+      if (look.only) {
+        const keep = new Set(look.only);
+        g.traverse((o) => {
+          if ((o as THREE.Mesh).isMesh && !keep.has(o.name)) o.visible = false;
+        });
+      }
       let sx: number, sy: number, sz: number;
       if (fit === 'box') {
         // A model turned a quarter swaps its x and z against the box.
@@ -137,7 +271,7 @@ export class Dressing {
       holder.rotation.y = (inst.rot[1] + (look.yaw ?? 0)) * DEG;
       this.target.root.add(holder);
     }
-    if (gray) gray.visible = false;
+    hideGray(gray);
   }
 
   private async water(p: PropData, gray: THREE.Object3D | undefined): Promise<void> {
@@ -157,7 +291,7 @@ export class Dressing {
     mesh.receiveShadow = true;
     this.target.root.add(mesh);
     this.waters.push(m);
-    if (gray) gray.visible = false;
+    hideGray(gray);
   }
 
   /** A house with depth: plaster walls, a tiled pitched roof with gable ends, chimney, gutter and downpipe,
@@ -265,6 +399,20 @@ export class Dressing {
     for (const d of this.disposables) d.dispose();
     this.disposables = [];
     this.sun?.dispose();
+  }
+}
+
+/**
+ * Stop drawing a prop's plain box once its dressed version is in, but keep it in the scene: sight lines for hidden
+ * things still meet it, so nothing is "seen" through a shelf or a chest that is drawn as a model (round 5).
+ */
+function hideGray(gray: THREE.Object3D | undefined): void {
+  const m = (gray as THREE.Mesh | undefined)?.material;
+  if (!m) return;
+  for (const x of Array.isArray(m) ? m : [m]) x.visible = false;
+  if (gray) {
+    gray.castShadow = false;
+    gray.userData.sightOnly = true;
   }
 }
 

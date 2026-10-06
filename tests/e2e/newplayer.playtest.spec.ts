@@ -1,6 +1,7 @@
 import { expect, test } from '@playwright/test';
 
-// The realistic street renders in software here; a smaller window and the low tier keep frames coming.
+// The realistic street renders in software here; a smaller window and the low tier keep frames coming. (Not
+// smaller than this: at 500 px high a tap 4 m ahead lands on the lens button.)
 test.use({ viewport: { width: 960, height: 600 } });
 import { capture } from './helpers';
 import { lastFrameMs, playPlaceOne } from './player';
@@ -8,7 +9,7 @@ import { lastFrameMs, playPlaceOne } from './player';
 // Founder rule (third round): a feature counts as working only when an end-to-end test reaches it with real
 // clicks or taps on the playtest build. This test uses no debug hooks (the playtest build has none).
 test('a new player starts, walks and dives into the shop with real clicks, within 60 s', async ({ page, baseURL }) => {
-  test.setTimeout(300_000);
+  test.setTimeout(600_000);
   const c = capture(page, baseURL!);
   await page.goto('/?quality=low');
   const seconds = await playPlaceOne(page, 'mouse');

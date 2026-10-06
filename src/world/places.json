@@ -374,7 +374,7 @@
         },
         "B": {
           "pos": [
-            2.2,
+            1.6,
             1.6,
             -3.0
           ],
@@ -387,13 +387,13 @@
             -50,
             60
           ],
-          "describe": "beside the chest of little drawers"
+          "describe": "in front of the low chest of drawers"
         },
         "C": {
           "pos": [
-            -1.8,
+            1.0,
             1.6,
-            -5.2
+            -4.9
           ],
           "heading": 0,
           "yaw": [
@@ -404,7 +404,7 @@
             -45,
             50
           ],
-          "describe": "the end of the counter, by the tall clock"
+          "describe": "behind the counter, by the table with the globe"
         },
         "D": {
           "pos": [
@@ -421,7 +421,7 @@
             -45,
             50
           ],
-          "describe": "the left-hand shelves"
+          "describe": "between the bookshelves and the tea table"
         }
       },
       "landmarks": [
@@ -429,32 +429,32 @@
           "text": "the tall clock behind the counter",
           "at": [
             "A",
-            -10,
+            8,
+            3
+          ]
+        },
+        {
+          "text": "the counter, with a sleeping cat and an oil lamp",
+          "at": [
+            "A",
+            5,
+            -12
+          ]
+        },
+        {
+          "text": "bookshelves along the left wall",
+          "at": [
+            "A",
+            55,
             5
           ]
         },
         {
-          "text": "the counter with brass scales",
+          "text": "a low chest of drawers on the right wall, one drawer painted blue",
           "at": [
             "A",
-            -12,
-            -8
-          ]
-        },
-        {
-          "text": "shelves to the ceiling on both walls",
-          "at": [
-            "A",
-            60,
-            20
-          ]
-        },
-        {
-          "text": "a chest of many small drawers on the right wall",
-          "at": [
-            "A",
-            -50,
-            -5
+            -40,
+            -12
           ]
         }
       ],
@@ -475,6 +475,21 @@
             0.6
           ]
         ]
+      },
+      "style": "realistic",
+      "hdri": "belfast_sunset_puresky_2k",
+      "envRotation": -100,
+      "envIntensity": 0.22,
+      "exposure": 0.5,
+      "dusk": {
+        "dir": [
+          0.25,
+          0.55,
+          1
+        ],
+        "color": "#8fa6d6",
+        "intensity": 0.5,
+        "background": "#141a2a"
       }
     },
     "drawer": {

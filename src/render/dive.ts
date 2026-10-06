@@ -44,6 +44,8 @@ export interface DivePlan {
   screenAspect: number;
   reducedMotion: boolean;
   startedAt: number;
+  /** Stop when the opening fills the screen, with no hand-over (the scoped build's ending dive, D-011). */
+  endAtHandover?: boolean;
 }
 
 /** The camera pose that sees exactly the visible crop of the opening: perpendicular, centred, fov matched. */
@@ -123,7 +125,7 @@ export class DiveAnimator {
     if (!p || !this.viewPose || !this.handover) return null;
     const t = this.freezeAt ?? clamp((now - p.startedAt) / DIVE_MS, 0, 1);
     this.progress = t;
-    const done = this.freezeAt === null && t >= 1;
+    const done = this.freezeAt === null && (t >= 1 || (!!p.endAtHandover && t >= 0.5));
     this.handedOver = t >= 0.5;
     if (p.reducedMotion) {
       const fade = t < 0.35 ? 0 : t < 0.5 ? (t - 0.35) / 0.15 : t < 0.65 ? 1 - (t - 0.5) / 0.15 : 0;
@@ -134,9 +136,10 @@ export class DiveAnimator {
       return { scene: second ? p.to.scene : p.from.scene, camera: second ? this.camB : this.camA, fade, done, second };
     }
     if (p.direction === 'in') {
-      if (t < 0.5) {
-        lerpPose(p.start, this.viewPose, easeInOut(t * 2), this.camA, p.screenAspect);
-        return { scene: p.from.scene, camera: this.camA, fade: 0, done: false, second: false };
+      if (t < 0.5 || p.endAtHandover) {
+        if (done) this.plan = null;
+        lerpPose(p.start, this.viewPose, easeInOut(Math.min(1, t * 2)), this.camA, p.screenAspect);
+        return { scene: p.from.scene, camera: this.camA, fade: 0, done, second: false };
       }
       lerpPose(this.handover, p.end, easeInOut((t - 0.5) * 2), this.camB, p.screenAspect);
       if (done) this.plan = null;

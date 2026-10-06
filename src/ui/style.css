@@ -44,7 +44,8 @@ button { font: inherit; color: inherit; }
 #bar-right { position: absolute; right: max(0.6rem, env(safe-area-inset-right)); top: max(0.5rem, env(safe-area-inset-top)); display: flex; gap: 0.4rem; }
 #bar-bottom { position: absolute; left: 50%; bottom: max(0.8rem, env(safe-area-inset-bottom)); transform: translateX(-50%); display: flex; gap: 0.6rem; align-items: flex-end; }
 #lens { width: 4rem; height: 4rem; border-radius: 50%; font-size: 1.4rem; }
-#pocket { position: absolute; right: max(0.6rem, env(safe-area-inset-right)); bottom: max(0.8rem, env(safe-area-inset-bottom)); background: rgba(27, 31, 42, 0.7); border: 1px dashed rgba(241, 230, 207, 0.4); border-radius: 0.6rem; padding: 0.4rem 0.6rem; font-size: 0.85rem; min-width: 5rem; text-align: center; }
+#corner { position: absolute; right: max(0.6rem, env(safe-area-inset-right)); bottom: max(0.8rem, env(safe-area-inset-bottom)); display: flex; flex-direction: column; align-items: flex-end; gap: 0.45rem; }
+#pocket { background: rgba(27, 31, 42, 0.7); border: 1px dashed rgba(241, 230, 207, 0.4); border-radius: 0.6rem; padding: 0.4rem 0.6rem; font-size: 0.85rem; min-width: 5rem; text-align: center; }
 #pocket:empty { display: none; }
 
 /* Sketch card (held up) */
@@ -124,3 +125,20 @@ button { font: inherit; color: inherit; }
 @keyframes bookpulse { 0% { transform: scale(1); box-shadow: 0 0 0 0 rgba(242,183,91,0.9); } 30% { transform: scale(1.18); box-shadow: 0 0 0 0.6rem rgba(242,183,91,0); } 60% { transform: scale(1); } 100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(242,183,91,0); } }
 #book .page.current { border: 2px solid var(--amber); }
 #book .page.current .btn.hint-offer { background: var(--amber); color: var(--ink); }
+
+/* Next-goal card (D-011): always on screen, bottom right; a tap opens the sketchbook */
+#goal { position: relative; display: none; width: min(30vw, 9.5rem); aspect-ratio: 4 / 3; padding: 0; background: var(--paper); border: 2px solid rgba(241, 230, 207, 0.9); border-radius: 0.35rem; box-shadow: 0 0.3rem 1rem rgba(0,0,0,0.55); overflow: hidden; cursor: pointer; transform: rotate(1.5deg); min-width: 2.75rem; min-height: 2.75rem; }
+#goal.show { display: block; }
+#goal canvas { position: absolute; inset: 0; width: 100%; height: 100%; }
+#goal .tag { position: absolute; left: 0.35rem; top: 0.15rem; color: var(--ink); font-size: 0.7rem; opacity: 0.7; letter-spacing: 0.04em; }
+#goal:focus-visible { outline: 2px solid var(--amber); outline-offset: 2px; }
+#goal:hover { border-color: var(--amber); }
+
+/* Find counter (D-011) */
+#counter { position: absolute; right: max(0.6rem, env(safe-area-inset-right)); top: calc(max(0.5rem, env(safe-area-inset-top)) + 3.2rem); display: none; font-size: 0.85rem; padding: 0.35rem 0.7rem; min-height: 2.75rem; }
+#counter.show { display: block; }
+#counter.bump { animation: bookpulse 900ms ease-out 1; }
+
+/* A find flying into the sketchbook */
+.fly { position: absolute; width: 3.6rem; height: 3.6rem; border-radius: 50%; background: radial-gradient(circle, rgba(255, 236, 170, 0.95), rgba(227, 179, 65, 0.85) 60%, rgba(227, 179, 65, 0) 72%); color: var(--ink); pointer-events: none; transform: translate(-50%, -50%); z-index: 20; }
+.fly svg { width: 70%; height: 70%; margin: 15%; display: block; }

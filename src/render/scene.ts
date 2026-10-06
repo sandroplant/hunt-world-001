@@ -6,13 +6,14 @@ import type { World } from '../game/world';
 import { propCount, propInstances } from '../game/props';
 import { Dressing } from './dressing';
 import type { Assets } from './assets';
+import { buildVisual, type Visual } from './visuals';
 
 export type Quality = 'high' | 'low';
 
 const unitGeometry: Record<Shape, () => THREE.BufferGeometry> = {
   box: () => new THREE.BoxGeometry(1, 1, 1),
-  sphere: () => new THREE.SphereGeometry(0.5, 12, 8),
-  cylinder: () => new THREE.CylinderGeometry(0.5, 0.5, 1, 12),
+  sphere: () => new THREE.SphereGeometry(0.5, 20, 12),
+  cylinder: () => new THREE.CylinderGeometry(0.5, 0.5, 1, 28),
   cone: () => new THREE.ConeGeometry(0.5, 1, 10),
 };
 
@@ -22,6 +23,15 @@ interface AmbientEntry {
   base: THREE.Vector3;
   phase: number;
   scale: number;
+}
+
+interface VisualEntry {
+  visual: Visual;
+  /** The unseen box it follows. */
+  proxy: THREE.Mesh;
+  /** Emissive colours as built, to restore after a glint. */
+  emissive: Array<{ m: THREE.MeshStandardMaterial; color: THREE.Color; intensity: number }>;
+  lightBase: number;
 }
 
 interface WiggleEntry {
@@ -49,6 +59,8 @@ export class PlaceScene {
   private propMeshes = new Map<string, THREE.Object3D>();
   readonly realistic: boolean;
   private dressing: Dressing | null = null;
+  /** Realistic looks of objects, by object id (round 5). */
+  private visuals = new Map<string, VisualEntry>();
   /** Resolves when the place's assets (if any) are in. Graybox places resolve at once. */
   readonly ready: Promise<void>;
 
@@ -82,11 +94,18 @@ export class PlaceScene {
         quality,
         propMesh: (id) => this.propMeshes.get(id),
       });
-      this.ready = this.dressing.done;
+      const looks = world.objectsIn(placeId).filter((o) => o.look).map((o, i) => this.addVisual(o, assets, i + 1));
+      this.ready = Promise.all([this.dressing.done, ...looks]).then(() => undefined);
     } else {
       this.ready = Promise.resolve();
     }
+    void this.ready.then(() => {
+      this.loaded = true;
+    });
   }
+
+  /** True once `ready` has resolved. */
+  loaded = false;
 
   private geometry(shape: Shape): THREE.BufferGeometry {
     const g = unitGeometry[shape]();
@@ -111,7 +130,11 @@ export class PlaceScene {
     const geometry = new THREE.PlaneGeometry(w, h);
     this.geometries.push(geometry);
     // The live picture is already tone mapped and fogged like the screen (see portal.ts), so it is shown as is.
-    const material = new THREE.MeshBasicMaterial({ color: '#0A0C14', fog: false, toneMapped: false });
+    // A realistic place behind the opening was drawn without tone mapping (render targets never get it), so the
+    // quad applies this screen's tone mapping to it, exactly as that place gets it on screen after the hand-over
+    // (D-010, round 5: the shop is realistic now). A graybox place is never tone mapped, so its quad is not either.
+    const behind = this.world.places[p.portal!];
+    const material = new THREE.MeshBasicMaterial({ color: '#0A0C14', fog: false, toneMapped: behind?.style === 'realistic' });
     this.materials.push(material);
     const mesh = new THREE.Mesh(geometry, material);
     mesh.name = p.id;
@@ -168,7 +191,9 @@ export class PlaceScene {
     const nightOverride = this.night ? p.night : undefined;
     const color = nightOverride?.color ?? p.color;
     const emissive = nightOverride?.emissive ?? p.emissive ?? false;
-    const n = propCount(p, this.quality);
+    // Rows (books on shelves) may hold fewer than the count asks for; draw what was placed.
+    const instances = propInstances(p, this.quality);
+    const n = p.rows ? instances.length : propCount(p, this.quality);
     let geometry: THREE.BufferGeometry;
     if (p.ring) {
       geometry = new THREE.TorusGeometry(p.size[0] / 2, p.size[1], 6, 48);
@@ -202,7 +227,6 @@ export class PlaceScene {
     const s = new THREE.Vector3();
     const pos = new THREE.Vector3();
     const colorAttr = p.palette ? new THREE.Color() : null;
-    const instances = propInstances(p, this.quality);
     for (let i = 0; i < n; i++) {
       const it = instances[i]!;
       pos.set(...it.pos);
@@ -240,6 +264,41 @@ export class PlaceScene {
     this.objects.set(o.id, mesh);
   }
 
+  /** Give an object its realistic look; its box stays for picking and sight but is no longer drawn. */
+  private async addVisual(o: WorldObject, assets: Assets, seed: number): Promise<void> {
+    const proxy = this.objects.get(o.id);
+    if (!proxy || !o.look) return;
+    (proxy.material as THREE.Material).visible = false;
+    let visual: Visual | null = null;
+    try {
+      visual = await buildVisual(assets, o.look, o.size, this.quality, seed);
+    } catch (e) {
+      console.warn(`look of ${o.id} failed`, e);
+      (proxy.material as THREE.Material).visible = true;
+      return;
+    }
+    if (!visual) return;
+    const emissive: VisualEntry['emissive'] = [];
+    for (const m of visual.materials) {
+      const sm = m as THREE.MeshStandardMaterial;
+      if (sm.emissive) emissive.push({ m: sm, color: sm.emissive.clone(), intensity: sm.emissiveIntensity });
+    }
+    const entry: VisualEntry = { visual, proxy, emissive, lightBase: visual.light?.intensity ?? 0 };
+    this.visuals.set(o.id, entry);
+    this.root.add(visual.object);
+    this.syncVisual(entry);
+    this.lastStates.delete(o.id);
+  }
+
+  private syncVisual(v: VisualEntry): void {
+    const p = v.proxy;
+    const base = p.userData.baseScale as THREE.Vector3;
+    v.visual.object.visible = p.visible;
+    v.visual.object.position.copy(p.position);
+    v.visual.object.quaternion.copy(p.quaternion);
+    v.visual.object.scale.set(p.scale.x / base.x, p.scale.y / base.y, p.scale.z / base.z);
+  }
+
   /** Show the state of every object in this place. Cheap; call after any state change. */
   applyState(state: GameState): void {
     for (const c of this.conditional) {
@@ -263,8 +322,16 @@ export class PlaceScene {
       mesh.scale.copy(baseScale);
       if (v?.scale) mesh.scale.multiply(new THREE.Vector3(...v.scale));
       (mesh.material as THREE.MeshLambertMaterial).color.set(v?.color ?? (mesh.userData.baseColor as string));
+      const look = this.visuals.get(id);
+      if (look) {
+        // A realistic look shows the state itself: toggles open/close, lamps dim, taken finds go.
+        const toggle = o.states.length === 2 && o.states[0] === 'first';
+        look.visual.setState?.(toggle ? (s === 'second' ? 'open' : 'closed') : s);
+        if (look.visual.light) look.visual.light.intensity = toggle && s === 'second' ? look.lightBase * 0.45 : look.lightBase;
+      }
+      if (o.kind === 'hidden' && s === 'found' && o.verb === 'Take') mesh.visible = false;
       // Toggled ordinary things show their second state as a small turn and a lighter colour.
-      if (!v && o.states.length === 2 && s === o.states[1] && o.kind === 'usable') {
+      if (!v && !o.look && o.states.length === 2 && s === o.states[1] && o.kind === 'usable') {
         mesh.rotation.y = baseRot.y + 0.5;
         (mesh.material as THREE.MeshLambertMaterial).color.set(o.color).offsetHSL(0, 0, 0.12);
       }
@@ -346,6 +413,21 @@ export class PlaceScene {
       g.mesh.scale.copy(g.baseScale).multiplyScalar(1 + 0.35 * pulse);
       if (mat.emissive) mat.emissive.set('#FFE39A').multiplyScalar(0.7 * pulse);
     }
+    // Looks follow their boxes (wiggles, glints, state offsets), and glint with them.
+    for (const v of this.visuals.values()) {
+      this.syncVisual(v);
+      const g = this.glints.find((x) => x.mesh === v.proxy);
+      for (const e of v.emissive) {
+        if (g) {
+          const pulse = Math.sin(Math.min(1, (now - g.start) / 900) * Math.PI);
+          e.m.emissive.copy(e.color).lerp(new THREE.Color('#FFE39A'), pulse);
+          e.m.emissiveIntensity = Math.max(e.intensity, 0.9 * pulse);
+        } else if (e.m.emissiveIntensity !== e.intensity || !e.m.emissive.equals(e.color)) {
+          e.m.emissive.copy(e.color);
+          e.m.emissiveIntensity = e.intensity;
+        }
+      }
+    }
     // The rims of the openings breathe slowly, even in test mode (a steady value there, so screenshots stay the same).
     for (const p of this.portals) {
       if (!p.glow) continue;
@@ -377,6 +459,8 @@ export class PlaceScene {
 
   dispose(): void {
     this.dressing?.dispose();
+    for (const v of this.visuals.values()) v.visual.dispose();
+    this.visuals.clear();
     for (const g of this.geometries) g.dispose();
     for (const m of this.materials) m.dispose();
     this.geometries = [];

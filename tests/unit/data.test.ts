@@ -61,11 +61,13 @@ describe('world data', () => {
     }
   });
 
-  it('place 1 keeps at most 6 ordinary usable things; from place 2 on, at least 4 for every important one (spec §5)', () => {
+  // D-011: "important" counts the main path (steps and dive openings). Optional finds are not counted, so adding
+  // finds does not force a crowd of decoys; spec §5's four-to-one rule still holds for the main path.
+  it('place 1 keeps at most 6 ordinary usable things; from place 2 on, at least 4 for every main-path thing (spec §5, D-011)', () => {
     for (const id of world.order) {
       if (id === 'street_night') continue;
       const objs = world.objectsIn(id);
-      const important = objs.filter((o) => o.kind === 'hidden' || o.kind === 'dive' || o.transitions.some((t) => (t.effects ?? []).some((e) => e.type === 'step'))).length;
+      const important = objs.filter((o) => o.kind === 'dive' || o.transitions.some((t) => (t.effects ?? []).some((e) => e.type === 'step'))).length;
       const ordinary = objs.filter((o) => o.kind === 'usable' && !o.transitions.some((t) => (t.effects ?? []).some((e) => e.type === 'step'))).length;
       if (id === 'street') expect(ordinary, 'street').toBeLessThanOrEqual(6);
       else expect(ordinary, `${id}: ${ordinary} ordinary vs ${important} important`).toBeGreaterThanOrEqual(4 * important);
@@ -91,9 +93,12 @@ describe('world data', () => {
     }
   });
 
-  it('every hidden object has an outline alt text and every sketch lists two hidden objects of its place', () => {
+  // D-011: a sketch page lists every hidden object of its place (the street and the shop have six each now).
+  it('every hidden object has an outline alt text and every sketch lists all the hidden objects of its place', () => {
     for (const s of world.sketches) {
-      expect(s.hidden).toHaveLength(2);
+      const ofPlace = world.objectsIn(s.place).filter((o) => o.kind === 'hidden').map((o) => o.id);
+      expect([...s.hidden].sort()).toEqual(ofPlace.sort());
+      expect(s.hidden.length).toBeGreaterThanOrEqual(2);
       for (const h of s.hidden) {
         expect(world.objects[h]?.kind, h).toBe('hidden');
         expect(world.objects[h]?.place, h).toBe(s.place);

@@ -480,3 +480,18 @@ Only the street's look changed; every other place is graybox. Positions that mov
 | Stall | the wooden table model under a cloth canopy on four posts; crates and the bucket are models; three leaning oars behind it |
 | Dressing | 37.3 MB of Poly Haven assets; the list of what each prop uses is the `look` field in `props.json` |
 | Lighting | HDRI `belfast_sunset_puresky_2k` turned −100° so its sun sits over the harbor; sun light from (0.45, 0.14, −0.88); mist #66768e from 20 to 140 m; exposure 0.5 |
+
+## 16. Fifth round: the street and the shop as a small complete game (2026-10-06, `DECISIONS.md` D-011)
+
+The playtest build plays the street and the shop; the dive into the open blue drawer ends it ("To be continued"). The full chain is still in the data and on the dev build.
+
+| What | Now |
+|---|---|
+| Shop room | 7 × 9 m as before. Plastered walls, plank floor and ceiling; a front wall with the door (x −0.6..0.6) and a window (x 0.95..2.25, y 0.95..2.05) whose glass shows the dusk |
+| Shop spots | A (0, 1.6, 0) the doorway; B (1.6, 1.6, −3) in front of the low chest; C (1, 1.6, −4.9) behind the counter by the back table; D (−2.4, 1.6, −1.5) between the bookshelves and the tea table |
+| Main path | key on the counter at (0.02, 1.01, −3.82), beside the oil lamp at (0.32, 1.2, −4.2); the low chest of drawers on the right wall, centre (3.09, 0.38, −3), front facing the room; the **blue drawer is the chest's top-middle drawer** at (3.07, 0.54, −3), sliding 0.4 m out when unlocked; the opening inside it at (2.59, 0.665, −3), 0.34 × 0.28 m, facing up |
+| Ordinary things (shop) | five more drawers of the chest (open/close), the oil lamp (dim/brighten, it is the light), the mantel clock on the chest (wind), the bell, the scales (counter), the big book (tea table), the globe, the music box and the cash box (back table). 12 ordinary for 3 main-path things |
+| Finds (12) | street: starfish (−1.3, 0.01, −3.6), toy sailboat in the puddle (1.9, 0.16, −1.45), fisherman's hat on the crate (3.15, 0.46, −1.02), umbrella (unchanged), glass float on the quay (−1.4, 0.08, −17.05), ship in a bottle (unchanged). Shop: spectacles (−1.4, 1.02, −3.78), snow globe (−1.3, 0.61, −1.12), compass (0.62, 0.57, −5.98), marble (2.25, 0.015, −4.35), clockwork mouse (−0.3, 0.025, −3.45), star teacup on the inside window sill (2.0, 1.06, −0.1). Easy 2× lens and 6° hit area at the reference distance; medium 2.5× and 4°; hard 3× and 2 to 3° |
+| Sketch S2 | from A, yaw 6, pitch −6, zoom 1.3: the counter with the cat, the scales and the lamp, the tall clock behind |
+| Lights (shop) | oil lamp 3.2 cd warm, 7 m; lanterns on the chest and the tea table 1.6 and 1.4 cd, 4.5 m; a dusk light (#8fa6d6, 0.35) through the front; HDRI reflections at 0.12; exposure 0.5 (equal to the street's, for the seam); no fog, no point-light shadows |
+| Download | 512 px textures and models, 1k HDRI; see D-011 for the measured total |

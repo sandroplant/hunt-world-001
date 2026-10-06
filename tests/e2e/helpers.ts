@@ -1,7 +1,19 @@
 import type { Page } from '@playwright/test';
 import { readFileSync } from 'node:fs';
 
-const objectsJson = JSON.parse(readFileSync(new URL('../../src/world/objects.json', import.meta.url), 'utf8')) as { objects: Array<{ id: string; at?: [string, number, number, number] }> };
+const objectsJson = JSON.parse(readFileSync(new URL('../../src/world/objects.json', import.meta.url), 'utf8')) as { objects: Array<{ id: string; place: string; at?: [string, number, number, number]; pos?: [number, number, number]; home?: string }> };
+const placesJson = JSON.parse(readFileSync(new URL('../../src/world/places.json', import.meta.url), 'utf8')) as { places: Record<string, { viewpoints: Record<string, { pos: [number, number, number] }> }> };
+
+/** [yaw, pitch, spot] for any object: from its `at`, or from its home spot toward its position (round 5 objects). */
+export function aimAt(id: string): [number, number, string] {
+  const o = objectsJson.objects.find((x) => x.id === id);
+  if (!o) throw new Error(`no object ${id}`);
+  if (o.at) return [o.at[1], o.at[2], o.at[0]];
+  const sp = placesJson.places[o.place]!.viewpoints[o.home!]!.pos;
+  const d = [o.pos![0] - sp[0], o.pos![1] - sp[1], o.pos![2] - sp[2]] as const;
+  const len = Math.hypot(d[0], d[1], d[2]);
+  return [(Math.atan2(-d[0], -d[2]) * 180) / Math.PI, (Math.asin(d[1] / len) * 180) / Math.PI, o.home!];
+}
 
 /** [yaw, pitch, spot] of an object placed with `at` (world yaw). */
 export function objectAt(id: string): [number, number, string] {
@@ -39,6 +51,7 @@ declare global {
       gc(): void;
       disposeAll(): void;
       sceneCount(): number;
+      ready(): Promise<void>;
     };
   }
 }
